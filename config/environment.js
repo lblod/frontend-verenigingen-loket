@@ -18,6 +18,9 @@ module.exports = function (environment) {
       // Here you can pass flags/options to your application instance
       // when it is created
     },
+    appName: 'Verenigingen',
+    contactEmail: 'verenigingen.abb@vlaanderen.be',
+    environmentName: '{{ENVIRONMENT_NAME}}',
   };
 
   if (environment === 'development') {

@@ -30,7 +30,6 @@ export default class CurrentSessionService extends Service {
         include: 'classification',
       });
       this.groupClassification = await this.group.classification;
-      console.log(this.groupClassification.serialize());
     }
   }
   get canEdit() {

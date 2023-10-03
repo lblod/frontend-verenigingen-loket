@@ -1,6 +1,6 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
-import ENV from 'frontend-loket/config/environment';
+import ENV from 'frontend-verenigingen-loket/config/environment';
 
 export default class AuthSwitchRoute extends Route {
   @service router;
@@ -22,7 +22,7 @@ export default class AuthSwitchRoute extends Route {
         'Something went wrong while trying to remove the session on the server',
         {
           cause: error,
-        }
+        },
       );
     }
   }
