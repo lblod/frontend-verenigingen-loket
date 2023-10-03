@@ -23,7 +23,7 @@ export default class MockLoginRoute extends Route {
       include: 'user,user.groups',
       filter: filter,
       page: { size: 10, number: params.page },
-      sort: 'user.first-name',
+      sort: 'user.family-name',
     });
     return accounts;
   }

@@ -6,34 +6,34 @@ export default class SharedBreadCrumbComponent extends Component {
 
   bread = [
     {
-      route: 'associations',
+      route: 'index',
       crumbs: [{ label: 'Verenigingen' }],
     },
     {
-      route: 'associations.association.general',
+      route: 'association.general',
       crumbs: [
-        { label: 'Verenigingen', link: 'associations' },
+        { label: 'Verenigingen', link: 'index' },
         { label: 'Vereniging Algemeen' },
       ],
     },
     {
-      route: 'associations.association.contact-detail',
+      route: 'association.contact-detail',
       crumbs: [
-        { label: 'Verenigingen', link: 'associations' },
+        { label: 'Verenigingen', link: 'index' },
         { label: 'Vereniging contactgegevens' },
       ],
     },
     {
-      route: 'associations.association.location',
+      route: 'association.location',
       crumbs: [
-        { label: 'Verenigingen', link: 'associations' },
+        { label: 'Verenigingen', link: 'index' },
         { label: 'Vereniging locatie' },
       ],
     },
     {
-      route: 'associations.association.representatives',
+      route: 'association.representatives',
       crumbs: [
-        { label: 'Verenigingen', link: 'associations' },
+        { label: 'Verenigingen', link: 'index' },
         { label: 'Vereniging vertegenwoordiger' },
       ],
     },
@@ -41,7 +41,7 @@ export default class SharedBreadCrumbComponent extends Component {
 
   get crumbsForRoute() {
     const results = this.bread.filter(
-      (value) => value.route === this.router.currentRouteName
+      (value) => value.route === this.router.currentRouteName,
     );
     if (results.length <= 0) return [];
     return results[0].crumbs;

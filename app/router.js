@@ -17,14 +17,13 @@ Router.map(function () {
   this.route('mock-login');
 
   // Association
-  this.route('associations', { path: '/' }, function () {
-    this.route('association', { path: 'vereniging/:id' }, function () {
-      this.route('general', { path: '/' });
-      this.route('general', { path: '/algemeen' });
-      this.route('contact-detail');
-      this.route('location');
-      this.route('representatives');
-    });
+
+  this.route('association', { path: 'vereniging/:id' }, function () {
+    this.route('general', { path: '/' });
+    this.route('general', { path: '/algemeen' });
+    this.route('contact-detail');
+    this.route('location');
+    this.route('representatives');
   });
 
   this.route('route-not-found', {
