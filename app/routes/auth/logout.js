@@ -7,7 +7,7 @@ export default class AuthLogoutRoute extends Route {
   @service session;
 
   async beforeModel(transition) {
-    if (this.session.requireAuthentication(transition, 'login')) {
+    if (this.session.requireAuthentication(transition, 'auth.login')) {
       try {
         let wasMockLoginSession = this.session.isMockLoginSession;
         await this.session.invalidate();

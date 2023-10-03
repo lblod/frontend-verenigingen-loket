@@ -17,7 +17,6 @@ Router.map(function () {
   this.route('mock-login');
 
   // Association
-
   this.route('association', { path: 'vereniging/:id' }, function () {
     this.route('general', { path: '/' });
     this.route('general', { path: '/algemeen' });

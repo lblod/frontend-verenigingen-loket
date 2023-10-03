@@ -7,7 +7,7 @@ export default class AuthSwitchRoute extends Route {
   @service session;
 
   async beforeModel(transition) {
-    this.session.requireAuthentication(transition, 'login');
+    this.session.requireAuthentication(transition, 'auth.login');
 
     try {
       let wasMockLoginSession = this.session.isMockLoginSession;
