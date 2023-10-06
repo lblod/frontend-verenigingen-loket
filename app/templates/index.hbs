@@ -6,10 +6,11 @@
       </div>
     </div>
   </m.sidebar>
+
   <m.content @scroll={{true}}>
     <div class="au-d-component-block au-d-component-block--overflow">
       <AuDataTable
-        @content={{this.administrativeUnits}}
+        @content={{@model}}
         @isLoading={{this.showTableLoader}}
         @page={{this.page}}
         @size={{this.size}}
@@ -72,27 +73,31 @@
               </p>
             </TableMessage>
           {{else}}
-            <c.body as |adminUnit|>
+            <c.body as |association|>
               <td>
                 <LinkTo
                   class="au-c-link"
-                  @model={{adminUnit.id}}
+                  @model={{association.id}}
                   @route="association"
                 >
-                  {{adminUnit.name}}
+                  {{association.name}}
                 </LinkTo>
               </td>
-              <td>{{adminUnit.classification_name}}</td>
+              <td>{{association.description}}</td>
               {{#if this.modelHasOnlyWorshipAdministrativeUnits}}
-                <td>{{adminUnit.recognized_worship_type_name}}</td>
+                <td>{{association.recognized_worship_type_name}}</td>
               {{/if}}
-              <td>{{adminUnit.province}}</td>
-              <td>{{adminUnit.municipality}}</td>
+              <td>{{association.province}}</td>
               <td>
-                {{#if adminUnit.status}}
+                {{#each association.identifiers as |identifier|}}
+                    {{this.getVcode identifier}}
+                {{/each}}
+              </td>
+              <td>
+                {{#if association.status}}
                   <OrganizationStatus
-                    @id={{adminUnit.status_id}}
-                    @label={{adminUnit.status}}
+                    @id={{association.status_id}}
+                    @label={{association.status}}
                   />
                 {{/if}}
               </td>
