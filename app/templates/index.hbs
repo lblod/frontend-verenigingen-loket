@@ -83,7 +83,9 @@
                   {{association.name}}
                 </LinkTo>
               </td>
-              <td>{{association.description}}</td>
+              <td>
+                {{association.primarySite.address.postcode}}
+              </td>
               {{#if this.modelHasOnlyWorshipAdministrativeUnits}}
                 <td>{{association.recognized_worship_type_name}}</td>
               {{/if}}
