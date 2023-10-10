@@ -1,23 +1,39 @@
 {{page-title "Vereniging"}}
 
-<div class="au-u-flex au-u-flex--vertical-center au-u-margin-top">
-  <AuHeading @level="1" @skin="2">Bekijk vereniging</AuHeading>
-  <AuHeading @level="2" @skin="5" class="au-u-margin-left-large">Vereniging {{@model.id}}</AuHeading>
-</div>
-<AuTabs as |Tab|>
-  <Tab>
-    <AuLink @route="association.general">Algemeen</AuLink>
-  </Tab>
-  <Tab>
-    <AuLink @route="association.contact-detail">Contactgegevens </AuLink>
-  </Tab>
-  <Tab>
-    <AuLink @route="association.location">Locaties </AuLink>
-  </Tab>
-  <Tab>
-    <AuLink @route="association.representatives">Vertegenwoordigers </AuLink>
-  </Tab>
-</AuTabs>
-<AuBodyContainer>
-  {{outlet}}
-</AuBodyContainer>
+<AuMainContainer as |m|>
+  <m.sidebar>
+    <div class="au-c-sidebar">
+      <div class="au-c-sidebar__content">
+        <nav>
+          <ul class="au-c-list-navigation">
+            <li class="au-c-list-navigation__item">
+              <AuNavigationLink @route="association.general">
+                Algemeen
+              </AuNavigationLink>
+            </li>
+
+            <li class="au-c-list-navigation__item">
+              <AuNavigationLink @route="association.contact-detail">
+                Contactgegevens
+              </AuNavigationLink>
+            </li>
+
+            <li class="au-c-list-navigation__item">
+              <AuNavigationLink @route="association.location">
+                Locaties
+              </AuNavigationLink>
+            </li>
+            <li class="au-c-list-navigation__item">
+              <AuNavigationLink @route="association.representatives">
+                Vertegenwoordigers
+              </AuNavigationLink>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </m.sidebar>
+  <m.content @scroll={{true}}>
+    {{outlet}}
+  </m.content>
+</AuMainContainer>
