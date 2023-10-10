@@ -43,15 +43,15 @@
               @class="data-table__header-title"
             />
             <AuDataTableThSortable
-              @field="erkenning"
-              @currentSorting={{this.sort}}
-              @label="Erkenning"
-              @class="data-table__header-title"
-            />
-            <AuDataTableThSortable
               @field="leeftijd"
               @currentSorting={{this.sort}}
               @label="Leeftijd"
+              @class="data-table__header-title"
+            />
+            <AuDataTableThSortable
+              @field="erkenning"
+              @currentSorting={{this.sort}}
+              @label="Erkenning"
               @class="data-table__header-title"
             />
           </c.header>
@@ -92,17 +92,16 @@
               <td>{{association.province}}</td>
               <td>
                 {{#each association.identifiers as |identifier|}}
-                    {{this.getVcode identifier}}
+                  {{this.getVcode identifier}}
                 {{/each}}
               </td>
               <td>
-                {{#if association.status}}
-                  <OrganizationStatus
-                    @id={{association.status_id}}
-                    @label={{association.status}}
-                  />
-                {{/if}}
+                18 - 65
               </td>
+              <td>
+                <AuPill @skin="warning">Niet erkend</AuPill>
+              </td>
+
             </c.body>
           {{/if}}
         </t.content>
