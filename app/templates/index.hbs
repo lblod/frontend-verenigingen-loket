@@ -13,26 +13,26 @@
         @content={{@model}}
         @isLoading={{this.showTableLoader}}
         @page={{this.page}}
+        @sort={{this.sort}}
         @size={{this.size}}
         as |t|
       >
         <t.content class="au-c-data-table__table--small" as |c|>
           <c.header>
             <AuDataTableThSortable
-              @field="naam"
+              @field="name"
               @currentSorting={{this.sort}}
               @label="Naam"
               @class="data-table__header-title"
             />
             <AuDataTableThSortable
-              @field="postcode"
+              @field="primarySite.address.postcode"
               @currentSorting={{this.sort}}
               @label="Postcode"
               @class="data-table__header-title"
             />
             <AuDataTableThSortable
               @field="hoofdactiviteiten"
-              @currentSorting={{this.sort}}
               @label="Hoofdactiviteiten"
               @class="data-table__header-title"
             />
