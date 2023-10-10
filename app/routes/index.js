@@ -9,6 +9,14 @@ export default class IndexRoute extends Route {
     this.session.requireAuthentication(transition, 'auth.login');
   }
   async model() {
-    return this.store.findAll('association');
+    const include = [
+      'primary-site.address',
+      'identifiers.structured-identifier',
+    ].join(',');
+
+    const query = {
+      include,
+    };
+    return this.store.query('association', query);
   }
 }
