@@ -1,14 +1,17 @@
 <form class="au-o-grid au-o-grid--small">
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuHeading @level="2" @skin="5">Filter verenigingen</AuHeading>
-    <AuHr  />
+    <AuHr />
     <AuInput
       class="au-u-margin-bottom au-u-margin-top"
       placeholder="zoek op vCode, naam, hoofdactiviteit of contactpersoon"
       @icon="search"
       @iconAlignment="right"
       @width="block"
+      value={{this.search}}
+      oninput={{perform @updateSearch value="target.value"}}
     />
+    {{log this.search}}
     <AuLabel for="filter-name">Hoofdactiviteiten</AuLabel>
     <AuCheckboxGroup as |Group|>
       <Group.Checkbox @value="checkboxOne">Burgerinitiatief & Actiegroep
@@ -29,7 +32,7 @@
       <Group.Checkbox @value="checkboxThree">9311 – Aalst</Group.Checkbox>
     </AuCheckboxGroup>
   </div>
-    <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
+  <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuLabel for="filter-municipality">Erkenning</AuLabel>
     <AuCheckboxGroup as |Group|>
       <Group.Checkbox @value="checkboxOne">Erkend</Group.Checkbox>
