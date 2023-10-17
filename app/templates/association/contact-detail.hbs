@@ -47,8 +47,10 @@
           <Item>
             <:label>Telefoon</:label>
             <:content>
-              {{#if this.getContactDetails.telephone}}
-                {{this.getContactDetails.telephone}}
+              {{#if this.contactDetails.telephone}}
+                {{this.contactDetails.telephone}}
+              {{else if this.isLoading}}
+                Loading...
               {{else}}
                 Niet opgegeven
               {{/if}}
@@ -57,8 +59,8 @@
           <Item>
             <:label>Email</:label>
             <:content>
-              {{#if this.getContactDetails.email}}
-                {{this.getContactDetails.email}}
+              {{#if this.contactDetails.email}}
+                {{this.contactDetails.email}}
               {{else}}
                 Niet opgegeven
               {{/if}}
@@ -69,9 +71,9 @@
           <Item>
             <:label>Website</:label>
             <:content>
-              {{#if this.getContactDetails.website}}
-                <AuLinkExternal href={{this.getContactDetails.website}}>
-                  {{this.getContactDetails.website}}
+              {{#if this.contactDetails.website}}
+                <AuLinkExternal href={{this.contactDetails.website}}>
+                  {{this.contactDetails.website}}
                   (externe link)
                 </AuLinkExternal>
               {{else}}
@@ -82,14 +84,16 @@
           <Item>
             <:label>Sociale media</:label>
             <:content>
-              {{#if this.getContactDetails.socialMedia.length}}
+              {{#if this.contactDetails.socialMedia.length}}
                 {{#each
-                  this.getContactDetails.socialMedia
+                  this.contactDetails.socialMedia
                   as |socialMedia index|
                 }}
                   <AuLinkExternal href={{socialMedia.url}}>
                     {{socialMedia.name}}
-                  </AuLinkExternal>{{#unless (last-index index this.getContactDetails.socialMedia)}},{{/unless}}
+                  </AuLinkExternal>{{#unless
+                    (last-index index this.contactDetails.socialMedia)
+                  }},{{/unless}}
                 {{/each}}
               {{else}}
                 Niet opgegeven

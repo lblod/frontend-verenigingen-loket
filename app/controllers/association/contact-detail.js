@@ -1,33 +1,37 @@
 import Controller from '@ember/controller';
 
 export default class AssociationContactDetailController extends Controller {
-  get getContactDetails() {
+  get contactDetails() {
     const contactPoints = {
       telephone: '',
       email: '',
       website: '',
       socialMedia: [],
     };
+
     if (this.model.contactPoints) {
       this.model.contactPoints.forEach((contactPoint) => {
-        if (contactPoint.telephone) {
-          contactPoints.telephone = contactPoint.telephone;
+        const { telephone, email, website, name } = contactPoint;
+
+        if (telephone) {
+          contactPoints.telephone = telephone;
         }
-        if (contactPoint.email) {
-          contactPoints.email = contactPoint.email;
+        if (email) {
+          contactPoints.email = email;
         }
-        if (contactPoint.website) {
-          if (contactPoint.name === 'Website') {
-            contactPoints.website = contactPoint.website;
+        if (website) {
+          if (name === 'Website') {
+            contactPoints.website = website;
           } else {
             contactPoints.socialMedia.push({
-              name: contactPoint.name,
-              url: contactPoint.website,
+              name,
+              url: website,
             });
           }
         }
       });
     }
+
     return contactPoints;
   }
 }
