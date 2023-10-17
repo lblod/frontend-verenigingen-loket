@@ -1,20 +1,99 @@
-<div>
-<AuCard
-  as |c|
+<section
+  class="au-u-flex au-u-flex--between au-u-padding-left-large au-u-padding-top au-u-padding-right-large au-u-padding-bottom"
 >
-  <c.header
+  <div>
+    <AuHeading @level="1" @skin="1">Contactgegevens</AuHeading>
+    <AuHeading @level="3" @skin="3">{{@model.name}}</AuHeading>
+  </div>
+  <div
+    class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
   >
-    <AuHeading @level="2" @skin="4">
-   Contact
-    </AuHeading>
-    <p>
-      {{this.subtitle}}
-    </p>
-  </c.header>
-  <c.content>
-    <p>{{this.content}}</p>
-  </c.content>
-  <c.footer>
-  </c.footer>
-</AuCard>
-</div>
+    <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op 22-02-2022</AuPill>
+    <AuHelpText>
+      Zie je een fout in de data?
+      <br />
+      <AuLinkExternal
+        href="
+            mailto:{{this.contactEmail}}
+            ?subject={{this.subject}}
+            &body={{this.body}}"
+      >
+        Meld het bij de vereniging!
+      </AuLinkExternal>
+    </AuHelpText>
+  </div>
+</section>
+<section
+  class="au-u-padding-left-large au-u-padding-top au-u-padding-right-large au-u-padding-bottom"
+>
+  <DataCard>
+    <:title>
+      Contactgegevens
+    </:title>
+    <:card as |Card|>
+      <Card.Columns>
+        <:left as |Item|>
+
+          <Item>
+            <:label>Adres</:label>
+            <:content>
+              {{#if @model.primarySite.address}}
+                {{@model.primarySite.address.fullAddress}}
+              {{else}}
+                Geen adres gevonden
+              {{/if}}
+            </:content>
+          </Item>
+          <Item>
+            <:label> Telefoon</:label>
+            <:content>
+              {{#if @model.contactPoint.telephone}}
+                {{@model.contactPoint.telephone}}
+              {{else}}
+                Niet opgegeven
+              {{/if}}
+            </:content>
+          </Item>
+            <Item>
+            <:label> Email</:label>
+            <:content>
+              {{#if @model.contactPoint.email}}
+                {{@model.contactPoint.email}}
+              {{else}}
+                Niet opgegeven
+              {{/if}}
+            </:content>
+          </Item>
+        </:left>
+        <:right as |Item|>
+          <Item>
+            <:label> Website  </:label>
+            <:content>
+              {{#if @model.contactPoint.website}}
+             <AuLinkExternal href={{@model.contactPoint.website}}>
+                  {{@model.contactPoint.website}}
+                  (externe link)
+                </AuLinkExternal>
+              {{else}}
+                Niet opgegeven
+              {{/if}}
+            </:content>
+          </Item>
+             <Item>
+            <:label>Sociale media</:label>
+            <:content>
+              {{#if @model.contactPoint.socialMedia}}
+             <AuLinkExternal href={{@model.contactPoint.socialMedia}}>
+                  {{@model.contactPoint.socialMedia}}
+                  (externe link)
+                </AuLinkExternal>
+              {{else}}
+                Niet opgegeven
+              {{/if}}
+            </:content>
+          </Item>
+        </:right>
+      </Card.Columns>
+    </:card>
+  </DataCard>
+</section>
