@@ -30,12 +30,9 @@
               @label="Postcode"
               @class="data-table__header-title"
             />
-            <AuDataTableThSortable
-              @field="hoofdactiviteiten"
-              @currentSorting={{this.sort}}
-              @label="Hoofdactiviteiten"
-              @class="data-table__header-title"
-            />
+            <th
+              class="data-table__header-title"
+            >Hoofdactiviteiten</th>
             <AuDataTableThSortable
               @field="vCode"
               @currentSorting={{this.sort}}

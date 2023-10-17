@@ -45,20 +45,20 @@
             </:content>
           </Item>
           <Item>
-            <:label> Telefoon</:label>
+            <:label>Telefoon</:label>
             <:content>
-              {{#if @model.contactPoint.telephone}}
-                {{@model.contactPoint.telephone}}
+              {{#if this.getContactDetails.telephone}}
+                {{this.getContactDetails.telephone}}
               {{else}}
                 Niet opgegeven
               {{/if}}
             </:content>
           </Item>
-            <Item>
-            <:label> Email</:label>
+          <Item>
+            <:label>Email</:label>
             <:content>
-              {{#if @model.contactPoint.email}}
-                {{@model.contactPoint.email}}
+              {{#if this.getContactDetails.email}}
+                {{this.getContactDetails.email}}
               {{else}}
                 Niet opgegeven
               {{/if}}
@@ -67,11 +67,11 @@
         </:left>
         <:right as |Item|>
           <Item>
-            <:label> Website  </:label>
+            <:label>Website</:label>
             <:content>
-              {{#if @model.contactPoint.website}}
-             <AuLinkExternal href={{@model.contactPoint.website}}>
-                  {{@model.contactPoint.website}}
+              {{#if this.getContactDetails.website}}
+                <AuLinkExternal href={{this.getContactDetails.website}}>
+                  {{this.getContactDetails.website}}
                   (externe link)
                 </AuLinkExternal>
               {{else}}
@@ -79,17 +79,22 @@
               {{/if}}
             </:content>
           </Item>
-             <Item>
+          <Item>
             <:label>Sociale media</:label>
             <:content>
-              {{#if @model.contactPoint.socialMedia}}
-             <AuLinkExternal href={{@model.contactPoint.socialMedia}}>
-                  {{@model.contactPoint.socialMedia}}
-                  (externe link)
-                </AuLinkExternal>
+              {{#if this.getContactDetails.socialMedia.length}}
+                {{#each
+                  this.getContactDetails.socialMedia
+                  as |socialMedia index|
+                }}
+                  <AuLinkExternal href={{socialMedia.url}}>
+                    {{socialMedia.name}}
+                  </AuLinkExternal>{{#unless (last-index index this.getContactDetails.socialMedia)}},{{/unless}}
+                {{/each}}
               {{else}}
                 Niet opgegeven
               {{/if}}
+
             </:content>
           </Item>
         </:right>

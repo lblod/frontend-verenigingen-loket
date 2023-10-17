@@ -4,7 +4,7 @@ export default class AssociationContactDetailRoute extends Route {
   @service store;
   async model() {
     const { id } = this.paramsFor('association');
-    const include = ['contact-point', 'primary-site.address'].join(',');
+    const include = ['contact-points', 'primary-site.address'].join(',');
     const query = {
       include,
     };
