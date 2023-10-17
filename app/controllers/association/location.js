@@ -9,7 +9,6 @@ export default class AssociationLocationController extends Controller {
       const primarySite = this.model.primarySite;
       if (primarySite) {
         primarySite.address.isPrimary = true;
-        console.log(primarySite);
       }
       const mergedSites = A([primarySite, ...sites]);
       this.showTableLoader = false;
