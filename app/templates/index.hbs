@@ -6,10 +6,11 @@
       </div>
     </div>
   </m.sidebar>
+
   <m.content @scroll={{true}}>
     <div class="au-d-component-block au-d-component-block--overflow">
       <AuDataTable
-        @content={{this.administrativeUnits}}
+        @content={{this.model}}
         @isLoading={{this.showTableLoader}}
         @page={{this.page}}
         @size={{this.size}}
@@ -72,27 +73,33 @@
               </p>
             </TableMessage>
           {{else}}
-            <c.body as |adminUnit|>
+            <c.body as |association|>
               <td>
                 <LinkTo
                   class="au-c-link"
-                  @model={{adminUnit.id}}
+                  @model={{association.id}}
                   @route="association"
                 >
-                  {{adminUnit.name}}
+                  {{association.name}}
                 </LinkTo>
               </td>
-              <td>{{adminUnit.classification_name}}</td>
-              {{#if this.modelHasOnlyWorshipAdministrativeUnits}}
-                <td>{{adminUnit.recognized_worship_type_name}}</td>
-              {{/if}}
-              <td>{{adminUnit.province}}</td>
-              <td>{{adminUnit.municipality}}</td>
               <td>
-                {{#if adminUnit.status}}
+                {{association.primarySite.address.postcode}}
+              </td>
+              {{#if this.modelHasOnlyWorshipAdministrativeUnits}}
+                <td>{{association.recognized_worship_type_name}}</td>
+              {{/if}}
+              <td>{{association.province}}</td>
+              <td>
+                {{#each association.identifiers as |identifier|}}
+                    {{this.getVcode identifier}}
+                {{/each}}
+              </td>
+              <td>
+                {{#if association.status}}
                   <OrganizationStatus
-                    @id={{adminUnit.status_id}}
-                    @label={{adminUnit.status}}
+                    @id={{association.status_id}}
+                    @label={{association.status}}
                   />
                 {{/if}}
               </td>
