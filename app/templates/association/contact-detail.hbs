@@ -3,7 +3,7 @@
 >
   <div>
     <AuHeading @level="1" @skin="1">Contactgegevens</AuHeading>
-    <AuHeading @level="3" @skin="3">{{@model.name}}</AuHeading>
+    <AuHeading @level="3" @skin="3">{{this.model.name}}</AuHeading>
   </div>
   <div
     class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
@@ -37,8 +37,8 @@
           <Item>
             <:label>Adres</:label>
             <:content>
-              {{#if @model.primarySite.address}}
-                {{@model.primarySite.address.fullAddress}}
+              {{#if this.model.primarySite.address}}
+                {{this.model.primarySite.address.fullAddress}}
               {{else}}
                 Geen adres gevonden
               {{/if}}

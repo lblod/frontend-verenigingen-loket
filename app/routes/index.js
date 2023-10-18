@@ -22,9 +22,9 @@ export default class IndexRoute extends Route {
     ].join(',');
 
     const query = {
-      	include,
-  		sort: params.sort ?? 'name',
-      	page: { size: 20, number: params.page },
+      include,
+      sort: params.sort ?? 'name',
+      page: { size: 20, number: params.page },
     };
     return this.store.query('association', query);
   }
