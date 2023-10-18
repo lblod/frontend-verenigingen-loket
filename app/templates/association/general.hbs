@@ -1,20 +1,18 @@
 <div>
-<AuCard
-  as |c|
->
-  <c.header
-  >
-    <AuHeading @level="2" @skin="4">
-   General
-    </AuHeading>
-    <p>
-      {{this.subtitle}}
-    </p>
-  </c.header>
-  <c.content>
-    <p>{{this.content}}</p>
-  </c.content>
-  <c.footer>
-  </c.footer>
-</AuCard>
+  <AuCard as |c|>
+    <c.header>
+      <AuHeading @level="2" @skin="4">
+        General
+      </AuHeading>
+      <p>
+        {{this.subtitle}}
+      </p>
+    </c.header>
+    <c.content>
+      <AuHeading @level="1" @skin="2">Bekijk vereniging</AuHeading>
+      <AuHeading @level="2" @skin="5" class="au-u-margin-left-large">Vereniging
+        {{this.model.id}}</AuHeading>
+    </c.content>
+    <c.footer />
+  </AuCard>
 </div>
