@@ -3,18 +3,13 @@
   <div class="au-u-flex au-u-flex--vertical-center au-u-margin-top">
     <AuHeading @level="1" @skin="2">Bekijk vereniging</AuHeading>
     <AuHeading @level="2" @skin="5" class="au-u-margin-left-large">
-      {{@model.name}}</AuHeading>
+      {{this.model.name}}</AuHeading>
   </div>
 
-  {{#each @model.identifiers as |identifier|}}
+  {{#each this.model.identifiers as |identifier|}}
     {{#if (eq identifier.idName "KBO nummer")}}
       <p>KBO nummer {{identifier.structuredIdentifier.localId}}</p>
     {{/if}}
-  {{/each}}
-  {{#each @model.sites as |site|}}
-    <p>
-      {{this.combineFullAddress site.address}}
-    </p>
   {{/each}}
   <AuTabs as |Tab|>
     <Tab>
