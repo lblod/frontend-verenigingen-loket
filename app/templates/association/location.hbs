@@ -1,5 +1,5 @@
 <AuDataTable
-  @content={{this.getSites}}
+  @content={{this.sites}}
   @isLoading={{this.showTableLoader}}
   as |t|
 >
@@ -61,7 +61,7 @@
           {{/if}}
         </td>
         <td>
-          {{this.combineFullAddress site.address}}
+          {{this.getFullAddress site.address}}
         </td>
         <td>
           {{site.siteType.label}}

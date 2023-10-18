@@ -1,9 +1,10 @@
 import Controller from '@ember/controller';
 import { A } from '@ember/array';
 import { tracked } from '@glimmer/tracking';
+import { combineFullAddress } from '../../models/address';
 export default class AssociationLocationController extends Controller {
   @tracked showTableLoader = true;
-  get getSites() {
+  get sites() {
     if (this.model.sites) {
       const sites = this.model.sites;
       const primarySite = this.model.primarySite;
@@ -17,27 +18,7 @@ export default class AssociationLocationController extends Controller {
     return null;
   }
 
-  combineFullAddress(address) {
-    if (!address) return null;
-
-    const fullStreet = [address.street, address.number, address.boxNumber]
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-
-    const municipalityInformation = [address.postcode, address.municipality]
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-
-    const countryInformation = address.country || '';
-
-    const parts = [
-      fullStreet,
-      municipalityInformation,
-      countryInformation,
-    ].filter(Boolean);
-
-    return parts.length ? parts.join(', ') : null;
+  getFullAddress(address) {
+    return combineFullAddress(address);
   }
 }
