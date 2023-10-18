@@ -1,23 +1,31 @@
 {{page-title "Vereniging"}}
+<div class="au-u-margin-left au-u-margin-right">
+  <div class="au-u-flex au-u-flex--vertical-center au-u-margin-top">
+    <AuHeading @level="1" @skin="2">Bekijk vereniging</AuHeading>
+    <AuHeading @level="2" @skin="5" class="au-u-margin-left-large">
+      {{this.model.name}}</AuHeading>
+  </div>
 
-<div class="au-u-flex au-u-flex--vertical-center au-u-margin-top">
-  <AuHeading @level="1" @skin="2">Bekijk vereniging</AuHeading>
-  <AuHeading @level="2" @skin="5" class="au-u-margin-left-large">Vereniging {{@model.id}}</AuHeading>
+  {{#each this.model.identifiers as |identifier|}}
+    {{#if (eq identifier.idName "KBO nummer")}}
+      <p>KBO nummer {{identifier.structuredIdentifier.localId}}</p>
+    {{/if}}
+  {{/each}}
+  <AuTabs as |Tab|>
+    <Tab>
+      <AuLink @route="association.general">Algemeen</AuLink>
+    </Tab>
+    <Tab>
+      <AuLink @route="association.contact-detail">Contactgegevens </AuLink>
+    </Tab>
+    <Tab>
+      <AuLink @route="association.location">Locaties </AuLink>
+    </Tab>
+    <Tab>
+      <AuLink @route="association.representatives">Vertegenwoordigers </AuLink>
+    </Tab>
+  </AuTabs>
+  <AuBodyContainer>
+    {{outlet}}
+  </AuBodyContainer>
 </div>
-<AuTabs as |Tab|>
-  <Tab>
-    <AuLink @route="association.general">Algemeen</AuLink>
-  </Tab>
-  <Tab>
-    <AuLink @route="association.contact-detail">Contactgegevens </AuLink>
-  </Tab>
-  <Tab>
-    <AuLink @route="association.location">Locaties </AuLink>
-  </Tab>
-  <Tab>
-    <AuLink @route="association.representatives">Vertegenwoordigers </AuLink>
-  </Tab>
-</AuTabs>
-<AuBodyContainer>
-  {{outlet}}
-</AuBodyContainer>
