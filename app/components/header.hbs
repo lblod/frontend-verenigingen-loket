@@ -1,0 +1,34 @@
+<AuMainHeader
+    @appTitle="Loket voor lokale besturen"
+    @brandLink={{unless
+      this.session.isAuthenticated
+      "https://www.vlaanderen.be/nl"
+    }}
+    @homeRoute="index"
+  >
+    <li class="au-c-list-horizontal__item">
+      <AuLinkExternal
+        href="https://abb-vlaanderen.gitbook.io/handleiding-loket/veelgestelde-vragen"
+        @skin="secondary"
+      >
+        <AuIcon @icon="question-circle" @alignment="left" />
+        Help
+      </AuLinkExternal>
+    </li>
+    <li class="au-c-list-horizontal__item">
+      {{#if this.session.isAuthenticated}}
+        <AuDropdown
+          @title="{{this.currentSession.user.firstName}} {{this.currentSession.user.familyName}}"
+          @buttonLabel="Account settings"
+          @alignment="right"
+          role="menu"
+        >
+          <AuLink @route="auth.logout" @icon="logout" role="menuitem">
+            Afmelden
+          </AuLink>
+        </AuDropdown>
+      {{else}}
+        <LoginButton @isCompact={{true}} />
+      {{/if}}
+    </li>
+  </AuMainHeader>

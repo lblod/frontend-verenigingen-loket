@@ -1,0 +1,24 @@
+<AuToolbar @size="medium" @skin="tint" @border="bottom" as |Group|>
+  <Group>
+    <ul class="au-c-list-horizontal au-c-list-horizontal--small">
+      <li class="au-c-list-horizontal__item">
+        <AuLink @linkRoute="index" @icon="arrow-left">
+          Loket voor lokale besturen
+        </AuLink>
+      </li>
+      {{#each this.crumbsForRoute as |crumb|}}
+        <li class="au-c-list-horizontal__item" role="menu">
+          {{#if crumb.link}}
+            <AuLink @route={{crumb.link}} role="menuitem">
+              {{crumb.label}}
+            </AuLink>
+          {{else}}
+            <strong role="menuitem">
+              {{crumb.label}}
+            </strong>
+          {{/if}}
+        </li>
+      {{/each}}
+    </ul>
+  </Group>
+</AuToolbar>

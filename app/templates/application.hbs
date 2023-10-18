@@ -1,0 +1,21 @@
+{{page-title "Verenigingen"}}
+
+<AuApp>
+  <Header />
+
+  {{#if this.session.isAuthenticated}}
+  <Shared::BreadCrumb />
+  
+    <AuMainContainer class="au-u-flex" as |m|>
+      <m.content @scroll={{true}}>
+        <AuBodyContainer>
+          {{outlet}}
+        </AuBodyContainer>
+      </m.content>
+    </AuMainContainer>
+  {{else}}
+    {{outlet}}
+  {{/if}}
+</AuApp>
+<AuModalContainer />
+<AuToaster />

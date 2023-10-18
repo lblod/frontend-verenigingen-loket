@@ -1,0 +1,52 @@
+<StaticPage class="au-c-body-container au-c-body-container--scroll">
+  <div class="au-o-layout au-o-region-large">
+    <MockLogin as |login|>
+      {{#if login.isLoading}}
+        <AuLoader />
+      {{else}}
+        {{#if login.errorMessage}}
+          {{login.errorMessage}}
+        {{/if}}
+        <AuHeading @skin="4">Kies een bestuurseenheid om mee in te loggen.</AuHeading>
+        <p class="au-u-margin-top-small au-u-margin-bottom">
+          {{#let (unique-id) as |id|}}
+            <AuLabel for={{id}}>Bestuurseenheid zoeken</AuLabel>
+            <input
+              class="au-c-input au-c-input--block js-js-input-pattern-bound"
+              id={{id}}
+              placeholder="Aalst, Berchem, ..."
+              value={{this.gemeente}}
+              oninput={{perform this.updateSearch value="target.value"}}
+            />
+          {{/let}}
+        </p>
+        <ul>
+          {{#each this.model as |account|}}
+            <li>
+              <div
+                class="au-o-box au-o-box--small au-c-card au-u-margin-bottom-small"
+              >
+                <AuButton
+                  @skin="tertiary"
+                  {{on "click" (perform this.callLogin login.login account)}}
+                >
+                  <strong>
+                    {{account.user.firstName}}
+                    {{account.user.familyName}}
+                  </strong>
+                </AuButton>
+              </div>
+            </li>
+          {{/each}}
+        </ul>
+      {{/if}}
+      <AuDataTableNumberPagination
+        @page={{this.page}}
+        @size={{this.size}}
+        @nbOfItems={{this.model.length}}
+        @total={{this.model.meta.count}}
+        @links={{this.model.meta.pagination}}
+      />
+    </MockLogin>
+  </div>
+</StaticPage>
