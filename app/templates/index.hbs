@@ -89,7 +89,9 @@
               <td>{{association.province}}</td>
               <td>
                 {{#each association.identifiers as |identifier|}}
-                  {{this.getVcode identifier}}
+        {{#if (eq identifier.idName "vCode")}}
+                    {{get identifier.structuredIdentifier "localId"}}
+                  {{/if}}
                 {{/each}}
               </td>
               <td>

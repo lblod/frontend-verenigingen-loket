@@ -1,5 +1,5 @@
 <AuDataTable
-  @content={{this.sites}}
+  @content={{this.model.sites}}
   @isLoading={{this.showTableLoader}}
   as |t|
 >
@@ -9,7 +9,7 @@
     >
       <div>
         <AuHeading @level="1" @skin="1">Locaties</AuHeading>
-        <AuHeading @level="3" @skin="3">{{this.model.name}}</AuHeading>
+        <AuHeading @level="3" @skin="3">{{this.model.association.name}}</AuHeading>
       </div>
       <div class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end">
         <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op

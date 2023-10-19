@@ -14,7 +14,8 @@ export default class AssociationContactDetailController extends Controller {
         const { telephone, email, website, name } = contactPoint;
 
         if (telephone) {
-          contactPoints.telephone = telephone;
+          const formattedPhoneNumber = telephone.replace('tel:', '');
+          contactPoints.telephone = formattedPhoneNumber;
         }
         if (email) {
           contactPoints.email = email;

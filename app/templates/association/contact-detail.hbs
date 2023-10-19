@@ -48,7 +48,9 @@
             <:label>Telefoon</:label>
             <:content>
               {{#if this.contactDetails.telephone}}
-                {{this.contactDetails.telephone}}
+                <AuLinkExternal href="tel:{{this.contactDetails.telephone}}">
+                  {{this.contactDetails.telephone}}
+                </AuLinkExternal>
               {{else if this.isLoading}}
                 Loading...
               {{else}}
@@ -60,7 +62,10 @@
             <:label>Email</:label>
             <:content>
               {{#if this.contactDetails.email}}
+                <AuLinkExternal href="mailto:{{this.contactDetails.email}}">
+
                 {{this.contactDetails.email}}
+                </AuLinkExternal>
               {{else}}
                 Niet opgegeven
               {{/if}}
@@ -85,10 +90,7 @@
             <:label>Sociale media</:label>
             <:content>
               {{#if this.contactDetails.socialMedia.length}}
-                {{#each
-                  this.contactDetails.socialMedia
-                  as |socialMedia index|
-                }}
+                {{#each this.contactDetails.socialMedia as |socialMedia index|}}
                   <AuLinkExternal href={{socialMedia.url}}>
                     {{socialMedia.name}}
                   </AuLinkExternal>{{#unless
