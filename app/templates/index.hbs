@@ -13,7 +13,7 @@
   <m.content @scroll={{true}}>
     <div class="au-d-component-block au-d-component-block--overflow">
       <AuDataTable
-        @content={{@model}}
+        @content={{this.model}}
         @isLoading={{this.showTableLoader}}
         @page={{this.page}}
         @sort={{this.sort}}
@@ -34,11 +34,7 @@
               @label="Postcode"
               @class="data-table__header-title"
             />
-            <AuDataTableThSortable
-              @field="hoofdactiviteiten"
-              @label="Hoofdactiviteiten"
-              @class="data-table__header-title"
-            />
+            <th class="data-table__header-title">Hoofdactiviteiten</th>
             <AuDataTableThSortable
               @field="vCode"
               @currentSorting={{this.sort}}
@@ -46,15 +42,15 @@
               @class="data-table__header-title"
             />
             <AuDataTableThSortable
-              @field="erkenning"
-              @currentSorting={{this.sort}}
-              @label="Erkenning"
-              @class="data-table__header-title"
-            />
-            <AuDataTableThSortable
               @field="leeftijd"
               @currentSorting={{this.sort}}
               @label="Leeftijd"
+              @class="data-table__header-title"
+            />
+            <AuDataTableThSortable
+              @field="erkenning"
+              @currentSorting={{this.sort}}
+              @label="Erkenning"
               @class="data-table__header-title"
             />
           </c.header>
@@ -95,17 +91,18 @@
               <td>{{association.province}}</td>
               <td>
                 {{#each association.identifiers as |identifier|}}
-                  {{this.getVcode identifier}}
+                  {{#if (eq identifier.idName "vCode")}}
+                    {{get identifier.structuredIdentifier "localId"}}
+                  {{/if}}
                 {{/each}}
               </td>
               <td>
-                {{#if association.status}}
-                  <OrganizationStatus
-                    @id={{association.status_id}}
-                    @label={{association.status}}
-                  />
-                {{/if}}
+                18 - 65
               </td>
+              <td>
+                <AuPill @skin="warning">Niet erkend</AuPill>
+              </td>
+
             </c.body>
           {{/if}}
         </t.content>

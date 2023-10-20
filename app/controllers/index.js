@@ -17,7 +17,7 @@ export default class IndexController extends Controller {
 
   getVcode(identifier) {
     if (identifier.idName === 'vCode') {
-      return identifier.structuredIdentifier.get('localId');
+      return identifier.structuredIdentifier.localId;
     }
   }
 

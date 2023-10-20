@@ -13,41 +13,41 @@
     />
     <AuLabel for="filter-name">Hoofdactiviteiten</AuLabel>
     <AuCheckboxGroup as |Group|>
-      <Group.Checkbox @value="checkboxOne">Burgerinitiatief & Actiegroep
+      <Group.Checkbox @value="burgerinitiatief">Burgerinitiatief &amp; Actiegroep
       </Group.Checkbox>
-      <Group.Checkbox @value="checkboxTwo">Mediawijsheid & Digitale
+      <Group.Checkbox @value="mediawijsheid">Mediawijsheid &amp; Digitale
         geletterdheid
       </Group.Checkbox>
-      <Group.Checkbox @value="checkboxThree">Buurtwerking & Wijkcomité
+      <Group.Checkbox @value="buurtwerking">Buurtwerking &amp; Wijkcomité
       </Group.Checkbox>
     </AuCheckboxGroup>
   </div>
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuLabel for="filter-municipality">Postcode</AuLabel>
     <AuCheckboxGroup as |Group|>
-      <Group.Checkbox @value="checkboxOne">9300 – Aalst</Group.Checkbox>
-      <Group.Checkbox @value="checkboxTwo">9308 – Aalst</Group.Checkbox>
-      <Group.Checkbox @value="checkboxThree">9310 – Aalst</Group.Checkbox>
-      <Group.Checkbox @value="checkboxThree">9311 – Aalst</Group.Checkbox>
+      <Group.Checkbox @value="9300">9300 – Aalst</Group.Checkbox>
+      <Group.Checkbox @value="9308">9308 – Aalst</Group.Checkbox>
+      <Group.Checkbox @value="9310">9310 – Aalst</Group.Checkbox>
+      <Group.Checkbox @value="9311">9311 – Aalst</Group.Checkbox>
     </AuCheckboxGroup>
   </div>
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuLabel for="filter-municipality">Erkenning</AuLabel>
     <AuCheckboxGroup as |Group|>
-      <Group.Checkbox @value="checkboxOne">Erkend</Group.Checkbox>
-      <Group.Checkbox @value="checkboxOne">Niet erkend</Group.Checkbox>
+      <Group.Checkbox @value="erkend">Erkend</Group.Checkbox>
+      <Group.Checkbox @value="niet-erkend">Niet erkend</Group.Checkbox>
     </AuCheckboxGroup>
   </div>
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuLabel for="filter-municipality">Doelgroep</AuLabel>
     <AuCheckboxGroup as |Group|>
-      <Group.Checkbox @value="checkboxOne">-18</Group.Checkbox>
-      <Group.Checkbox @value="checkboxThree">18+</Group.Checkbox>
-      <Group.Checkbox @value="checkboxThree">65+</Group.Checkbox>
+      <Group.Checkbox @value="-18">-18</Group.Checkbox>
+      <Group.Checkbox @value="18+">18+</Group.Checkbox>
+      <Group.Checkbox @value="65+">65+</Group.Checkbox>
     </AuCheckboxGroup>
   </div>
   <div class="au-o-grid__item">
-    <AuButton @skin="tertiary" type="reset">
+    <AuButton @skin="link" type="reset">
       <AuIcon @icon="cross" @alignment="left" />
       Herstel alle filters
     </AuButton>

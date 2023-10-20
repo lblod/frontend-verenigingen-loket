@@ -15,10 +15,10 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@appuniversum/ember-appuniversum@^2.15.0":
-  version "2.16.0"
-  resolved "https://registry.yarnpkg.com/@appuniversum/ember-appuniversum/-/ember-appuniversum-2.16.0.tgz#8d65e369278b00e07cf8509352f290e2783023f8"
-  integrity sha512-cVNZfzvvJNEexjyHgbNOrNj6jjlp6mUfYW2Tl6DNHTxqQYYV27KtVgDvT9+3btcaFnjSUDwGynyVT4aiO/mjfg==
+"@appuniversum/ember-appuniversum@^2.18.0":
+  version "2.18.0"
+  resolved "https://registry.yarnpkg.com/@appuniversum/ember-appuniversum/-/ember-appuniversum-2.18.0.tgz#07705d5990bb9b7410e8856b18f133b073cd2635"
+  integrity sha512-W67tWC3racq9Eq9ziV4heFhAPeoRG0ILPtjKmYwM0BeIQ8k+L6Fp3Vrnh741yQBERNkdAr6F8XQu4G8mNbkBow==
   dependencies:
     "@babel/core" "^7.22.10"
     "@duetds/date-picker" "^1.4.0"

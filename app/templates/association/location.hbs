@@ -1,20 +1,75 @@
-<div>
-<AuCard
-  as |c|
+<AuDataTable
+  @content={{this.model.sites}}
+  @isLoading={{this.showTableLoader}}
+  as |t|
 >
-  <c.header
-  >
-    <AuHeading @level="2" @skin="4">
-   Locatie
-    </AuHeading>
-    <p>
-      {{this.subtitle}}
-    </p>
-  </c.header>
-  <c.content>
-    <p>{{this.content}}</p>
-  </c.content>
-  <c.footer>
-  </c.footer>
-</AuCard>
-</div>
+  <t.menu>
+    <section
+      class="au-u-flex au-u-flex--between au-u-padding-left-large au-u-padding-top au-u-padding-right-large au-u-padding-bottom"
+    >
+      <div>
+        <AuHeading @level="1" @skin="1">Locaties</AuHeading>
+        <AuHeading @level="3" @skin="3">{{this.model.association.name}}</AuHeading>
+      </div>
+      <div class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end">
+        <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
+          22-02-2022</AuPill>
+        <AuHelpText>
+          Zie je een fout in de data? <br>
+          <AuLinkExternal
+            href="
+            mailto:{{this.contactEmail}}
+            ?subject={{this.subject}}
+            &body={{this.body}}"
+          >
+           Meld het bij de vereniging!
+          </AuLinkExternal>
+        </AuHelpText>
+      </div>
+    </section>
+
+  </t.menu>
+  <t.content class="au-c-data-table__table--small" as |c|>
+    <c.header>
+      <th width="80px" class="data-table__header-title"></th>
+      <AuDataTableThSortable
+        @field="locatie"
+        @currentSorting={{this.sort}}
+        @label="Locatie"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="type"
+        @currentSorting={{this.sort}}
+        @label="Type"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="beschrijving"
+        @currentSorting={{this.sort}}
+        @label="Beschrijving"
+        @class="data-table__header-title"
+      />
+    </c.header>
+    {{#if this.hasErrored}}
+      <TableMessage::Error />
+    {{else}}
+      <c.body as |site|>
+        <td>
+          {{#if site.address.isPrimary}}
+            <AuBadge @icon="vote-star-filled"/> 
+          {{/if}}
+        </td>
+        <td>
+          {{site.address.fullAddress}}
+        </td>
+        <td>
+          {{site.siteType.label}}
+        </td>
+        <td>
+          {{site.description}}
+        </td>
+      </c.body>
+    {{/if}}
+  </t.content>
+</AuDataTable>
