@@ -6,7 +6,7 @@ export default class IndexController extends Controller {
   @tracked size = 20;
   getVcode(identifier) {
     if (identifier.idName === 'vCode') {
-      return identifier.structuredIdentifier.get('localId');
+      return identifier.structuredIdentifier.localId;
     }
   }
 }

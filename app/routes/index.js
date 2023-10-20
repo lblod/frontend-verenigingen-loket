@@ -16,7 +16,13 @@ export default class IndexRoute extends Route {
     this.session.requireAuthentication(transition, 'auth.login');
   }
   async model(params) {
+    const include = [
+      'primary-site.address',
+      'identifiers.structured-identifier',
+    ].join(',');
+
     const query = {
+      include,
       sort: params.sort ?? 'name',
       page: { size: 20, number: params.page },
     };

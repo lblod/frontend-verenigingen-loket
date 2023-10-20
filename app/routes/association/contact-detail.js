@@ -1,3 +1,13 @@
 import Route from '@ember/routing/route';
-
-export default class AssociationContactDetailRoute extends Route {}
+import { inject as service } from '@ember/service';
+export default class AssociationContactDetailRoute extends Route {
+  @service store;
+  async model() {
+    const { id } = this.paramsFor('association');
+    const include = ['contact-points', 'primary-site.address'].join(',');
+    const query = {
+      include,
+    };
+    return this.store.findRecord('association', id, query);
+  }
+}
