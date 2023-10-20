@@ -36,7 +36,7 @@
             />
             <th class="data-table__header-title">Hoofdactiviteiten</th>
             <AuDataTableThSortable
-              @field="vCode"
+              @field="identifiers.structured-identifier.local-id"
               @currentSorting={{this.sort}}
               @label="vCode"
               @class="data-table__header-title"
