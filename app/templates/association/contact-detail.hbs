@@ -47,12 +47,14 @@
           <Item>
             <:label>Telefoon</:label>
             <:content>
-              {{#if this.contactDetails.telephone}}
-                <AuLinkExternal href="tel:{{this.contactDetails.telephone}}">
-                  {{this.contactDetails.telephone}}
-                </AuLinkExternal>
-              {{else if this.isLoading}}
-                Loading...
+              {{#if this.contactDetails.telephone.length}}
+                {{#each this.contactDetails.telephone as |telephone index|}}
+                  <AuLinkExternal href="tel:{{telephone}}">
+                    {{telephone}}
+                  </AuLinkExternal>{{#unless
+                    (last-index index this.contactDetails.telephone)
+                  }},{{/unless}}
+                {{/each}}
               {{else}}
                 Niet opgegeven
               {{/if}}
@@ -64,7 +66,7 @@
               {{#if this.contactDetails.email}}
                 <AuLinkExternal href="mailto:{{this.contactDetails.email}}">
 
-                {{this.contactDetails.email}}
+                  {{this.contactDetails.email}}
                 </AuLinkExternal>
               {{else}}
                 Niet opgegeven
