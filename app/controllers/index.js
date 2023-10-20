@@ -5,6 +5,7 @@ import { restartableTask, task, timeout } from 'ember-concurrency';
 
 export default class IndexController extends Controller {
   @service store;
+  @service router;
 
   @tracked page = 0;
   @tracked size = 20;

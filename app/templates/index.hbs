@@ -2,7 +2,10 @@
   <m.sidebar>
     <div class="au-c-sidebar">
       <div class="au-c-sidebar__content au-o-box">
-        <Filter @updateSearch={{this.updateAssociationSearch}} />
+        <Filter
+          @updateSearch={{this.updateAssociationSearch}}
+          @search={{this.search}}
+        />
       </div>
     </div>
   </m.sidebar>

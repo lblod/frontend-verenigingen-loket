@@ -18,7 +18,17 @@ export default class IndexRoute extends Route {
       sort: params.sort ?? 'name',
     };
     if (params.search && params.search !== '') {
-      query.filter = { name: params.search };
+      query.filter = {
+        ':or:': {
+          name: params.search,
+          identifiers: {
+            'structured-identifier': {
+              'local-id': params.search,
+            },
+            [':exact:id-name']: 'vCode',
+          },
+        },
+      };
     }
     const associations = await this.store.query('association', query);
 

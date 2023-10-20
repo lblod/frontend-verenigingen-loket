@@ -1,4 +1,4 @@
-<form class="au-o-grid au-o-grid--small">
+<div class="au-o-grid au-o-grid--small">
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuHeading @level="2" @skin="5">Filter verenigingen</AuHeading>
     <AuHr />
@@ -8,10 +8,9 @@
       @icon="search"
       @iconAlignment="right"
       @width="block"
-      value={{this.search}}
+      @value={{@search}}
       oninput={{perform @updateSearch value="target.value"}}
     />
-    {{log this.search}}
     <AuLabel for="filter-name">Hoofdactiviteiten</AuLabel>
     <AuCheckboxGroup as |Group|>
       <Group.Checkbox @value="checkboxOne">Burgerinitiatief & Actiegroep
@@ -53,4 +52,4 @@
       Herstel alle filters
     </AuButton>
   </div>
-</form>
+</div>
