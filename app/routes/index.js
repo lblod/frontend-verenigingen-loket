@@ -6,6 +6,7 @@ export default class IndexRoute extends Route {
   @service store;
 
   queryParams = {
+    sort: { refreshModel: true },
     size: { refreshModel: true },
     page: {
       refreshModel: true,
@@ -16,7 +17,7 @@ export default class IndexRoute extends Route {
     this.session.requireAuthentication(transition, 'auth.login');
   }
   async model(params) {
-  const include = [
+    const include = [
       'primary-site.address',
       'identifiers.structured-identifier',
       'organization-status',
