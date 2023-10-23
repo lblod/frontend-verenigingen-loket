@@ -1,7 +1,5 @@
 <div class="au-o-box au-o-flow au-o-flow--large">
-<section
-  class="au-u-flex au-u-flex--between"
->
+  <section class="au-u-flex au-u-flex--between">
     <div>
       <AuHeading @level="1" @skin="1">Algemeen</AuHeading>
       <AuHeading @level="3" @skin="3">{{this.model.name}}</AuHeading>
@@ -54,7 +52,11 @@
               <:label>Hoofdactiviteiten</:label>
               <:content>
                 {{#if this.model.activities}}
-                  {{this.model.activities}}
+                  {{#each this.model.activities as |activity index|}}
+                    {{activity.label}}{{#unless
+                      (last-index index this.model.activities)
+                    }},{{/unless}}
+                  {{/each}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
