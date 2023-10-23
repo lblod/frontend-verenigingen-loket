@@ -30,12 +30,7 @@
               @label="Postcode"
               @class="data-table__header-title"
             />
-            <AuDataTableThSortable
-              @field="hoofdactiviteiten"
-              @currentSorting={{this.sort}}
-              @label="Hoofdactiviteiten"
-              @class="data-table__header-title"
-            />
+            <th class="data-table__header-title">Hoofdactiviteiten</th>
             <AuDataTableThSortable
               @field="vCode"
               @currentSorting={{this.sort}}
@@ -89,19 +84,38 @@
               {{#if this.modelHasOnlyWorshipAdministrativeUnits}}
                 <td>{{association.recognized_worship_type_name}}</td>
               {{/if}}
-              <td>{{association.province}}</td>
+              <td>
+                {{#each association.activities as |activity index|}}
+                    {{activity.label}}{{#unless
+                    (last-index index association.activities)
+                  }},{{/unless}}
+                {{/each}}
+              </td>
               <td>
                 {{#each association.identifiers as |identifier|}}
-                  {{this.getVcode identifier}}
+                  {{#if (eq identifier.idName "vCode")}}
+                    {{get identifier.structuredIdentifier "localId"}}
+                  {{/if}}
                 {{/each}}
               </td>
               <td>
                 18 - 65
               </td>
               <td>
-                <AuPill @skin="warning">Niet erkend</AuPill>
+                {{#if (eq association.organizationStatus.label "Erkend")}}
+                  <AuPill
+                    @skin="success"
+                  >{{association.organizationStatus.label}}</AuPill>
+                {{else if
+                  (eq association.organizationStatus.label "Niet erkend")
+                }}
+                  <AuPill
+                    @skin="warning"
+                  >{{association.organizationStatus.label}}</AuPill>
+                {{else}}
+                  <AuPill @skin="warning">Niet erkend</AuPill>
+                {{/if}}
               </td>
-
             </c.body>
           {{/if}}
         </t.content>

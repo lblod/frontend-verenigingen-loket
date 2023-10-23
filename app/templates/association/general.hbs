@@ -1,18 +1,149 @@
-<div>
-  <AuCard as |c|>
-    <c.header>
-      <AuHeading @level="2" @skin="4">
-        General
-      </AuHeading>
-      <p>
-        {{this.subtitle}}
-      </p>
-    </c.header>
-    <c.content>
-      <AuHeading @level="1" @skin="2">Bekijk vereniging</AuHeading>
-      <AuHeading @level="2" @skin="5" class="au-u-margin-left-large">Vereniging
-        {{this.model.id}}</AuHeading>
-    </c.content>
-    <c.footer />
-  </AuCard>
+<div class="au-o-box au-o-flow au-o-flow--large">
+<section
+  class="au-u-flex au-u-flex--between"
+>
+    <div>
+      <AuHeading @level="1" @skin="1">Algemeen</AuHeading>
+      <AuHeading @level="3" @skin="3">{{this.model.name}}</AuHeading>
+
+    </div>
+    <div
+      class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
+    >
+      <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
+        22-02-2022</AuPill>
+      <AuHelpText>
+        Zie je een fout in de data?
+        <br />
+        <AuLinkExternal
+          href="
+            mailto:{{this.contactEmail}}
+            ?subject={{this.subject}}
+            &body={{this.body}}"
+        >
+          Meld het bij de vereniging!
+        </AuLinkExternal>
+      </AuHelpText>
+    </div>
+  </section>
+  <section class="au-u-padding-top au-u-padding-bottom">
+    <DataCard>
+      <:title>
+        Vereniging
+      </:title>
+      <:card as |Card|>
+        <Card.Columns>
+          <:left as |Item|>
+            <Item>
+              <:label>Naam</:label>
+              <:content>
+                {{this.model.name}}
+              </:content>
+            </Item>
+            <Item>
+              <:label>Type</:label>
+              <:content>
+                {{#if this.model.type}}
+                  {{this.model.type}}
+                {{else}}
+                  Niet opgegeven
+                {{/if}}
+              </:content>
+            </Item>
+            <Item>
+              <:label>Hoofdactiviteiten</:label>
+              <:content>
+                {{#if this.model.activities}}
+                  {{this.model.activities}}
+                {{else}}
+                  Niet opgegeven
+                {{/if}}
+              </:content>
+            </Item>
+
+            <Item>
+              <:label>Beschrijving</:label>
+              <:content>
+                {{#if this.model.description}}
+                  {{this.model.description}}
+                {{else}}
+                  Niet opgegeven
+                {{/if}}
+              </:content>
+            </Item>
+          </:left>
+          <:right as |Item|>
+            <Item>
+              <:label>Minimum leeftijd</:label>
+              <:content>
+                {{#if this.model.minAge}}
+                  {{this.model.minAge}}
+                {{else}}
+                  Niet opgegeven
+                {{/if}}
+              </:content>
+            </Item>
+            <Item>
+              <:label>Maximum leeftijd</:label>
+              <:content>
+                {{#if this.model.maxAge}}
+                  {{this.model.maxAge}}
+                {{else}}
+                  Niet opgegeven
+                {{/if}}
+              </:content>
+            </Item>
+            <Item>
+              <:label>Koepel</:label>
+              <:content>
+                {{#if this.model.parentOrganization.name}}
+                  {{this.model.parentOrganization.name}}
+                {{else}}
+                  Niet opgegeven
+                {{/if}}
+              </:content>
+            </Item>
+            <Item>
+              <:label>Startdatum</:label>
+              <:content>
+                {{#if this.model.startDate}}
+                  {{this.model.startDate}}
+                {{else}}
+                  Niet opgegeven
+                {{/if}}
+              </:content>
+            </Item>
+            <Item>
+              <:label>vCode</:label>
+              <:content>
+                {{#each this.model.identifiers as |identifier|}}
+                  {{#if (eq identifier.idName "vCode")}}
+                    {{#if (get identifier.structuredIdentifier "localId")}}
+                      {{get identifier.structuredIdentifier "localId"}}
+                    {{else}}
+                      Niet opgegeven
+                    {{/if}}
+                  {{/if}}
+                {{/each}}
+              </:content>
+            </Item>
+            <Item>
+              <:label>KBO nummer</:label>
+              <:content>
+                {{#each this.model.identifiers as |identifier|}}
+                  {{#if (eq identifier.idName "KBO nummer")}}
+                    {{#if (get identifier.structuredIdentifier "localId")}}
+                      {{get identifier.structuredIdentifier "localId"}}
+                    {{else}}
+                      Niet opgegeven
+                    {{/if}}
+                  {{/if}}
+                {{/each}}
+              </:content>
+            </Item>
+          </:right>
+        </Card.Columns>
+      </:card>
+    </DataCard>
+  </section>
 </div>

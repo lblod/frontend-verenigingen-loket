@@ -19,6 +19,8 @@ export default class IndexRoute extends Route {
   const include = [
       'primary-site.address',
       'identifiers.structured-identifier',
+      'organization-status',
+      'activities',
     ].join(',');
     const query = {
       sort: params.sort ?? 'name',
