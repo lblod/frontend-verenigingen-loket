@@ -24,7 +24,7 @@ export default class IndexRoute extends Route {
       'activities',
     ].join(',');
     const query = {
-      sort: params.sort ?? 'name',
+      sort: params.sort ? `${params.sort},name` : 'name',
       page: { size: 20, number: params.page },
       include,
     };
