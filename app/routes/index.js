@@ -37,7 +37,9 @@ export default class IndexRoute extends Route {
             'structured-identifier': {
               'local-id': params.search,
             },
-            // [':exact:id-name']: 'vCode',
+          },
+          activities: {
+            label: params.search,
           },
         },
       };
