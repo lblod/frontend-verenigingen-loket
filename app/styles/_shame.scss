@@ -4,3 +4,9 @@
     width: 28px;
     height: 28px;
 }
+
+.au-c-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}

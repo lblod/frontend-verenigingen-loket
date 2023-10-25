@@ -1,7 +1,7 @@
 <form class="au-o-grid au-o-grid--small">
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuHeading @level="2" @skin="5">Filter verenigingen</AuHeading>
-    <AuHr  />
+    <AuHr />
     <AuInput
       class="au-u-margin-bottom au-u-margin-top"
       placeholder="zoek op vCode, naam, hoofdactiviteit of contactpersoon"
@@ -10,38 +10,41 @@
       @width="block"
     />
     <AuLabel for="filter-name">Hoofdactiviteiten</AuLabel>
-    <AuCheckboxGroup as |Group|>
-      <Group.Checkbox @value="burgerinitiatief">Burgerinitiatief &amp; Actiegroep
-      </Group.Checkbox>
-      <Group.Checkbox @value="mediawijsheid">Mediawijsheid &amp; Digitale
-        geletterdheid
-      </Group.Checkbox>
-      <Group.Checkbox @value="buurtwerking">Buurtwerking &amp; Wijkcomité
-      </Group.Checkbox>
-    </AuCheckboxGroup>
+    <div class={{if @error "ember-power-select--error"}}>
+      <PowerSelectMultiple
+        @noMatchesMessage="Geen resultaten"
+        @searchEnabled={{true}}
+        @searchField="label"
+        @placeholder="Selecteer een activiteit"
+        @searchMessage="Typ om te zoeken"
+        @options={{@filters.activities}}
+        @selected={{@selectedActivities}}
+        @onChange={{@setActivities}}
+        as |activity|
+      >
+        {{activity.label}}
+      </PowerSelectMultiple>
+    </div>
   </div>
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
-    <AuLabel for="filter-municipality">Postcode</AuLabel>
-    <AuCheckboxGroup as |Group|>
-      <Group.Checkbox @value="9300">9300 – Aalst</Group.Checkbox>
-      <Group.Checkbox @value="9308">9308 – Aalst</Group.Checkbox>
-      <Group.Checkbox @value="9310">9310 – Aalst</Group.Checkbox>
-      <Group.Checkbox @value="9311">9311 – Aalst</Group.Checkbox>
-    </AuCheckboxGroup>
-  </div>
-    <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuLabel for="filter-municipality">Erkenning</AuLabel>
-    <AuCheckboxGroup as |Group|>
-      <Group.Checkbox @value="erkend">Erkend</Group.Checkbox>
-      <Group.Checkbox @value="niet-erkend">Niet erkend</Group.Checkbox>
-    </AuCheckboxGroup>
-  </div>
-  <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
-    <AuLabel for="filter-municipality">Doelgroep</AuLabel>
-    <AuCheckboxGroup as |Group|>
-      <Group.Checkbox @value="-18">-18</Group.Checkbox>
-      <Group.Checkbox @value="18+">18+</Group.Checkbox>
-      <Group.Checkbox @value="65+">65+</Group.Checkbox>
+    <AuCheckboxGroup
+      @alignment="default"
+      @selected={{@selectedOrganizationStatus}}
+      @onChange={{@setOrganizationStatus}}
+      as |Group|
+    >
+      {{#each @filters.organizationStatus as |status|}}
+        {{#if (eq status.label "Erkend")}}
+          <Group.Checkbox
+            @value={{status.id}}
+          >{{status.label}}</Group.Checkbox>
+        {{else if (eq status.label "Niet erkend")}}
+          <Group.Checkbox
+            @value={{status.id}}
+          >{{status.label}}</Group.Checkbox>
+        {{/if}}
+      {{/each}}
     </AuCheckboxGroup>
   </div>
   <div class="au-o-grid__item">
