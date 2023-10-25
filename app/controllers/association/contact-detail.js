@@ -3,7 +3,7 @@ import Controller from '@ember/controller';
 export default class AssociationContactDetailController extends Controller {
   get contactDetails() {
     const contactPoints = {
-      telephone: '',
+      telephone: [],
       email: '',
       website: '',
       socialMedia: [],
@@ -15,7 +15,7 @@ export default class AssociationContactDetailController extends Controller {
 
         if (telephone) {
           const formattedPhoneNumber = telephone.replace('tel:', '');
-          contactPoints.telephone = formattedPhoneNumber;
+          contactPoints.telephone.push(formattedPhoneNumber);
         }
         if (email) {
           contactPoints.email = email;

@@ -1,5 +1,6 @@
+<div class="au-o-box au-o-flow au-o-flow--large">
 <section
-  class="au-u-flex au-u-flex--between au-u-padding-left-large au-u-padding-top au-u-padding-right-large au-u-padding-bottom"
+  class="au-u-flex au-u-flex--between"
 >
   <div>
     <AuHeading @level="1" @skin="1">Contactgegevens</AuHeading>
@@ -24,7 +25,6 @@
   </div>
 </section>
 <section
-  class="au-u-padding-left-large au-u-padding-top au-u-padding-right-large au-u-padding-bottom"
 >
   <DataCard>
     <:title>
@@ -47,12 +47,14 @@
           <Item>
             <:label>Telefoon</:label>
             <:content>
-              {{#if this.contactDetails.telephone}}
-                <AuLinkExternal href="tel:{{this.contactDetails.telephone}}">
-                  {{this.contactDetails.telephone}}
-                </AuLinkExternal>
-              {{else if this.isLoading}}
-                Loading...
+              {{#if this.contactDetails.telephone.length}}
+                {{#each this.contactDetails.telephone as |telephone index|}}
+                  <AuLinkExternal href="tel:{{telephone}}">
+                    {{telephone}}
+                  </AuLinkExternal>{{#unless
+                    (last-index index this.contactDetails.telephone)
+                  }},{{/unless}}
+                {{/each}}
               {{else}}
                 Niet opgegeven
               {{/if}}
@@ -64,7 +66,7 @@
               {{#if this.contactDetails.email}}
                 <AuLinkExternal href="mailto:{{this.contactDetails.email}}">
 
-                {{this.contactDetails.email}}
+                  {{this.contactDetails.email}}
                 </AuLinkExternal>
               {{else}}
                 Niet opgegeven
@@ -108,3 +110,4 @@
     </:card>
   </DataCard>
 </section>
+</div>

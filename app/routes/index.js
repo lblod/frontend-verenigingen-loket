@@ -21,12 +21,13 @@ export default class IndexRoute extends Route {
     const include = [
       'primary-site.address',
       'identifiers.structured-identifier',
+      'organization-status',
+      'activities',
     ].join(',');
-
     const query = {
-      include,
-      sort: params.sort ?? 'name',
+      sort: params.sort ? `${params.sort},name` : 'name',
       page: { size: 20, number: params.page },
+      include,
     };
     if (params.search && params.search !== '') {
       query.filter = {
