@@ -34,19 +34,19 @@
     <c.header>
       <th width="80px" class="data-table__header-title"></th>
       <AuDataTableThSortable
-        @field="locatie"
+        @field="address.fullAddress"
         @currentSorting={{this.sort}}
         @label="Locatie"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="type"
+        @field="siteType.label"
         @currentSorting={{this.sort}}
         @label="Type"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="beschrijving"
+        @field="description"
         @currentSorting={{this.sort}}
         @label="Beschrijving"
         @class="data-table__header-title"

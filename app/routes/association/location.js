@@ -4,10 +4,22 @@ import { A } from '@ember/array';
 
 export default class AssociationLocationRoute extends Route {
   @service store;
-  async model() {
+
+  queryParams = {
+    sort: { refreshModel: true },
+  };
+
+  async model(params) {
     const { id } = this.paramsFor('association');
     const model = await this.store.findRecord('association', id);
-    const sites = await model.get('sites');
+    const sites = await this.store.query('site', {
+      filter: {
+        associations: {
+          id: id,
+        },
+      },
+      sort: params.sort ? `${params.sort},address.street` : 'address.street',
+    });
     const primarySite = await model.get('primarySite');
     if (primarySite) {
       primarySite.address.isPrimary = true;
