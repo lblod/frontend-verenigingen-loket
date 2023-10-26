@@ -12,4 +12,5 @@ export default class AssociationModel extends Model {
   @belongsTo('organization-status-code', { inverse: null, async: true })
   organizationStatus;
   @hasMany('activity', { inverse: null, async: true }) activities;
+  @hasMany('membership', { inverse: null, async: true }) members;
 }
