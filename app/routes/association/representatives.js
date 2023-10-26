@@ -6,11 +6,19 @@ export default class AssociationRepresentativesRoute extends Route {
     sort: { refreshModel: true },
   };
 
-  async model() {
+  async model(params) {
     const { id } = this.paramsFor('association');
     const association = await this.store.findRecord('association', id);
-    const members = await association.get('members');
-    console.log(members);
+    const members = await this.store.query('membership', {
+      filter: {
+        association: {
+          id: id,
+        },
+      },
+      sort: params.sort
+        ? `${params.sort},person.family-name`
+        : 'person.family-name',
+    });
     return {
       association,
       members,

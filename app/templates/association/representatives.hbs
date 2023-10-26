@@ -39,13 +39,13 @@
     <c.header>
       <th width="80px" class="data-table__header-title"></th>
       <AuDataTableThSortable
-        @field="person.givenName"
+        @field="person.given-name"
         @currentSorting={{this.sort}}
         @label="Voornaam"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="person.familyName"
+        @field="person.family-name"
         @currentSorting={{this.sort}}
         @label="Achternaam"
         @class="data-table__header-title"
@@ -57,13 +57,13 @@
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="person.phoneNumber"
+        @field="person.phone-number"
         @currentSorting={{this.sort}}
         @label="Telefoonnummer"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="person.socialMedia"
+        @field="person.social-media"
         @currentSorting={{this.sort}}
         @label="Sociale media"
         @class="data-table__header-title"
