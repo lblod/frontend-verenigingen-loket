@@ -4,11 +4,9 @@ export default class IndexRoute extends Route {
   @service currentSession;
   @service session;
   @service store;
-  queryParams = {
-    sort: { refreshModel: true },
-  };
 
   queryParams = {
+    sort: { refreshModel: true },
     size: { refreshModel: true },
     page: {
       refreshModel: true,
