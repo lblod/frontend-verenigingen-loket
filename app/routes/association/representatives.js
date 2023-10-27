@@ -8,8 +8,10 @@ export default class AssociationRepresentativesRoute extends Route {
 
   async model(params) {
     const { id } = this.paramsFor('association');
+    const include = ['person.site.contact-points'].join(',');
     const association = await this.store.findRecord('association', id);
     const members = await this.store.query('membership', {
+      include,
       filter: {
         association: {
           id: id,
