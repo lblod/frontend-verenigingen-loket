@@ -5,6 +5,12 @@
         <Filter
           @updateSearch={{this.updateAssociationSearch}}
           @search={{this.search}}
+          @filters={{this.model.filters}}
+          @setActivities={{this.setActivities}}
+          @selectedActivities={{this.selectedActivities}}
+          @organizationStatusLabels={{this.organizationStatusLabels}}
+          @setOrganizationStatus={{this.setOrganizationStatus}}
+          @selectedOrganizationStatus={{this.selectedOrganizationStatus}}
         />
       </div>
     </div>
@@ -13,7 +19,7 @@
   <m.content @scroll={{true}}>
     <div class="au-d-component-block au-d-component-block--overflow">
       <AuDataTable
-        @content={{this.model}}
+        @content={{this.model.associations}}
         @isLoading={{this.showTableLoader}}
         @page={{this.page}}
         @sort={{this.sort}}
@@ -85,12 +91,9 @@
               <td>
                 {{association.primarySite.address.postcode}}
               </td>
-              {{#if this.modelHasOnlyWorshipAdministrativeUnits}}
-                <td>{{association.recognized_worship_type_name}}</td>
-              {{/if}}
               <td>
                 {{#each association.activities as |activity index|}}
-                    {{activity.label}}{{#unless
+                  {{activity.label}}{{#unless
                     (last-index index association.activities)
                   }},{{/unless}}
                 {{/each}}
