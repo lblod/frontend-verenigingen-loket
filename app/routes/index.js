@@ -29,6 +29,13 @@ export default class IndexRoute extends Route {
       page: { size: 20, number: params.page },
       include,
     };
+
+    const name = params.search.split(' ');
+    const [firstName, ...lastName] = name;
+    console.log({
+      firstName,
+      lastName,
+    });
     if (params.search && params.search !== '') {
       query.filter = {
         ':or:': {
@@ -40,6 +47,12 @@ export default class IndexRoute extends Route {
           },
           activities: {
             label: params.search,
+          },
+          members: {
+            person: {
+              ':exact:given-name': firstName,
+              'family-name': name.length > 1 ? lastName.join(' ') : firstName,
+            },
           },
         },
       };
