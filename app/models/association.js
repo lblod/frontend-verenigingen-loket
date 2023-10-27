@@ -6,4 +6,5 @@ export default class AssociationModel extends Model {
   @hasMany('identifier', { inverse: null, async: true }) identifiers;
   @hasMany('site', { inverse: null, async: true }) sites;
   @belongsTo('site', { inverse: null, async: true }) primarySite;
+  @hasMany('contact-point', { inverse: null, async: true }) contactPoints;
 }

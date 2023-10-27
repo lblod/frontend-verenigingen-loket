@@ -11,30 +11,24 @@ export default class SharedBreadCrumbComponent extends Component {
     },
     {
       route: 'association.general',
-      crumbs: [
-        { label: 'Verenigingen', link: 'index' },
-        { label: 'Vereniging Algemeen' },
-      ],
+      crumbs: [{ label: 'Verenigingen', link: 'index' }, { label: 'Algemeen' }],
     },
     {
       route: 'association.contact-detail',
       crumbs: [
         { label: 'Verenigingen', link: 'index' },
-        { label: 'Vereniging contactgegevens' },
+        { label: 'Contactgegevens' },
       ],
     },
     {
       route: 'association.location',
-      crumbs: [
-        { label: 'Verenigingen', link: 'index' },
-        { label: 'Vereniging locatie' },
-      ],
+      crumbs: [{ label: 'Verenigingen', link: 'index' }, { label: 'Locaties' }],
     },
     {
       route: 'association.representatives',
       crumbs: [
         { label: 'Verenigingen', link: 'index' },
-        { label: 'Vereniging vertegenwoordiger' },
+        { label: 'Vertegenwoordigers' },
       ],
     },
   ];
