@@ -16,7 +16,7 @@ export default class IndexRoute extends Route {
     this.session.requireAuthentication(transition, 'auth.login');
   }
   async model(params) {
-  const include = [
+    const include = [
       'primary-site.address',
       'identifiers.structured-identifier',
       'organization-status',
@@ -27,6 +27,11 @@ export default class IndexRoute extends Route {
       page: { size: 20, number: params.page },
       include,
     };
-    return this.store.query('association', query);
+    return this.store.query('association', query).then((results) => {
+      return {
+        associations: results,
+        meta: results.meta,
+      };
+    });
   }
 }

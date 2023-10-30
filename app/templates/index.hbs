@@ -9,8 +9,14 @@
 
   <m.content @scroll={{true}}>
     <div class="au-d-component-block au-d-component-block--overflow">
+      <div class="au-u-padding">
+        <AuHeading @level="1" @skin="3">Verenigingen</AuHeading>
+        <AuHr />
+        <AuHeading @level="1" @skin="5">{{this.model.meta.count}}
+          Resultaten</AuHeading>
+      </div>
       <AuDataTable
-        @content={{this.model}}
+        @content={{this.model.associations}}
         @isLoading={{this.showTableLoader}}
         @page={{this.page}}
         @size={{this.size}}
@@ -86,7 +92,7 @@
               {{/if}}
               <td>
                 {{#each association.activities as |activity index|}}
-                    {{activity.label}}{{#unless
+                  {{activity.label}}{{#unless
                     (last-index index association.activities)
                   }},{{/unless}}
                 {{/each}}
