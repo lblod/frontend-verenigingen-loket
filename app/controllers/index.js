@@ -8,10 +8,15 @@ export default class IndexController extends Controller {
   @tracked page = 0;
   @tracked size = 20;
   @tracked sort = 'name';
-  @tracked selectedActivities = [];
   @tracked activities = '';
-  @tracked selectedOrganizationStatus = [];
+  @tracked selectedActivities = this.activities
+    ? [...this.activities.split(',')]
+    : [];
+  @tracked selectedOrganizationStatus = this.status
+    ? [...this.status.split(',')]
+    : [];
   @tracked status = '';
+  @tracked search = '';
 
   queryParams = ['sort', 'page', 'search', 'activities', 'status'];
 
@@ -36,5 +41,16 @@ export default class IndexController extends Controller {
     yield timeout(500);
     this.page = 0;
     this.search = value;
+  }
+
+  @action
+  deleteFilters() {
+    this.selectedOrganizationStatus = [];
+    this.status = '';
+    this.selectedActivities = [];
+    this.activities = '';
+    this.search = '';
+    this.page = 0;
+    this.sort = 'name';
   }
 }
