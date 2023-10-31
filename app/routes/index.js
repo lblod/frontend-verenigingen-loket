@@ -24,7 +24,7 @@ export default class IndexRoute extends Route {
     ].join(',');
     const query = {
       sort: params.sort ?? 'name',
-      page: { size: 20, number: params.page },
+      page: { size: 50, number: params.page },
       include,
     };
     return this.store.query('association', query).then((results) => {
