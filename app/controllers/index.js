@@ -5,7 +5,7 @@ import { inject as service } from '@ember/service';
 export default class IndexController extends Controller {
   @service router;
   @tracked page = 0;
-  @tracked size = 20;
+  @tracked size = 50;
   @tracked sort = 'name';
   @tracked selectedActivities = [];
   @tracked activities = '';
@@ -28,5 +28,11 @@ export default class IndexController extends Controller {
     this.page = 0;
     this.selectedOrganizationStatus = selectedStatus;
     this.status = selectedStatus.join(',');
+  }
+
+  getVcode(identifier) {
+    if (identifier.idName === 'vCode') {
+      return identifier.structuredIdentifier.localId;
+    }
   }
 }
