@@ -41,7 +41,10 @@ export default class IndexRoute extends Route {
       filters: {
         activities,
         organizationStatus,
-        postalCodes,
+        postalCodes: postalCodes.map((postal) => ({
+          id: postal.postalCode,
+          label: postal.postalName,
+        })),
       },
     };
   }
@@ -56,7 +59,11 @@ function buildQuery(params, include) {
   };
 
   if (params.postalCodes !== '') {
-    //
+    query.filters['primary-site'] = {
+      address: {
+        postcode: params.postalCodes,
+      },
+    };
   }
 
   if (params.activities !== '') {

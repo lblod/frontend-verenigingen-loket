@@ -25,7 +25,7 @@
         {{activity.label}}
       </PowerSelectMultiple>
     </div>
-    <AuLabel for="filter-name">Selecteer postcode(s)</AuLabel>
+    <AuLabel class="au-u-margin-top" for="filter-name">Selecteer postcode(s)</AuLabel>
     <div class={{if @error "ember-power-select--error"}}>
       <PowerSelectMultiple
         @noMatchesMessage="Geen resultaten"
@@ -38,9 +38,9 @@
         @onChange={{@setPostalCodes}}
         as |postalCode|
       >
-        {{postalCode.postalCode}}
+        {{postalCode.id}}
         -
-        {{postalCode.postalName}}
+        {{postalCode.label}}
       </PowerSelectMultiple>
     </div>
   </div>
