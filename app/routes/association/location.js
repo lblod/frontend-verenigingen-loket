@@ -9,6 +9,7 @@ export default class AssociationLocationRoute extends Route {
     const model = await this.store.findRecord('association', id);
     const sites = await model.get('sites');
     const primarySite = await model.get('primarySite');
+
     if (primarySite) {
       primarySite.address.isPrimary = true;
     }

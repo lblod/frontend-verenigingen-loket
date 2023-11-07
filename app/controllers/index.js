@@ -7,12 +7,27 @@ export default class IndexController extends Controller {
   @tracked page = 0;
   @tracked size = 50;
   @tracked sort = 'name';
-  @tracked selectedActivities = [];
   @tracked activities = '';
-  @tracked selectedOrganizationStatus = [];
+  @tracked selectedActivities = this.activities
+    ? [...this.activities.split(',')]
+    : [];
+  @tracked postalCodes = '';
+  @tracked selectedPostalCodes = this.postalCodes
+    ? [...this.postalCodes.split(',')]
+    : [];
   @tracked status = '';
+  @tracked selectedOrganizationStatus = this.status
+    ? [...this.status.split(',')]
+    : [];
 
-  queryParams = ['sort', 'page', 'search', 'activities', 'status'];
+  queryParams = [
+    'sort',
+    'page',
+    'search',
+    'activities',
+    'status',
+    'postalCodes',
+  ];
 
   @action
   setActivities(selectedActivities) {
@@ -21,6 +36,13 @@ export default class IndexController extends Controller {
     this.activities = selectedActivities
       .map((activity) => activity.id)
       .join(',');
+  }
+
+  @action
+  setPostalCodes(selectedPostals) {
+    this.page = 0;
+    this.selectedPostalCodes = selectedPostals;
+    this.postalCodes = selectedPostals.map((postal) => postal.id).join(',');
   }
 
   @action

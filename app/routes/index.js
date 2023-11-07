@@ -12,6 +12,7 @@ export default class IndexRoute extends Route {
     page: { refreshModel: true },
     activities: { refreshModel: true },
     status: { refreshModel: true },
+    postalCodes: { refreshModel: true },
   };
 
   async beforeModel(transition) {
@@ -27,17 +28,20 @@ export default class IndexRoute extends Route {
     ].join(',');
 
     const query = buildQuery(params, include);
-    const [associations, activities, organizationStatus] = await Promise.all([
-      this.store.query('association', query),
-      this.store.query('activity', { sort: 'label' }),
-      this.store.query('organization-status-code', { sort: 'label' }),
-    ]);
+    const [associations, activities, organizationStatus, postalCodes] =
+      await Promise.all([
+        this.store.query('association', query),
+        this.store.query('activity', { sort: 'label' }),
+        this.store.query('organization-status-code', { sort: 'label' }),
+        this.store.findAll('postal-code'),
+      ]);
 
     return {
       associations,
       filters: {
         activities,
         organizationStatus,
+        postalCodes,
       },
     };
   }
@@ -50,6 +54,10 @@ function buildQuery(params, include) {
     include,
     filters: {},
   };
+
+  if (params.postalCodes !== '') {
+    //
+  }
 
   if (params.activities !== '') {
     query.filters.activities = { ':id:': params.activities };
