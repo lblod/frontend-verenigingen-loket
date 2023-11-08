@@ -17,6 +17,7 @@ export default class IndexRoute extends Route {
   async beforeModel(transition) {
     this.session.requireAuthentication(transition, 'auth.login');
   }
+
   async model(params) {
     const include = [
       'primary-site.address',
