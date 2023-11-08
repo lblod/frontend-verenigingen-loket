@@ -21,26 +21,10 @@ export default class IndexController extends Controller {
     }
   }
 
-  @task
-  *queryStore() {
-    const filter = {};
-    if (this.search) {
-      filter.name = this.search;
-    }
-    const associations = yield this.store.query('association', {
-      filter: filter,
-      page: { size: this.size, number: this.page },
-      sort: this.sort,
-    });
-    return associations;
-  }
-
   @restartableTask
   *updateAssociationSearch(value) {
     yield timeout(500);
     this.page = 0;
     this.search = value;
-
-    this.model = yield this.queryStore.perform();
   }
 }

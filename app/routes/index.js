@@ -32,10 +32,7 @@ export default class IndexRoute extends Route {
 
     const name = params.search.split(' ');
     const [firstName, ...lastName] = name;
-    console.log({
-      firstName,
-      lastName,
-    });
+
     if (params.search && params.search !== '') {
       query.filter = {
         ':or:': {
