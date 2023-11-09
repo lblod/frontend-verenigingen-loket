@@ -1,5 +1,7 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
+
+import { keepLatestTask } from 'ember-concurrency';
 export default class IndexRoute extends Route {
   @service currentSession;
   @service session;
@@ -19,6 +21,11 @@ export default class IndexRoute extends Route {
   }
 
   async model(params) {
+    return { associations: this.loadAssociations.perform(params) };
+  }
+
+  @keepLatestTask({ cancelOn: 'deactivate' })
+  *loadAssociations(params) {
     const include = [
       'primary-site.address',
       'identifiers.structured-identifier',
@@ -55,7 +62,7 @@ export default class IndexRoute extends Route {
         },
       };
     }
-    const associations = await this.store.query('association', query);
+    const associations = yield this.store.query('association', query);
 
     return associations;
   }

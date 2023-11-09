@@ -1,6 +1,6 @@
 <AuDataTable
-  @content={{this.model.sites}}
-  @isLoading={{this.showTableLoader}}
+  @content={{this.sites}}
+  @isLoading={{this.isLoading}}
   @noDataMessage="Geen locaties"
   as |t|
 >
@@ -10,10 +10,7 @@
     >
       <div>
         <AuHeading @level="1" @skin="1">Locaties</AuHeading>
-        <AuHeading
-          @level="3"
-          @skin="3"
-        >{{this.model.association.name}}</AuHeading>
+        <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
       </div>
       <div
         class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
