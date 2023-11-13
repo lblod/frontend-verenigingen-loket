@@ -1,49 +1,38 @@
 import Controller from '@ember/controller';
-import { tracked } from '@glimmer/tracking';
-import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
-export default class IndexController extends Controller {
-  @service router;
+import { tracked } from '@glimmer/tracking';
+import { restartableTask, timeout } from 'ember-concurrency';
 
-  size = 50;
+export default class IndexController extends Controller {
+  @service store;
+  @service router;
 
   @tracked page = 0;
   @tracked sort = 'name';
-  @tracked activities = '';
-  @tracked postalCodes = '';
-  @tracked status = '';
+  @tracked search = '';
 
-  queryParams = [
-    'sort',
-    'page',
-    'search',
-    'activities',
-    'status',
-    'postalCodes',
-  ];
-
-  @action
-  setActivities(selection) {
-    console.log({ selection });
-    this.page = 0;
-    this.activities = selection.map((activity) => activity.id).join(',');
-  }
-
-  @action
-  setPostalCodes(selectedPostals) {
-    this.page = 0;
-    this.postalCodes = selectedPostals.map((postal) => postal.id).join(',');
-  }
-
-  @action
-  setOrganizationStatus(selectedStatus) {
-    this.page = 0;
-    this.status = selectedStatus.join(',');
-  }
+  queryParams = ['sort', 'page', 'search'];
 
   getVcode(identifier) {
     if (identifier.idName === 'vCode') {
       return identifier.structuredIdentifier.localId;
     }
+  }
+
+  get isLoading() {
+    return this.model.associations.isRunning;
+  }
+
+  get associations() {
+    return this.model.associations.isFinished
+      ? this.model.associations.value
+      : [];
+  }
+
+  @restartableTask
+  *updateAssociationSearch(value) {
+    yield timeout(500);
+    this.page = 0;
+    this.search = value.trimStart();
   }
 }

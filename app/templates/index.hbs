@@ -3,13 +3,8 @@
     <div class="au-c-sidebar">
       <div class="au-c-sidebar__content au-o-box">
         <Filter
-          @filters={{this.model.filters}}
-          @setActivities={{this.setActivities}}
-          @setPostalCodes={{this.setPostalCodes}}
-          @selectedPostalCodes={{this.selectedPostalCodes}}
-          @setOrganizationStatus={{this.setOrganizationStatus}}
-          @postalCodes={{this.postalCodes}}
-          @activities={{this.activities}}
+          @updateSearch={{this.updateAssociationSearch}}
+          @search={{this.search}}
         />
       </div>
     </div>
@@ -24,11 +19,12 @@
           Resultaten</AuHeading>
       </div>
       <AuDataTable
-        @content={{this.model.associations}}
-        @isLoading={{this.showTableLoader}}
+        @content={{this.associations}}
+        @isLoading={{this.isLoading}}
         @page={{this.page}}
         @sort={{this.sort}}
         @size={{this.size}}
+        @noDataMessage="Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of probeer een andere zoekopdracht."
         as |t|
       >
         <t.content class="au-c-data-table__table--small" as |c|>

@@ -1,6 +1,7 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 
+import { keepLatestTask } from 'ember-concurrency';
 export default class IndexRoute extends Route {
   @service currentSession;
   @service session;
@@ -8,6 +9,7 @@ export default class IndexRoute extends Route {
 
   queryParams = {
     sort: { refreshModel: true },
+    search: { refreshModel: true },
     size: { refreshModel: true },
     page: { refreshModel: true },
     activities: { refreshModel: true },
@@ -20,6 +22,11 @@ export default class IndexRoute extends Route {
   }
 
   async model(params) {
+    return { associations: this.loadAssociations.perform(params) };
+  }
+
+  @keepLatestTask({ cancelOn: 'deactivate' })
+  *loadAssociations(params) {
     const include = [
       'primary-site.address',
       'identifiers.structured-identifier',
@@ -28,25 +35,34 @@ export default class IndexRoute extends Route {
     ].join(',');
 
     const query = buildQuery(params, include);
-    const [associations, activities, organizationStatus, postalCodes] =
-      await Promise.all([
-        this.store.query('association', query),
-        this.store.query('activity', { sort: 'label' }),
-        this.store.query('organization-status-code', { sort: 'label' }),
-        this.store.findAll('postal-code'),
-      ]);
 
-    return {
-      associations,
-      filters: {
-        activities,
-        organizationStatus,
-        postalCodes: postalCodes.map((postal) => ({
-          id: postal.postalCode,
-          label: postal.postalName,
-        })),
-      },
-    };
+    const name = params.search.split(' ');
+    const [firstName, ...lastName] = name;
+
+    if (params.search && params.search !== '') {
+      query.filter = {
+        ':or:': {
+          name: params.search,
+          identifiers: {
+            'structured-identifier': {
+              'local-id': params.search,
+            },
+          },
+          activities: {
+            label: params.search,
+          },
+          members: {
+            person: {
+              ':exact:given-name': firstName,
+              'family-name': name.length > 1 ? lastName.join(' ') : firstName,
+            },
+          },
+        },
+      };
+    }
+    const associations = yield this.store.query('association', query);
+
+    return associations;
   }
 }
 
