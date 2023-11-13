@@ -4,21 +4,14 @@ import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 export default class IndexController extends Controller {
   @service router;
+
+  size = 50;
+
   @tracked page = 0;
-  @tracked size = 50;
   @tracked sort = 'name';
   @tracked activities = '';
-  @tracked selectedActivities = this.activities
-    ? [...this.activities.split(',')]
-    : [];
   @tracked postalCodes = '';
-  @tracked selectedPostalCodes = this.postalCodes
-    ? [...this.postalCodes.split(',')]
-    : [];
   @tracked status = '';
-  @tracked selectedOrganizationStatus = this.status
-    ? [...this.status.split(',')]
-    : [];
 
   queryParams = [
     'sort',
@@ -30,25 +23,21 @@ export default class IndexController extends Controller {
   ];
 
   @action
-  setActivities(selectedActivities) {
+  setActivities(selection) {
+    console.log({ selection });
     this.page = 0;
-    this.selectedActivities = selectedActivities;
-    this.activities = selectedActivities
-      .map((activity) => activity.id)
-      .join(',');
+    this.activities = selection.map((activity) => activity.id).join(',');
   }
 
   @action
   setPostalCodes(selectedPostals) {
     this.page = 0;
-    this.selectedPostalCodes = selectedPostals;
     this.postalCodes = selectedPostals.map((postal) => postal.id).join(',');
   }
 
   @action
   setOrganizationStatus(selectedStatus) {
     this.page = 0;
-    this.selectedOrganizationStatus = selectedStatus;
     this.status = selectedStatus.join(',');
   }
 

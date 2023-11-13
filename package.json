@@ -83,6 +83,7 @@
     "edition": "octane"
   },
   "dependencies": {
+    "ember-resources": "^6.4.2",
     "ember-simple-auth": "^6.0.0"
   }
 }

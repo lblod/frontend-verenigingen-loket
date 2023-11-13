@@ -9,40 +9,8 @@
       @iconAlignment="right"
       @width="block"
     />
-    <AuLabel for="filter-name">Selecteer hoofdactiviteit(en)</AuLabel>
-    <div class={{if @error "ember-power-select--error"}}>
-      <PowerSelectMultiple
-        @noMatchesMessage="Geen resultaten"
-        @searchEnabled={{true}}
-        @searchField="label"
-        @placeholder="Selecteer een activiteit"
-        @searchMessage="Typ om te zoeken"
-        @options={{@filters.activities}}
-        @selected={{@selectedActivities}}
-        @onChange={{@setActivities}}
-        as |activity|
-      >
-        {{activity.label}}
-      </PowerSelectMultiple>
-    </div>
-    <AuLabel class="au-u-margin-top" for="filter-name">Selecteer postcode(s)</AuLabel>
-    <div class={{if @error "ember-power-select--error"}}>
-      <PowerSelectMultiple
-        @noMatchesMessage="Geen resultaten"
-        @searchEnabled={{true}}
-        @searchField="postalName"
-        @placeholder="Selecteer een activiteit"
-        @searchMessage="Typ om te zoeken"
-        @options={{@filters.postalCodes}}
-        @selected={{@selectedPostalCodes}}
-        @onChange={{@setPostalCodes}}
-        as |postalCode|
-      >
-        {{postalCode.id}}
-        -
-        {{postalCode.label}}
-      </PowerSelectMultiple>
-    </div>
+    <ActivitySelect @selected={{@activities}} @onChange={{@setActivities}} />
+    <PostalSelect @selected={{@postalCodes}} @onChange={{@setPostalCodes}} />
   </div>
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuLabel for="filter-municipality">Erkenning</AuLabel>
