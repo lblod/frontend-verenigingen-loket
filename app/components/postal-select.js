@@ -42,8 +42,6 @@ export default class PostalCodeMultipleSelectComponent extends Component {
     // See https://github.com/NullVoxPopuli/ember-resources/issues/340 for more details
     yield Promise.resolve();
 
-    return yield this.store.query('postal-code', {
-      sort: 'postalCode',
-    });
+    return yield this.store.query('postal-code');
   }
 }
