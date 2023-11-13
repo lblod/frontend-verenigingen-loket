@@ -11,6 +11,7 @@ export default class IndexController extends Controller {
   @tracked page = 0;
   @tracked sort = 'name';
   @tracked search = '';
+  size = 0;
 
   queryParams = ['sort', 'page', 'search'];
 
