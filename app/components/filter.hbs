@@ -11,8 +11,8 @@
       @value={{@search}}
       oninput={{perform @updateSearch value="target.value"}}
     />
-    <ActivitySelect @selected={{@activities}} @onChange={{@setActivities}} />
-    <PostalSelect @selected={{@postalCodes}} @onChange={{@setPostalCodes}} />
+    <ActivitySelect @onChange={{@setActivities}} />
+    <PostalSelect  @onChange={{@setPostalCodes}} />
   </div>
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuLabel for="filter-municipality">Erkenning</AuLabel>
