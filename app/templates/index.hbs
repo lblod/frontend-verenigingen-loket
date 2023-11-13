@@ -2,7 +2,10 @@
   <m.sidebar>
     <div class="au-c-sidebar">
       <div class="au-c-sidebar__content au-o-box">
-        <Filter />
+        <Filter
+          @updateSearch={{this.updateAssociationSearch}}
+          @search={{this.search}}
+        />
       </div>
     </div>
   </m.sidebar>
@@ -10,11 +13,12 @@
   <m.content @scroll={{true}}>
     <div class="au-d-component-block au-d-component-block--overflow">
       <AuDataTable
-        @content={{this.model}}
-        @isLoading={{this.showTableLoader}}
+        @content={{this.associations}}
+        @isLoading={{this.isLoading}}
         @page={{this.page}}
         @sort={{this.sort}}
         @size={{this.size}}
+        @noDataMessage="Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of probeer een andere zoekopdracht."
         as |t|
       >
         <t.content class="au-c-data-table__table--small" as |c|>
@@ -87,7 +91,7 @@
               {{/if}}
               <td>
                 {{#each association.activities as |activity index|}}
-                    {{activity.label}}{{#unless
+                  {{activity.label}}{{#unless
                     (last-index index association.activities)
                   }},{{/unless}}
                 {{/each}}

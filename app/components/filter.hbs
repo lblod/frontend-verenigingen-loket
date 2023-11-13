@@ -1,17 +1,20 @@
-<form class="au-o-grid au-o-grid--small">
+<div class="au-o-grid au-o-grid--small">
   <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuHeading @level="2" @skin="5">Filter verenigingen</AuHeading>
-    <AuHr  />
+    <AuHr />
     <AuInput
       class="au-u-margin-bottom au-u-margin-top"
-      placeholder="zoek op vCode, naam, hoofdactiviteit of contactpersoon"
+      placeholder="Zoek op vCode, naam, hoofdactiviteit of contactpersoon"
       @icon="search"
       @iconAlignment="right"
       @width="block"
+      @value={{@search}}
+      oninput={{perform @updateSearch value="target.value"}}
     />
     <AuLabel for="filter-name">Hoofdactiviteiten</AuLabel>
     <AuCheckboxGroup as |Group|>
-      <Group.Checkbox @value="burgerinitiatief">Burgerinitiatief &amp; Actiegroep
+      <Group.Checkbox @value="burgerinitiatief">Burgerinitiatief &amp;
+        Actiegroep
       </Group.Checkbox>
       <Group.Checkbox @value="mediawijsheid">Mediawijsheid &amp; Digitale
         geletterdheid
@@ -29,7 +32,7 @@
       <Group.Checkbox @value="9311">9311 – Aalst</Group.Checkbox>
     </AuCheckboxGroup>
   </div>
-    <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
+  <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
     <AuLabel for="filter-municipality">Erkenning</AuLabel>
     <AuCheckboxGroup as |Group|>
       <Group.Checkbox @value="erkend">Erkend</Group.Checkbox>
@@ -50,4 +53,4 @@
       Herstel alle filters
     </AuButton>
   </div>
-</form>
+</div>

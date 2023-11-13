@@ -1,18 +1,11 @@
-<AuDataTable
-  @content={{this.model.members}}
-  @isLoading={{this.showTableLoader}}
-  as |t|
->
+<AuDataTable @content={{this.members}} @isLoading={{this.isLoading}} as |t|>
   <t.menu>
     <section
       class="au-u-flex au-u-flex--between au-o-box au-o-flow au-o-flow--large"
     >
       <div>
         <AuHeading @level="1" @skin="1">Vertegenwoordigers</AuHeading>
-        <AuHeading
-          @level="3"
-          @skin="3"
-        >{{this.model.association.name}}</AuHeading>
+        <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
       </div>
       <div
         class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"

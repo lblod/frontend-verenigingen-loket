@@ -1,6 +1,7 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
+import { keepLatestTask } from 'ember-concurrency';
 
 export default class AssociationLocationRoute extends Route {
   @service store;
@@ -10,9 +11,26 @@ export default class AssociationLocationRoute extends Route {
   };
 
   async model(params) {
+    return {
+      association: this.loadAssociation.perform(),
+      sites: this.loadSites.perform(params),
+    };
+  }
+
+  @keepLatestTask({ cancelOn: 'deactivate' })
+  *loadAssociation() {
     const { id } = this.paramsFor('association');
-    const model = await this.store.findRecord('association', id);
-    const sites = await this.store.query('site', {
+    const model = yield this.store.findRecord('association', id);
+
+    return model;
+  }
+
+  @keepLatestTask({ cancelOn: 'deactivate' })
+  *loadSites(params) {
+    const { id } = this.paramsFor('association');
+    const model = yield this.store.findRecord('association', id);
+
+    const sites = yield this.store.query('site', {
       filter: {
         associations: {
           id: id,
@@ -20,15 +38,10 @@ export default class AssociationLocationRoute extends Route {
       },
       sort: params.sort ? `${params.sort},address.street` : 'address.street',
     });
-    const primarySite = await model.get('primarySite');
+    const primarySite = yield model.get('primarySite');
     if (primarySite) {
       primarySite.address.isPrimary = true;
     }
-    const mergedSites = A([primarySite, ...sites]);
-
-    return {
-      association: model,
-      sites: mergedSites,
-    };
+    return A([primarySite, ...sites]);
   }
 }
