@@ -1,4 +1,9 @@
-<AuDataTable @content={{this.members}} @isLoading={{this.isLoading}} as |t|>
+<AuDataTable
+  @content={{this.members}}
+  @noDataMessage="Geen vertegenwoordigers"
+  @isLoading={{this.isLoading}}
+  as |t|
+>
   <t.menu>
     <section
       class="au-u-flex au-u-flex--between au-o-box au-o-flow au-o-flow--large"
