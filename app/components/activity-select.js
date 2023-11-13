@@ -1,38 +1,40 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { task } from 'ember-concurrency';
-import { trackedTask } from 'ember-resources/util/ember-concurrency';
+import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
 export default class ActivityMultipleSelectComponent extends Component {
+  @service router;
   @service store;
 
-  activities = trackedTask(this, this.loadActivities);
+  @tracked activitiesQuery;
+  @tracked selected = [];
+  @tracked activities;
 
-  get selectedActivities() {
-    let selectionArray = [];
+  constructor() {
+    super(...arguments);
+    this.activitiesQuery = this.router.currentRoute.queryParams.activities;
+    this.loadActivities.perform();
+  }
 
-    if (typeof this.args.selected === 'string' && this.args.selected.length) {
-      const ids = this.args.selected.split(',');
-      ids.forEach((id) => {
-        const activity = this.findActivityById(id);
-        if (activity) {
-          selectionArray.push(activity);
-        }
-      });
-    }
-    if (selectionArray.length) {
-      return selectionArray;
-    }
+  @action
+  onChange(selectedActivities) {
+    this.selected = selectedActivities;
+    this.args.onChange(selectedActivities);
+  }
 
-    return this.args.selected;
+  selectedActivities() {
+    return (
+      this.activitiesQuery
+        .split(',')
+        .map((id) => this.findActivityById(id))
+        .filter(Boolean) || []
+    );
   }
 
   findActivityById(id) {
-    if (this.activities.isRunning) {
-      return null;
-    }
-
-    const activities = this.activities.value;
+    const activities = this.activities;
     return activities.find((activity) => activity.id === id);
   }
 
@@ -40,10 +42,11 @@ export default class ActivityMultipleSelectComponent extends Component {
   *loadActivities() {
     // Trick used to avoid infinite loop
     // See https://github.com/NullVoxPopuli/ember-resources/issues/340 for more details
-    yield Promise.resolve();
 
-    return yield this.store.query('activity', {
+    yield Promise.resolve();
+    this.activities = yield this.store.query('activity', {
       sort: 'label',
     });
+    this.selected = this.selectedActivities();
   }
 }

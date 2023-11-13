@@ -8,12 +8,23 @@ export default class IndexController extends Controller {
   @service store;
   @service router;
 
+  size = 0;
   @tracked page = 0;
   @tracked sort = 'name';
   @tracked search = '';
-  size = 0;
+  @tracked activities = '';
+  @tracked status = '';
+  @tracked postalCodes = '';
+  @tracked selectedPostalCodes = [];
 
-  queryParams = ['sort', 'page', 'search'];
+  queryParams = [
+    'sort',
+    'page',
+    'search',
+    'activities',
+    'status',
+    'postalCodes',
+  ];
 
   getVcode(identifier) {
     if (identifier.idName === 'vCode') {
@@ -24,7 +35,6 @@ export default class IndexController extends Controller {
   @action
   setActivities(selectedActivities) {
     this.page = 0;
-    this.selectedActivities = selectedActivities;
     this.activities = selectedActivities
       .map((activity) => activity.id)
       .join(',');
