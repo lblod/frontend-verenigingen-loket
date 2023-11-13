@@ -1,11 +1,11 @@
 import Controller from '@ember/controller';
 export default class AssociationLocationController extends Controller {
   get isLoading() {
-    return this.model.sites.isRunning;
+    return this.model.members.isRunning;
   }
 
-  get sites() {
-    return this.model.sites.isFinished ? this.model.sites.value : [];
+  get members() {
+    return this.model.members.isFinished ? this.model.members.value : [];
   }
 
   get association() {

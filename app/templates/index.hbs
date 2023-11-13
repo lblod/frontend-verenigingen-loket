@@ -2,7 +2,10 @@
   <m.sidebar>
     <div class="au-c-sidebar">
       <div class="au-c-sidebar__content au-o-box">
-        <Filter />
+        <Filter
+          @updateSearch={{this.updateAssociationSearch}}
+          @search={{this.search}}
+        />
       </div>
     </div>
   </m.sidebar>
@@ -10,31 +13,31 @@
   <m.content @scroll={{true}}>
     <div class="au-d-component-block au-d-component-block--overflow">
       <AuDataTable
-        @content={{this.model}}
-        @isLoading={{this.showTableLoader}}
+        @content={{this.associations}}
+        @isLoading={{this.isLoading}}
         @page={{this.page}}
+        @sort={{this.sort}}
         @size={{this.size}}
+        @noDataMessage="Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of probeer een andere zoekopdracht."
         as |t|
       >
         <t.content class="au-c-data-table__table--small" as |c|>
           <c.header>
             <AuDataTableThSortable
-              @field="naam"
+              @field="name"
               @currentSorting={{this.sort}}
               @label="Naam"
               @class="data-table__header-title"
             />
             <AuDataTableThSortable
-              @field="postcode"
+              @field="primarySite.address.postcode"
               @currentSorting={{this.sort}}
               @label="Postcode"
               @class="data-table__header-title"
             />
-            <th
-              class="data-table__header-title"
-            >Hoofdactiviteiten</th>
+            <th class="data-table__header-title">Hoofdactiviteiten</th>
             <AuDataTableThSortable
-              @field="vCode"
+              @field="identifiers.structured-identifier.local-id"
               @currentSorting={{this.sort}}
               @label="vCode"
               @class="data-table__header-title"
@@ -46,7 +49,7 @@
               @class="data-table__header-title"
             />
             <AuDataTableThSortable
-              @field="erkenning"
+              @field="organization-status"
               @currentSorting={{this.sort}}
               @label="Erkenning"
               @class="data-table__header-title"
@@ -86,10 +89,16 @@
               {{#if this.modelHasOnlyWorshipAdministrativeUnits}}
                 <td>{{association.recognized_worship_type_name}}</td>
               {{/if}}
-              <td>{{association.province}}</td>
+              <td>
+                {{#each association.activities as |activity index|}}
+                  {{activity.label}}{{#unless
+                    (last-index index association.activities)
+                  }},{{/unless}}
+                {{/each}}
+              </td>
               <td>
                 {{#each association.identifiers as |identifier|}}
-        {{#if (eq identifier.idName "vCode")}}
+                  {{#if (eq identifier.idName "vCode")}}
                     {{get identifier.structuredIdentifier "localId"}}
                   {{/if}}
                 {{/each}}
@@ -98,9 +107,20 @@
                 18 - 65
               </td>
               <td>
-                <AuPill @skin="warning">Niet erkend</AuPill>
+                {{#if (eq association.organizationStatus.label "Erkend")}}
+                  <AuPill
+                    @skin="success"
+                  >{{association.organizationStatus.label}}</AuPill>
+                {{else if
+                  (eq association.organizationStatus.label "Niet erkend")
+                }}
+                  <AuPill
+                    @skin="warning"
+                  >{{association.organizationStatus.label}}</AuPill>
+                {{else}}
+                  <AuPill @skin="warning">Niet erkend</AuPill>
+                {{/if}}
               </td>
-
             </c.body>
           {{/if}}
         </t.content>
