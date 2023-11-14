@@ -67,7 +67,7 @@ export default class IndexRoute extends Route {
 }
 
 function buildQuery(params, include) {
-  const query = {
+  let query = {
     sort: params.sort ? `${params.sort},name` : 'name',
     page: { size: 20, number: params.page },
     include,
@@ -75,10 +75,12 @@ function buildQuery(params, include) {
   };
 
   if (params.postalCodes !== '') {
-    query.filters['primary-site'] = {
-      address: {
-        postcode: params.postalCodes,
-      },
+    const postalCodes = params.postalCodes.split(',');
+    const postalCodesQuery = postalCodes.map((postalCode) =>
+      encodeURIComponent(postalCode),
+    );
+    query.filters = {
+      ':or:': { 'primary-site': { address: { postcode: postalCodesQuery } } },
     };
   }
 

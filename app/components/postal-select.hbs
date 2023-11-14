@@ -7,13 +7,13 @@
     @placeholder="Selecteer een postcode"
     @searchMessage="Typ om te zoeken"
     @options={{this.postalCodes}}
-    @selected={{this.selectedPostalCodes}}
-    @onChange={{@onChange}}
+    @selected={{this.selected}}
+    @onChange={{this.onChange}}
     @triggerId={{@id}}
     as |postalCode|
   >
-    {{postalCode.id}}
+    {{postalCode.postalName}}
     -
-    {{postalCode.label}}
+    {{postalCode.postalCode}}
   </PowerSelectMultiple>
 </div>

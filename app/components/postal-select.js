@@ -1,39 +1,42 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { task } from 'ember-concurrency';
-import { trackedTask } from 'ember-resources/util/ember-concurrency';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
 export default class PostalCodeMultipleSelectComponent extends Component {
+  @service router;
   @service store;
 
-  postalCodes = trackedTask(this, this.loadPostalCodes);
+  @tracked postalCodesQuery;
+  @tracked selected = [];
+  @tracked postalCodes;
 
-  get selectedActivities() {
-    let selectionArray = [];
-
-    if (typeof this.args.selected === 'string' && this.args.selected.length) {
-      const codes = this.args.selected.split(',');
-      codes.forEach((code) => {
-        const postalCode = this.findPostalByCode(code);
-        if (postalCode) {
-          selectionArray.push(postalCode);
-        }
-      });
-    }
-    if (selectionArray.length) {
-      return selectionArray;
-    }
-
-    return this.args.selected;
+  constructor() {
+    super(...arguments);
+    this.postalCodesQuery = this.router.currentRoute.queryParams.postalCodes;
+    this.loadPostalCodes.perform();
   }
 
-  findClassificationById(id) {
-    if (this.activities.isRunning) {
-      return null;
-    }
+  @action
+  onChange(selectedPostalCodes) {
+    this.selected = selectedPostalCodes;
+    this.args.onChange(selectedPostalCodes);
+  }
 
-    const activities = this.activities.value;
-    return activities.find((activity) => activity.id === id);
+  selectedPostalCodes() {
+    return this.postalCodesQuery
+      ? this.postalCodesQuery
+          .split(',')
+          .map((code) => this.findPostalByCode(code))
+          .filter(Boolean)
+      : [];
+  }
+
+  findPostalByCode(code) {
+    return this.postalCodes.find(
+      (postalCode) => postalCode.postalCode === code,
+    );
   }
 
   @task
@@ -42,6 +45,7 @@ export default class PostalCodeMultipleSelectComponent extends Component {
     // See https://github.com/NullVoxPopuli/ember-resources/issues/340 for more details
     yield Promise.resolve();
 
-    return yield this.store.query('postal-code');
+    this.postalCodes = yield this.store.findAll('postal-code');
+    this.selected = this.selectedPostalCodes();
   }
 }

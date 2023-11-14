@@ -44,7 +44,9 @@ export default class IndexController extends Controller {
   setPostalCodes(selectedPostals) {
     this.page = 0;
     this.selectedPostalCodes = selectedPostals;
-    this.postalCodes = selectedPostals.map((postal) => postal.id).join(',');
+    this.postalCodes = selectedPostals
+      .map((postal) => postal.postalCode)
+      .join(',');
   }
 
   @action

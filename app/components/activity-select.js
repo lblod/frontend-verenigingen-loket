@@ -8,7 +8,7 @@ export default class ActivityMultipleSelectComponent extends Component {
   @service router;
   @service store;
 
-  @tracked activitiesQuery;
+  @tracked activitiesQuery = '';
   @tracked selected = [];
   @tracked activities;
 
@@ -25,17 +25,16 @@ export default class ActivityMultipleSelectComponent extends Component {
   }
 
   selectedActivities() {
-    return (
-      this.activitiesQuery
-        .split(',')
-        .map((id) => this.findActivityById(id))
-        .filter(Boolean) || []
-    );
+    return this.activitiesQuery
+      ? this.activitiesQuery
+          .split(',')
+          .map((id) => this.findActivityById(id))
+          .filter(Boolean)
+      : [];
   }
 
   findActivityById(id) {
-    const activities = this.activities;
-    return activities.find((activity) => activity.id === id);
+    return this.activities.find((activity) => activity.id === id);
   }
 
   @task
