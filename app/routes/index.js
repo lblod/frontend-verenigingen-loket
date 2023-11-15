@@ -34,7 +34,7 @@ export default class IndexRoute extends Route {
       'activities',
     ].join(',');
 
-    const query = buildQuery(params, include);
+    const { query, customQuery } = buildQuery(params, include);
 
     const name = params.search.split(' ');
     const [firstName, ...lastName] = name;
@@ -60,14 +60,19 @@ export default class IndexRoute extends Route {
         },
       };
     }
-    const associations = yield this.store.query('association', query);
+
+    const associations = yield this.store.query('association', {
+      customQuery,
+      ...query,
+    });
 
     return associations;
   }
 }
 
 function buildQuery(params, include) {
-  let query = {
+  let customQuery = '';
+  const query = {
     sort: params.sort ? `${params.sort},name` : 'name',
     page: { size: 20, number: params.page },
     include,
@@ -76,12 +81,10 @@ function buildQuery(params, include) {
 
   if (params.postalCodes !== '') {
     const postalCodes = params.postalCodes.split(',');
-    const postalCodesQuery = postalCodes.map((postalCode) =>
-      encodeURIComponent(postalCode),
+    let postalCodeQuery = postalCodes.map(
+      (code) => `filter[:or:][primary-site][address][postcode]=${code}`,
     );
-    query.filters = {
-      ':or:': { 'primary-site': { address: { postcode: postalCodesQuery } } },
-    };
+    customQuery += postalCodeQuery.join('&');
   }
 
   if (params.activities !== '') {
@@ -92,5 +95,5 @@ function buildQuery(params, include) {
     query.filters['organization-status'] = { ':id:': params.status };
   }
 
-  return query;
+  return { query, customQuery };
 }
