@@ -2,13 +2,39 @@
   <m.sidebar>
     <div class="au-c-sidebar">
       <div class="au-c-sidebar__content au-o-box">
-        <Filter
-          @updateSearch={{this.updateAssociationSearch}}
-          @search={{this.search}}
-          @setPostalCodes={{this.setPostalCodes}}
-          @setActivities={{this.setActivities}}
-          @setOrganizationStatus={{this.setOrganizationStatus}}
-        />
+        <div class="au-o-grid au-o-grid--small">
+          <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
+            <AuHeading @level="2" @skin="5">Filter verenigingen</AuHeading>
+            <AuHr />
+            <AuInput
+              class="au-u-margin-bottom au-u-margin-top"
+              placeholder="Zoek op vCode, naam, hoofdactiviteit of contactpersoon"
+              @icon="search"
+              @iconAlignment="right"
+              @width="block"
+              value={{this.search}}
+              oninput={{perform this.updateAssociationSearch value="target.value"}}
+            />
+            <ActivitySelect
+              @onChange={{this.setActivities}}
+              @selected={{this.selectedActivities}}
+            />
+            <PostalSelect
+              @onChange={{this.setPostalCodes}}
+              @selected={{this.selectedPostalCodes}}
+            />
+            <OrganizationStatusSelect
+              @onChange={{this.setOrganizationStatus}}
+              @selected={{this.selectedOrganizationStatus}}
+            />
+          </div>
+          <div class="au-o-grid__item">
+            <AuButton @skin="link" type="reset" onclick={{this.resetFilters}}>
+              <AuIcon @icon="cross" @alignment="left" />
+              Herstel alle filters
+            </AuButton>
+          </div>
+        </div>
       </div>
     </div>
   </m.sidebar>

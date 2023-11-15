@@ -7,8 +7,8 @@
     @placeholder="Selecteer een activiteit"
     @searchMessage="Typ om te zoeken"
     @options={{this.activities}}
-    @selected={{this.selected}}
-    @onChange={{this.onChange}}
+    @selected={{@selected}}
+    @onChange={{@onChange}}
     @triggerId={{@id}}
     as |activity|
   >

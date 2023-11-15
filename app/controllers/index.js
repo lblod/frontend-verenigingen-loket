@@ -13,7 +13,9 @@ export default class IndexController extends Controller {
   @tracked sort = 'name';
   @tracked search = '';
   @tracked activities = '';
+  @tracked selectedActivities = [];
   @tracked status = '';
+  @tracked selectedOrganizationStatus = '';
   @tracked postalCodes = '';
   @tracked selectedPostalCodes = [];
 
@@ -35,9 +37,11 @@ export default class IndexController extends Controller {
   @action
   setActivities(selectedActivities) {
     this.page = 0;
+    this.selectedActivities = selectedActivities;
     this.activities = selectedActivities
       .map((activity) => activity.id)
       .join(',');
+    return this.activities;
   }
 
   @action
@@ -71,5 +75,18 @@ export default class IndexController extends Controller {
     yield timeout(500);
     this.page = 0;
     this.search = value.trimStart();
+  }
+
+  @action
+  resetFilters() {
+    this.status = '';
+    this.selectedOrganizationStatus = [];
+    this.activities = '';
+    this.selectedActivities = [];
+    this.postalCodes = '';
+    this.selectedPostalCodes = [];
+    this.search = '';
+    this.page = null;
+    this.sort = 'name';
   }
 }

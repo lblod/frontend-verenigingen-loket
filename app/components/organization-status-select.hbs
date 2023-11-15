@@ -1,8 +1,8 @@
 <AuLabel class="au-u-margin-top" for="filter-municipality">Erkenning</AuLabel>
 <AuCheckboxGroup
   @alignment="default"
-  @selected={{this.selected}}
-  @onChange={{this.onChange}}
+  @selected={{@selected}}
+  @onChange={{@onChange}}
   as |Group|
 >
   {{#each this.organizationStatus as |status|}}

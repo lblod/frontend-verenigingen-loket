@@ -9,19 +9,12 @@ export default class OrganizationStatusSelectComponent extends Component {
   @service store;
 
   @tracked organizationStatusQuery = '';
-  @tracked selected = [];
   @tracked organizationStatus;
 
   constructor() {
     super(...arguments);
     this.organizationStatusQuery = this.router.currentRoute.queryParams.status;
     this.loadOrganizationStatus.perform();
-  }
-
-  @action
-  onChange(selectedOrganizationStatus) {
-    this.selected = selectedOrganizationStatus;
-    this.args.onChange(selectedOrganizationStatus);
   }
 
   selectedOrganizationStatus() {
@@ -48,6 +41,6 @@ export default class OrganizationStatusSelectComponent extends Component {
     this.organizationStatus = yield this.store.findAll(
       'organization-status-code',
     );
-    this.selected = this.selectedOrganizationStatus();
+    this.args.onChange(this.selectedOrganizationStatus());
   }
 }

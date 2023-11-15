@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { task } from 'ember-concurrency';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class ActivityMultipleSelectComponent extends Component {
@@ -9,19 +8,12 @@ export default class ActivityMultipleSelectComponent extends Component {
   @service store;
 
   @tracked activitiesQuery = '';
-  @tracked selected = [];
   @tracked activities;
 
   constructor() {
     super(...arguments);
     this.activitiesQuery = this.router.currentRoute.queryParams.activities;
     this.loadActivities.perform();
-  }
-
-  @action
-  onChange(selectedActivities) {
-    this.selected = selectedActivities;
-    this.args.onChange(selectedActivities);
   }
 
   selectedActivities() {
@@ -46,6 +38,6 @@ export default class ActivityMultipleSelectComponent extends Component {
     this.activities = yield this.store.query('activity', {
       sort: 'label',
     });
-    this.selected = this.selectedActivities();
+    this.args.onChange(this.selectedActivities());
   }
 }
