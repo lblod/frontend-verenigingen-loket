@@ -12,24 +12,8 @@
       oninput={{perform @updateSearch value="target.value"}}
     />
     <ActivitySelect @onChange={{@setActivities}} />
-    <PostalSelect  @onChange={{@setPostalCodes}} />
-  </div>
-  <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
-    <AuLabel for="filter-municipality">Erkenning</AuLabel>
-    <AuCheckboxGroup
-      @alignment="default"
-      @selected={{@selectedOrganizationStatus}}
-      @onChange={{@setOrganizationStatus}}
-      as |Group|
-    >
-      {{#each @filters.organizationStatus as |status|}}
-        {{#if (eq status.label "Erkend")}}
-          <Group.Checkbox @value={{status.id}}>{{status.label}}</Group.Checkbox>
-        {{else if (eq status.label "Niet erkend")}}
-          <Group.Checkbox @value={{status.id}}>{{status.label}}</Group.Checkbox>
-        {{/if}}
-      {{/each}}
-    </AuCheckboxGroup>
+    <PostalSelect @onChange={{@setPostalCodes}} />
+    <OrganizationStatusSelect @onChange={{@setOrganizationStatus}} />
   </div>
   <div class="au-o-grid__item">
     <AuButton @skin="link" type="reset">
