@@ -31,10 +31,6 @@ export default class ActivityMultipleSelectComponent extends Component {
 
   @task
   *loadActivities() {
-    // Trick used to avoid infinite loop
-    // See https://github.com/NullVoxPopuli/ember-resources/issues/340 for more details
-
-    yield Promise.resolve();
     this.activities = yield this.store.query('activity', {
       sort: 'label',
     });

@@ -33,8 +33,6 @@ export default class PostalCodeMultipleSelectComponent extends Component {
 
   @task
   *loadPostalCodes() {
-    yield Promise.resolve();
-
     this.postalCodes = yield this.store.findAll('postal-code');
     this.args.onChange(this.selectedPostalCodes());
   }

@@ -34,10 +34,6 @@ export default class OrganizationStatusSelectComponent extends Component {
 
   @task
   *loadOrganizationStatus() {
-    // Trick used to avoid infinite loop
-    // See https://github.com/NullVoxPopuli/ember-resources/issues/340 for more details
-
-    yield Promise.resolve();
     this.organizationStatus = yield this.store.findAll(
       'organization-status-code',
     );
