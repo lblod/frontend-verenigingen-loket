@@ -1,4 +1,9 @@
-<AuDataTable @content={{this.members}} @isLoading={{this.isLoading}} as |t|>
+<AuDataTable
+  @content={{this.members}}
+  @noDataMessage="Geen vertegenwoordigers"
+  @isLoading={{this.isLoading}}
+  as |t|
+>
   <t.menu>
     <section
       class="au-u-flex au-u-flex--between au-o-box au-o-flow au-o-flow--large"
@@ -44,19 +49,19 @@
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="person.email"
+        @field="person.site.contactPoints.email"
         @currentSorting={{this.sort}}
         @label="Email"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="person.phone-number"
+        @field="person.site.contactPoints.telephone"
         @currentSorting={{this.sort}}
         @label="Telefoonnummer"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="person.social-media"
+        @field="person.site.contactPoints.website"
         @currentSorting={{this.sort}}
         @label="Sociale media"
         @class="data-table__header-title"
@@ -77,15 +82,31 @@
         <td>
           {{member.person.familyName}}
         </td>
-        <td>
-          {{member.person.email}}
-        </td>
-        <td>
-          {{member.person.phoneNumber}}
-        </td>
-        <td>
-          {{member.person.socialMedia}}
-        </td>
+        {{#let member.person.site.contactPoints as |contactPoints|}}
+          {{#let (this.contactPoints.getDetails contactPoints) as |contact|}}
+            <td>
+              <AuLinkExternal href="mailto: {{contact.email}}">
+                {{contact.email}}
+              </AuLinkExternal>
+            </td>
+            <td>
+              {{#each contact.telephone as |phoneNumber|}}
+                <AuLinkExternal href="tel:{{phoneNumber}}">
+                  {{phoneNumber}}
+                </AuLinkExternal>
+              {{/each}}
+            </td>
+            <td>
+              {{#each contact.socialMedia as |socialMedia index|}}
+                <AuLinkExternal href={{socialMedia.url}}>
+                  {{socialMedia.name}}
+                </AuLinkExternal>{{#unless
+                  (last-index index contact.socialMedia)
+                }},{{/unless}}
+              {{/each}}
+            </td>
+          {{/let}}
+        {{/let}}
       </c.body>
     {{/if}}
   </t.content>

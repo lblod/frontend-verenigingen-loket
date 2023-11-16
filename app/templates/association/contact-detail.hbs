@@ -17,98 +17,96 @@
             mailto:{{this.contactEmail}}
             ?subject={{this.subject}}
             &body={{this.body}}"
-        >
-          Meld het bij de vereniging!
-        </AuLinkExternal>
-      </AuHelpText>
-    </div>
-  </section>
-  <section>
-    <DataCard>
-      <:title>
-        Contactgegevens
-      </:title>
-      <:card as |Card|>
-        <Card.Columns>
-          <:left as |Item|>
+      >
+        Meld het bij de vereniging!
+      </AuLinkExternal>
+    </AuHelpText>
+  </div>
+</section>
+<section
+>
+{{#let (this.contactPoints.getDetails this.model.contactPoints) as |contact|}}
+  <DataCard>
+    <:title>
+      Contactgegevens
+    </:title>
+    <:card as |Card|>
+      <Card.Columns>
+        <:left as |Item|>
+          <Item>
+            <:label>Adres</:label>
+            <:content>
+              {{#if this.model.primarySite.address}}
+                {{this.model.primarySite.address.fullAddress}}
+              {{else}}
+                Geen adres gevonden
+              {{/if}}
+            </:content>
+          </Item>
+          <Item>
+            <:label>Telefoon</:label>
+            <:content>
+              {{#if contact.telephone.length}}
+                {{#each contact.telephone as |telephone index|}}
+                  <AuLinkExternal href="tel:{{telephone}}">
+                    {{telephone}}
+                  </AuLinkExternal>{{#unless
+                    (last-index index contact.telephone)
+                  }},{{/unless}}
+                {{/each}}
+              {{else}}
+                Niet opgegeven
+              {{/if}}
+            </:content>
+          </Item>
+          <Item>
+            <:label>Email</:label>
+            <:content>
+              {{#if contact.email}}
+                <AuLinkExternal href="mailto:{{contact.email}}">
+                  {{contact.email}}
+                </AuLinkExternal>
+              {{else}}
+                Niet opgegeven
+              {{/if}}
+            </:content>
+          </Item>
+        </:left>
+        <:right as |Item|>
+          <Item>
+            <:label>Website</:label>
+            <:content>
+              {{#if contact.website}}
+                <AuLinkExternal href={{contact.website}}>
+                  {{contact.website}}
+                  (externe link)
+                </AuLinkExternal>
+              {{else}}
+                Niet opgegeven
+              {{/if}}
+            </:content>
+          </Item>
+          <Item>
+            <:label>Sociale media</:label>
+            <:content>
+              {{#if contact.socialMedia.length}}
+                {{#each contact.socialMedia as |socialMedia index|}}
+                  <AuLinkExternal href={{socialMedia.url}}>
+                    {{socialMedia.name}}
+                  </AuLinkExternal>{{#unless
+                    (last-index index contact.socialMedia)
+                  }},{{/unless}}
+                {{/each}}
+              {{else}}
+                Niet opgegeven
+              {{/if}}
 
-            <Item>
-              <:label>Adres</:label>
-              <:content>
-                {{#if this.model.primarySite.address}}
-                  {{this.model.primarySite.address.fullAddress}}
-                {{else}}
-                  Geen adres gevonden
-                {{/if}}
-              </:content>
-            </Item>
-            <Item>
-              <:label>Telefoon</:label>
-              <:content>
-                {{#if this.contactDetails.telephone.length}}
-                  {{#each this.contactDetails.telephone as |telephone index|}}
-                    <AuLinkExternal href="tel:{{telephone}}">
-                      {{telephone}}
-                    </AuLinkExternal>{{#unless
-                      (last-index index this.contactDetails.telephone)
-                    }},{{/unless}}
-                  {{/each}}
-                {{else}}
-                  Niet opgegeven
-                {{/if}}
-              </:content>
-            </Item>
-            <Item>
-              <:label>Email</:label>
-              <:content>
-                {{#if this.contactDetails.email}}
-                  <AuLinkExternal href="mailto:{{this.contactDetails.email}}">
-
-                    {{this.contactDetails.email}}
-                  </AuLinkExternal>
-                {{else}}
-                  Niet opgegeven
-                {{/if}}
-              </:content>
-            </Item>
-          </:left>
-          <:right as |Item|>
-            <Item>
-              <:label>Website</:label>
-              <:content>
-                {{#if this.contactDetails.website}}
-                  <AuLinkExternal href={{this.contactDetails.website}}>
-                    {{this.contactDetails.website}}
-                    (externe link)
-                  </AuLinkExternal>
-                {{else}}
-                  Niet opgegeven
-                {{/if}}
-              </:content>
-            </Item>
-            <Item>
-              <:label>Sociale media</:label>
-              <:content>
-                {{#if this.contactDetails.socialMedia.length}}
-                  {{#each
-                    this.contactDetails.socialMedia
-                    as |socialMedia index|
-                  }}
-                    <AuLinkExternal href={{socialMedia.url}}>
-                      {{socialMedia.name}}
-                    </AuLinkExternal>{{#unless
-                      (last-index index this.contactDetails.socialMedia)
-                    }},{{/unless}}
-                  {{/each}}
-                {{else}}
-                  Niet opgegeven
-                {{/if}}
-
-              </:content>
-            </Item>
-          </:right>
-        </Card.Columns>
-      </:card>
-    </DataCard>
-  </section>
+            </:content>
+          </Item>
+        </:right>
+      </Card.Columns>
+    </:card>
+  </DataCard>
+  {{/let}}
+</section>
 </div>
