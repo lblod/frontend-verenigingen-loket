@@ -11,9 +11,10 @@ export default class IndexRoute extends Route {
     sort: { refreshModel: true },
     search: { refreshModel: true },
     size: { refreshModel: true },
-    page: {
-      refreshModel: true,
-    },
+    page: { refreshModel: true },
+    activities: { refreshModel: true },
+    status: { refreshModel: true },
+    postalCodes: { refreshModel: true },
   };
 
   async beforeModel(transition) {
@@ -32,11 +33,8 @@ export default class IndexRoute extends Route {
       'organization-status',
       'activities',
     ].join(',');
-    const query = {
-      sort: params.sort ? `${params.sort},name` : 'name',
-      page: { size: 20, number: params.page },
-      include,
-    };
+
+    const { query, customQuery } = buildQuery(params, include);
 
     const name = params.search.split(' ');
     const [firstName, ...lastName] = name;
@@ -62,8 +60,40 @@ export default class IndexRoute extends Route {
         },
       };
     }
-    const associations = yield this.store.query('association', query);
+
+    const associations = yield this.store.query('association', {
+      customQuery,
+      ...query,
+    });
 
     return associations;
   }
+}
+
+function buildQuery(params, include) {
+  let customQuery = '';
+  const query = {
+    sort: params.sort ? `${params.sort},name` : 'name',
+    page: { size: 20, number: params.page },
+    include,
+    filters: {},
+  };
+
+  if (params.postalCodes !== '') {
+    const postalCodes = params.postalCodes.split(',');
+    let postalCodeQuery = postalCodes.map(
+      (code) => `filter[:or:][primary-site][address][postcode]=${code}`,
+    );
+    customQuery += postalCodeQuery.join('&');
+  }
+
+  if (params.activities !== '') {
+    query.filters.activities = { ':id:': params.activities };
+  }
+
+  if (params.status !== '') {
+    query.filters['organization-status'] = { ':id:': params.status };
+  }
+
+  return { query, customQuery };
 }

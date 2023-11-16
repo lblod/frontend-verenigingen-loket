@@ -1,5 +1,13 @@
 import JSONAPIAdapter from '@ember-data/adapter/json-api';
 
 export default class ApplicationAdapter extends JSONAPIAdapter {
-  // Application specific overrides go here
+  urlForQuery(query) {
+    if (query.customQuery) {
+      let customQueryParam = query.customQuery;
+      delete query.customQuery;
+      return `${super.urlForQuery(...arguments)}?${customQueryParam}`;
+    }
+
+    return super.urlForQuery(...arguments);
+  }
 }
