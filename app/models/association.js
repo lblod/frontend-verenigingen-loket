@@ -13,4 +13,5 @@ export default class AssociationModel extends Model {
   organizationStatus;
   @hasMany('activity', { inverse: null, async: true }) activities;
   @hasMany('membership', { inverse: null, async: true }) members;
+  @hasMany('change-event', { inverse: null, async: true }) changeEvents;
 }

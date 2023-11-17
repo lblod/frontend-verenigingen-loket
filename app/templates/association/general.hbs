@@ -107,11 +107,15 @@
             <Item>
               <:label>Startdatum</:label>
               <:content>
-                {{#if this.model.startDate}}
-                  {{this.model.startDate}}
+                {{#each this.model.changeEvents as |changeEvent|}}
+                  {{#let (get changeEvent.result "label") as |result|}}
+                    {{#if (eq result "Oprichting")}}
+                      {{date-format changeEvent.date}}
+                    {{/if}}
+                  {{/let}}
                 {{else}}
                   Niet opgegeven
-                {{/if}}
+                {{/each}}
               </:content>
             </Item>
             <Item>
