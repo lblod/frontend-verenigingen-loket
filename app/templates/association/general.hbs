@@ -40,8 +40,10 @@
             <Item>
               <:label>Type</:label>
               <:content>
-                {{#if this.model.type}}
-                  {{this.model.type}}
+                {{#if this.model.classification}}
+                  <span title="{{this.model.classification.prefLabel}}">
+                    {{this.model.classification.notation}}
+                  </span>
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -77,8 +79,8 @@
             <Item>
               <:label>Minimum leeftijd</:label>
               <:content>
-                {{#if this.model.minAge}}
-                  {{this.model.minAge}}
+                {{#if this.model.targetAudience}}
+                  {{this.model.targetAudience.minimumLeeftijd}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -87,8 +89,8 @@
             <Item>
               <:label>Maximum leeftijd</:label>
               <:content>
-                {{#if this.model.maxAge}}
-                  {{this.model.maxAge}}
+                {{#if this.model.targetAudience}}
+                  {{this.model.targetAudience.maximumLeeftijd}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -107,11 +109,15 @@
             <Item>
               <:label>Startdatum</:label>
               <:content>
-                {{#if this.model.startDate}}
-                  {{this.model.startDate}}
+                {{#each this.model.changeEvents as |changeEvent|}}
+                  {{#let (get changeEvent.result "label") as |result|}}
+                    {{#if (eq result "Oprichting")}}
+                      {{date-format changeEvent.date}}
+                    {{/if}}
+                  {{/let}}
                 {{else}}
                   Niet opgegeven
-                {{/if}}
+                {{/each}}
               </:content>
             </Item>
             <Item>
