@@ -1,28 +1,32 @@
 <AuDataTable
-  @content={{this.model.sites}}
-  @isLoading={{this.showTableLoader}}
+  @content={{this.sites}}
+  @isLoading={{this.isLoading}}
+  @noDataMessage="Geen locaties"
   as |t|
 >
   <t.menu>
     <section
-      class="au-u-flex au-u-flex--between au-u-padding-left-large au-u-padding-top au-u-padding-right-large au-u-padding-bottom"
+      class="au-u-flex au-u-flex--between au-o-box au-o-flow au-o-flow--large"
     >
       <div>
         <AuHeading @level="1" @skin="1">Locaties</AuHeading>
-        <AuHeading @level="3" @skin="3">{{this.model.association.name}}</AuHeading>
+        <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
       </div>
-      <div class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end">
+      <div
+        class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
+      >
         <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
           22-02-2022</AuPill>
         <AuHelpText>
-          Zie je een fout in de data? <br>
+          Zie je een fout in de data?
+          <br />
           <AuLinkExternal
             href="
             mailto:{{this.contactEmail}}
             ?subject={{this.subject}}
             &body={{this.body}}"
           >
-           Meld het bij de vereniging!
+            Meld het bij de vereniging!
           </AuLinkExternal>
         </AuHelpText>
       </div>
@@ -33,19 +37,19 @@
     <c.header>
       <th width="80px" class="data-table__header-title"></th>
       <AuDataTableThSortable
-        @field="locatie"
+        @field="address.fullAddress"
         @currentSorting={{this.sort}}
         @label="Locatie"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="type"
+        @field="siteType.label"
         @currentSorting={{this.sort}}
         @label="Type"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="beschrijving"
+        @field="description"
         @currentSorting={{this.sort}}
         @label="Beschrijving"
         @class="data-table__header-title"
@@ -57,7 +61,7 @@
       <c.body as |site|>
         <td>
           {{#if site.address.isPrimary}}
-            <AuBadge @icon="vote-star-filled"/> 
+            <AuBadge @icon="vote-star-filled" />
           {{/if}}
         </td>
         <td>

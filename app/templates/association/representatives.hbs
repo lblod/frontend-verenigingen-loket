@@ -1,17 +1,113 @@
-<div>
-  <AuCard as |c|>
+<AuDataTable
+  @content={{this.members}}
+  @noDataMessage="Geen vertegenwoordigers"
+  @isLoading={{this.isLoading}}
+  as |t|
+>
+  <t.menu>
+    <section
+      class="au-u-flex au-u-flex--between au-o-box au-o-flow au-o-flow--large"
+    >
+      <div>
+        <AuHeading @level="1" @skin="1">Vertegenwoordigers</AuHeading>
+        <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
+      </div>
+      <div
+        class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
+      >
+        <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
+          22-02-2022</AuPill>
+        <AuHelpText>
+          Zie je een fout in de data?
+          <br />
+          <AuLinkExternal
+            href="
+            mailto:{{this.contactEmail}}
+            ?subject={{this.subject}}
+            &body={{this.body}}"
+          >
+            Meld het bij de vereniging!
+          </AuLinkExternal>
+        </AuHelpText>
+      </div>
+    </section>
+
+  </t.menu>
+  <t.content class="au-c-data-table__table--small" as |c|>
     <c.header>
-      <AuHeading @level="2" @skin="4">
-        Vertegenwoordiger
-      </AuHeading>
-      <p>
-        {{this.subtitle}}
-      </p>
+      <th width="80px" class="data-table__header-title"></th>
+      <AuDataTableThSortable
+        @field="person.given-name"
+        @currentSorting={{this.sort}}
+        @label="Voornaam"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="person.family-name"
+        @currentSorting={{this.sort}}
+        @label="Achternaam"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="person.site.contactPoints.email"
+        @currentSorting={{this.sort}}
+        @label="Email"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="person.site.contactPoints.telephone"
+        @currentSorting={{this.sort}}
+        @label="Telefoonnummer"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="person.site.contactPoints.website"
+        @currentSorting={{this.sort}}
+        @label="Sociale media"
+        @class="data-table__header-title"
+      />
     </c.header>
-    <c.content>
-      <p>{{this.content}}</p>
-    </c.content>
-    <c.footer>
-    </c.footer>
-  </AuCard>
-</div>
+    {{#if this.hasErrored}}
+      <TableMessage::Error />
+    {{else}}
+      <c.body as |member|>
+        <td>
+          {{#if member.person.isPrimary}}
+            <AuBadge @icon="vote-star-filled" />
+          {{/if}}
+        </td>
+        <td>
+          {{member.person.givenName}}
+        </td>
+        <td>
+          {{member.person.familyName}}
+        </td>
+        {{#let member.person.site.contactPoints as |contactPoints|}}
+          {{#let (this.contactPoints.getDetails contactPoints) as |contact|}}
+            <td>
+              <AuLinkExternal href="mailto: {{contact.email}}">
+                {{contact.email}}
+              </AuLinkExternal>
+            </td>
+            <td>
+              {{#each contact.telephone as |phoneNumber|}}
+                <AuLinkExternal href="tel:{{phoneNumber}}">
+                  {{phoneNumber}}
+                </AuLinkExternal>
+              {{/each}}
+            </td>
+            <td>
+              {{#each contact.socialMedia as |socialMedia index|}}
+                <AuLinkExternal href={{socialMedia.url}}>
+                  {{socialMedia.name}}
+                </AuLinkExternal>{{#unless
+                  (last-index index contact.socialMedia)
+                }},{{/unless}}
+              {{/each}}
+            </td>
+          {{/let}}
+        {{/let}}
+      </c.body>
+    {{/if}}
+  </t.content>
+</AuDataTable>

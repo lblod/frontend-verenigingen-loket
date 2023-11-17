@@ -1,0 +1,19 @@
+<AuLabel class="au-u-margin-top" for="filter-name">Selecteer postcode(s)</AuLabel>
+<div class={{if @error "ember-power-select--error"}}>
+  <PowerSelectMultiple
+    @noMatchesMessage="Geen resultaten"
+    @searchEnabled={{true}}
+    @searchField="postalName"
+    @placeholder="Selecteer een postcode"
+    @searchMessage="Typ om te zoeken"
+    @options={{this.postalCodes}}
+    @selected={{@selected}}
+    @onChange={{@onChange}}
+    @triggerId={{@id}}
+    as |postalCode|
+  >
+    {{postalCode.postalName}}
+    -
+    {{postalCode.postalCode}}
+  </PowerSelectMultiple>
+</div>

@@ -2,19 +2,58 @@
   <m.sidebar>
     <div class="au-c-sidebar">
       <div class="au-c-sidebar__content au-o-box">
-        <Filter />
+        <div class="au-o-grid au-o-grid--small">
+          <div class="au-o-grid__item au-u-1-2@small au-u-1-1@medium">
+            <AuHeading @level="2" @skin="5">Filter verenigingen</AuHeading>
+            <AuHr />
+            <AuInput
+              class="au-u-margin-bottom au-u-margin-top"
+              placeholder="Zoek op vCode, naam, hoofdactiviteit of contactpersoon"
+              @icon="search"
+              @iconAlignment="right"
+              @width="block"
+              value={{this.search}}
+              oninput={{perform this.updateAssociationSearch value="target.value"}}
+            />
+            <ActivitySelect
+              @onChange={{this.setActivities}}
+              @selected={{this.selectedActivities}}
+            />
+            <PostalSelect
+              @onChange={{this.setPostalCodes}}
+              @selected={{this.selectedPostalCodes}}
+            />
+            <OrganizationStatusSelect
+              @onChange={{this.setOrganizationStatus}}
+              @selected={{this.selectedOrganizationStatus}}
+            />
+          </div>
+          <div class="au-o-grid__item">
+            <AuButton @skin="link" type="reset" onclick={{this.resetFilters}}>
+              <AuIcon @icon="cross" @alignment="left" />
+              Herstel alle filters
+            </AuButton>
+          </div>
+        </div>
       </div>
     </div>
   </m.sidebar>
 
   <m.content @scroll={{true}}>
     <div class="au-d-component-block au-d-component-block--overflow">
+      <div class="au-u-padding">
+        <AuHeading @level="1" @skin="3">Verenigingen</AuHeading>
+        <AuHr />
+        <AuHeading @level="1" @skin="5">{{this.model.meta.count}}
+          Resultaten</AuHeading>
+      </div>
       <AuDataTable
-        @content={{this.model}}
-        @isLoading={{this.showTableLoader}}
+        @content={{this.associations}}
+        @isLoading={{this.isLoading}}
         @page={{this.page}}
         @sort={{this.sort}}
         @size={{this.size}}
+        @noDataMessage="Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of probeer een andere zoekopdracht."
         as |t|
       >
         <t.content class="au-c-data-table__table--small" as |c|>
@@ -31,9 +70,7 @@
               @label="Postcode"
               @class="data-table__header-title"
             />
-            <th
-              class="data-table__header-title"
-            >Hoofdactiviteiten</th>
+            <th class="data-table__header-title">Hoofdactiviteiten</th>
             <AuDataTableThSortable
               @field="identifiers.structured-identifier.local-id"
               @currentSorting={{this.sort}}
@@ -47,7 +84,7 @@
               @class="data-table__header-title"
             />
             <AuDataTableThSortable
-              @field="erkenning"
+              @field="organization-status"
               @currentSorting={{this.sort}}
               @label="Erkenning"
               @class="data-table__header-title"
@@ -84,10 +121,13 @@
               <td>
                 {{association.primarySite.address.postcode}}
               </td>
-              {{#if this.modelHasOnlyWorshipAdministrativeUnits}}
-                <td>{{association.recognized_worship_type_name}}</td>
-              {{/if}}
-              <td>{{association.province}}</td>
+              <td>
+                {{#each association.activities as |activity index|}}
+                  {{activity.label}}{{#unless
+                    (last-index index association.activities)
+                  }},{{/unless}}
+                {{/each}}
+              </td>
               <td>
                 {{#each association.identifiers as |identifier|}}
                   {{#if (eq identifier.idName "vCode")}}
@@ -99,9 +139,20 @@
                 18 - 65
               </td>
               <td>
-                <AuPill @skin="warning">Niet erkend</AuPill>
+                {{#if (eq association.organizationStatus.label "Erkend")}}
+                  <AuPill
+                    @skin="success"
+                  >{{association.organizationStatus.label}}</AuPill>
+                {{else if
+                  (eq association.organizationStatus.label "Niet erkend")
+                }}
+                  <AuPill
+                    @skin="warning"
+                  >{{association.organizationStatus.label}}</AuPill>
+                {{else}}
+                  <AuPill @skin="warning">Niet erkend</AuPill>
+                {{/if}}
               </td>
-
             </c.body>
           {{/if}}
         </t.content>
