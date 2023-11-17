@@ -77,8 +77,8 @@
             <Item>
               <:label>Minimum leeftijd</:label>
               <:content>
-                {{#if this.model.minAge}}
-                  {{this.model.minAge}}
+                {{#if this.model.targetAudience}}
+                  {{this.model.targetAudience.minimumLeeftijd}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -87,8 +87,8 @@
             <Item>
               <:label>Maximum leeftijd</:label>
               <:content>
-                {{#if this.model.maxAge}}
-                  {{this.model.maxAge}}
+                {{#if this.model.targetAudience}}
+                  {{this.model.targetAudience.maximumLeeftijd}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
