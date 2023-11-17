@@ -14,4 +14,8 @@ export default class AssociationModel extends Model {
   @hasMany('activity', { inverse: null, async: true }) activities;
   @hasMany('membership', { inverse: null, async: true }) members;
   @hasMany('change-event', { inverse: null, async: true }) changeEvents;
+  @belongsTo('concept', { inverse: null, async: true })
+  classification;
+  @belongsTo('target-audience', { inverse: null, async: true })
+  targetAudience;
 }

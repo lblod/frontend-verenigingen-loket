@@ -13,7 +13,10 @@
               @iconAlignment="right"
               @width="block"
               value={{this.search}}
-              oninput={{perform this.updateAssociationSearch value="target.value"}}
+              oninput={{perform
+                this.updateAssociationSearch
+                value="target.value"
+              }}
             />
             <ActivitySelect
               @onChange={{this.setActivities}}
@@ -78,7 +81,7 @@
               @class="data-table__header-title"
             />
             <AuDataTableThSortable
-              @field="leeftijd"
+              @field="targetAudience.minimumLeeftijd,targetAudience.maximumLeeftijd"
               @currentSorting={{this.sort}}
               @label="Leeftijd"
               @class="data-table__header-title"
@@ -136,7 +139,11 @@
                 {{/each}}
               </td>
               <td>
-                18 - 65
+                {{#if association.targetAudience}}
+                  {{association.targetAudience.minimumLeeftijd}}
+                -
+                  {{association.targetAudience.maximumLeeftijd}}
+                {{/if}}
               </td>
               <td>
                 {{#if (eq association.organizationStatus.label "Erkend")}}

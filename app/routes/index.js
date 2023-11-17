@@ -28,6 +28,7 @@ export default class IndexRoute extends Route {
   @keepLatestTask({ cancelOn: 'deactivate' })
   *loadAssociations(params) {
     const include = [
+      'target-audience',
       'primary-site.address',
       'identifiers.structured-identifier',
       'organization-status',

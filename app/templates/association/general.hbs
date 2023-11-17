@@ -40,8 +40,10 @@
             <Item>
               <:label>Type</:label>
               <:content>
-                {{#if this.model.type}}
-                  {{this.model.type}}
+                {{#if this.model.classification}}
+                  <span title="{{this.model.classification.prefLabel}}">
+                    {{this.model.classification.notation}}
+                  </span>
                 {{else}}
                   Niet opgegeven
                 {{/if}}
