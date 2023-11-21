@@ -22,6 +22,8 @@ export default class TargetAudienceSelectComponent extends Component {
 
   @task
   *loadTargetAudience() {
-    this.args.onChange(this.selectedTargetAudience());
+    if (this.targetAudienceQuery) {
+      yield this.args.onChange(this.selectedTargetAudience());
+    }
   }
 }
