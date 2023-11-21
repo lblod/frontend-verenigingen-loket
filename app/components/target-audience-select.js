@@ -8,7 +8,6 @@ export default class TargetAudienceSelectComponent extends Component {
   @service store;
 
   @tracked targetAudienceQuery = '';
-  @tracked targetAudience;
 
   constructor() {
     super(...arguments);
@@ -19,12 +18,6 @@ export default class TargetAudienceSelectComponent extends Component {
 
   selectedTargetAudience() {
     return this.targetAudienceQuery.split(',');
-  }
-
-  findTargetAudienceById(id) {
-    return this.targetAudience.find(
-      (targetAudience) => targetAudience.id === id,
-    ).id;
   }
 
   @task
