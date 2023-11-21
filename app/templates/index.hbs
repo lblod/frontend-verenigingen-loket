@@ -30,6 +30,10 @@
               @onChange={{this.setOrganizationStatus}}
               @selected={{this.selectedOrganizationStatus}}
             />
+            <TargetAudienceSelect
+              @onChange={{this.setTargetAudiences}}
+              @selected={{this.selectedTargetAudiences}}
+            />
           </div>
           <div class="au-o-grid__item">
             <AuButton @skin="link" type="reset" onclick={{this.resetFilters}}>
@@ -141,7 +145,7 @@
               <td>
                 {{#if association.targetAudience}}
                   {{association.targetAudience.minimumLeeftijd}}
-                -
+                  -
                   {{association.targetAudience.maximumLeeftijd}}
                 {{/if}}
               </td>
