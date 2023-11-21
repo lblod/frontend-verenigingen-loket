@@ -100,10 +100,9 @@ function buildQuery(params, include) {
   if (params.targetAudiences !== '') {
     const targetAudiences = params.targetAudiences.split(',');
     let minAge = 0;
-    let maxAge = 150;
+    let maxAge = 100;
     if (targetAudiences.length === 1) {
       if (targetAudiences.includes('-18')) {
-        minAge = 0;
         maxAge = 18;
       }
       if (targetAudiences.includes('18+')) {
@@ -112,16 +111,13 @@ function buildQuery(params, include) {
       }
       if (targetAudiences.includes('65+')) {
         minAge = 65;
-        maxAge = 150;
       }
     } else if (targetAudiences.length === 2) {
       if (targetAudiences.includes('-18') && targetAudiences.includes('18+')) {
-        minAge = 0;
         maxAge = 65;
       }
       if (targetAudiences.includes('18+') && targetAudiences.includes('65+')) {
         minAge = 18;
-        maxAge = 150;
       }
     }
     query.filters['target-audience'] = {
