@@ -18,6 +18,8 @@ export default class IndexController extends Controller {
   @tracked selectedOrganizationStatus = '';
   @tracked postalCodes = '';
   @tracked selectedPostalCodes = [];
+  @tracked types = '';
+  @tracked selectedTypes = [];
 
   queryParams = [
     'sort',
@@ -26,6 +28,7 @@ export default class IndexController extends Controller {
     'activities',
     'status',
     'postalCodes',
+    'types',
   ];
 
   getVcode(identifier) {
@@ -41,6 +44,14 @@ export default class IndexController extends Controller {
     this.activities = selectedActivities
       .map((activity) => activity.id)
       .join(',');
+    return this.activities;
+  }
+
+  @action
+  setTypes(selectedTypes) {
+    this.page = 0;
+    this.selectedTypes = selectedTypes;
+    this.types = selectedTypes.map((type) => type.id).join(',');
     return this.activities;
   }
 
@@ -85,6 +96,8 @@ export default class IndexController extends Controller {
     this.selectedActivities = [];
     this.postalCodes = '';
     this.selectedPostalCodes = [];
+    this.types = '';
+    this.selectedTypes = [];
     this.search = '';
     this.page = null;
     this.sort = 'name';
