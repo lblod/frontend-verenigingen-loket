@@ -6,9 +6,9 @@ import { task } from 'ember-concurrency';
 export default class ReportWrongDataComponent extends Component {
   @service store;
   @service router;
-  @tracked contactEmail;
+  @tracked contactEmail = '';
   @tracked association = this.args.model;
-  @tracked vCode;
+  @tracked vCode = '';
 
   constructor() {
     super(...arguments);
@@ -51,6 +51,10 @@ export default class ReportWrongDataComponent extends Component {
   }
   get body() {
     const url = encodeURIComponent('https://www.verenigingsloket.be/');
-    return `Wij hebben vastgesteld dat de gegevens van je vereniging niet volledig of foutief zijn.%0D%0A Je vereniging: ${this.association?.name} %0D%0A Je vCode: ${this.vCode} %0D%0A Wil je je aanmelden op het ${url} (Verenigingsloket) en naar de pagina 'Mijn gegevens' surfen om je gegevens bij te werken? Dan beschikt iedereen over correcte en volledige gegevens en kunnen we fouten en misverstanden vermijden.%0D%0A %0D%0A Alvast hartelijk dank,`;
+    return `Wij hebben vastgesteld dat de gegevens van je vereniging niet volledig of foutief zijn.%0D%0A Je vereniging: ${
+      this.association ? this.association.name : ''
+    } %0D%0A Je vCode: ${
+      this.vCode
+    } %0D%0A Wil je je aanmelden op het ${url} (Verenigingsloket) en naar de pagina 'Mijn gegevens' surfen om je gegevens bij te werken? Dan beschikt iedereen over correcte en volledige gegevens en kunnen we fouten en misverstanden vermijden.%0D%0A %0D%0A Alvast hartelijk dank,`;
   }
 }
