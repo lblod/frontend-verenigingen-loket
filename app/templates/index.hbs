@@ -47,8 +47,9 @@
       <div class="au-u-padding">
         <AuHeading @level="1" @skin="3">Verenigingen</AuHeading>
         <AuHr />
-        <AuHeading @level="1" @skin="5">{{this.model.meta.count}}
-          Resultaten</AuHeading>
+        <AuHeading @level="1" @skin="5">
+        {{ this.associations.meta.count }} 
+         Resultaten </AuHeading>
       </div>
       <AuDataTable
         @content={{this.associations}}
