@@ -7,8 +7,8 @@ export default class ReportWrongDataComponent extends Component {
   @service store;
   @service router;
   @tracked contactEmail = '';
-  @tracked association = this.args.model;
   @tracked vCode = '';
+  association = this.args.model;
 
   constructor() {
     super(...arguments);
