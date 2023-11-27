@@ -45,11 +45,21 @@
   <m.content @scroll={{true}}>
     <div class="au-d-component-block au-d-component-block--overflow">
       <div class="au-u-padding">
-        <AuHeading @level="1" @skin="3">Verenigingen</AuHeading>
+        <AuHeading
+          @level="1"
+          @skin="3"
+          class="au-u-flex au-u-flex--between au-u-flex--vertical-center"
+        >
+          <span>Verenigingen</span>
+          <AuButton @skin="secondary" {{on "click" (perform this.download)}}>
+            Download
+          </AuButton>
+        </AuHeading>
         <AuHr />
         <AuHeading @level="1" @skin="5">
-        {{ this.associations.meta.count }} 
-         Resultaten </AuHeading>
+          {{this.associations.meta.count}}
+          Resultaten
+        </AuHeading>
       </div>
       <AuDataTable
         @content={{this.associations}}
@@ -142,7 +152,7 @@
               <td>
                 {{#if association.targetAudience}}
                   {{association.targetAudience.minimumLeeftijd}}
-                -
+                  -
                   {{association.targetAudience.maximumLeeftijd}}
                 {{/if}}
               </td>
