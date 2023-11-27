@@ -20,6 +20,8 @@ export default class IndexController extends Controller {
   @tracked selectedPostalCodes = [];
   @tracked types = '';
   @tracked selectedTypes = [];
+  @tracked targetAudiences = '';
+  @tracked selectedTargetAudiences = [];
 
   queryParams = [
     'sort',
@@ -29,6 +31,7 @@ export default class IndexController extends Controller {
     'status',
     'postalCodes',
     'types',
+    'targetAudiences',
   ];
 
   getVcode(identifier) {
@@ -71,6 +74,12 @@ export default class IndexController extends Controller {
     this.status = selectedStatus.join(',');
   }
 
+  @action
+  setTargetAudiences(selectedTargetAudiences) {
+    this.page = 0;
+    this.selectedTargetAudiences = selectedTargetAudiences;
+    this.targetAudiences = selectedTargetAudiences.join(',');
+  }
   get isLoading() {
     return this.model.associations.isRunning;
   }
@@ -98,6 +107,8 @@ export default class IndexController extends Controller {
     this.selectedPostalCodes = [];
     this.types = '';
     this.selectedTypes = [];
+    this.targetAudiences = '';
+    this.selectedTargetAudiences = [];
     this.search = '';
     this.page = null;
     this.sort = 'name';

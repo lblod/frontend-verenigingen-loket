@@ -16,6 +16,7 @@ export default class IndexRoute extends Route {
     status: { refreshModel: true },
     postalCodes: { refreshModel: true },
     types: { refreshModel: true },
+    targetAudiences: { refreshModel: true },
   };
 
   async beforeModel(transition) {
@@ -99,6 +100,35 @@ function buildQuery(params, include) {
 
   if (params.status !== '') {
     query.filters['organization-status'] = { ':id:': params.status };
+  }
+
+  if (params.targetAudiences !== '') {
+    const targetAudiences = params.targetAudiences.split(',');
+    let minAge = 0;
+    let maxAge = 100;
+    if (targetAudiences.length === 1) {
+      if (targetAudiences.includes('-18')) {
+        maxAge = 18;
+      }
+      if (targetAudiences.includes('18+')) {
+        minAge = 18;
+        maxAge = 65;
+      }
+      if (targetAudiences.includes('65+')) {
+        minAge = 65;
+      }
+    } else if (targetAudiences.length === 2) {
+      if (targetAudiences.includes('-18') && targetAudiences.includes('18+')) {
+        maxAge = 65;
+      }
+      if (targetAudiences.includes('18+') && targetAudiences.includes('65+')) {
+        minAge = 18;
+      }
+    }
+    query.filters['target-audience'] = {
+      ':gte:minimum-leeftijd': minAge,
+      ':lt:maximum-leeftijd': maxAge,
+    };
   }
 
   return { query, customQuery };

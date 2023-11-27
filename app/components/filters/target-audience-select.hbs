@@ -1,0 +1,11 @@
+<AuLabel class="au-u-margin-top" for="filter-municipality">Doelgroep</AuLabel>
+<AuCheckboxGroup
+  @alignment="default"
+  @selected={{@selected}}
+  @onChange={{@onChange}}
+  as |Group|
+>
+  <Group.Checkbox @value="-18">-18</Group.Checkbox>
+  <Group.Checkbox @value="18+">18+</Group.Checkbox>
+  <Group.Checkbox @value="65+">65+</Group.Checkbox>
+</AuCheckboxGroup>

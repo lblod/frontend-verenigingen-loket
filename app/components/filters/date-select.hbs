@@ -1,0 +1,17 @@
+<AuLabel class="au-u-margin-top" for="filter-name">Laatste wijziging</AuLabel>
+<div class={{if @error "ember-power-select--error"}}>
+  <PowerSelectMultiple
+    @noMatchesMessage="Geen resultaten"
+    @searchEnabled={{true}}
+    @searchField="label"
+    @placeholder="Selecteer een activiteit"
+    @searchMessage="Typ om te zoeken"
+    @options={{this.activities}}
+    @selected={{@selected}}
+    @onChange={{@onChange}}
+    @triggerId={{@id}}
+    as |activity|
+  >
+    {{activity.label}}
+  </PowerSelectMultiple>
+</div>
