@@ -51,10 +51,10 @@ export default class ReportWrongDataComponent extends Component {
   }
   get body() {
     const url = encodeURIComponent('https://www.verenigingsloket.be/');
-    return `Wij hebben vastgesteld dat de gegevens van je vereniging niet volledig of foutief zijn.%0D%0A Je vereniging: ${
+    return `Vereniging: ${
       this.association ? this.association.name : ''
-    } %0D%0A Je vCode: ${
+    } %0D%0A vCode: ${
       this.vCode
-    } %0D%0A Wil je je aanmelden op het ${url} (Verenigingsloket) en naar de pagina 'Mijn gegevens' surfen om je gegevens bij te werken? Dan beschikt iedereen over correcte en volledige gegevens en kunnen we fouten en misverstanden vermijden.%0D%0A %0D%0A Alvast hartelijk dank,`;
+    } %0D%0A Aan te passen op het ${url} (Verenigingsloket), pagina 'Mijn gegevens'.`;
   }
 }
