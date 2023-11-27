@@ -20,9 +20,7 @@ export default class AssociationLocationRoute extends Route {
   @keepLatestTask({ cancelOn: 'deactivate' })
   *loadAssociation() {
     const { id } = this.paramsFor('association');
-    const model = yield this.store.findRecord('association', id);
-
-    return model;
+    return yield this.store.findRecord('association', id);
   }
 
   @keepLatestTask({ cancelOn: 'deactivate' })

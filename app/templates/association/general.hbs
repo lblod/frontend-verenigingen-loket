@@ -9,18 +9,7 @@
     >
       <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
         22-02-2022</AuPill>
-      <AuHelpText>
-        Zie je een fout in de data?
-        <br />
-        <AuLinkExternal
-          href="
-            mailto:{{this.contactEmail}}
-            ?subject={{this.subject}}
-            &body={{this.body}}"
-        >
-          Meld het bij de vereniging!
-        </AuLinkExternal>
-      </AuHelpText>
+      <ReportWrongData @model={{this.model}} />
     </div>
   </section>
   <section>
