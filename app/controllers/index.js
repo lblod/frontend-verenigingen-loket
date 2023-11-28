@@ -197,14 +197,14 @@ export default class IndexController extends Controller {
           .join(',');
 
         let startdatum = '';
-        const [_, identifier] = await Promise.all([
+        const [identifier] = await Promise.all([
+          this.getIdentifiers.perform(identifiers),
           changeEvents.map(async (changeEvent) => {
             const result = await changeEvent.result;
             if (result.label === 'Oprichting') {
               startdatum = changeEvent.date;
             }
           }),
-          this.getIdentifiers.perform(identifiers),
         ]);
 
         return {
@@ -216,7 +216,7 @@ export default class IndexController extends Controller {
           'Minimum Leeftijd': targetAudience?.minimumLeeftijd || '',
           'Maximum Leeftijd': targetAudience?.maximumLeeftijd || '',
           Koepel: parentOrganization?.name || '',
-          Startdatum: startdatum || '',
+          Startdatum: startdatum,
           'KBO Nummer': identifier?.kboNummer || '',
           ...this.getAddress(address),
         };
