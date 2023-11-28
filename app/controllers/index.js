@@ -8,6 +8,7 @@ export default class IndexController extends Controller {
   @service store;
   @service router;
   @service toaster;
+  @service contactPoints;
 
   size = 0;
   @tracked page = 0;
@@ -87,172 +88,237 @@ export default class IndexController extends Controller {
 
   @task
   *download() {
-    const generalData = yield this.getGeneralData.perform();
-    const locationData = yield this.getLocationData.perform(generalData);
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = currentDate.getDate().toString().padStart(2, '0');
-    const hours = currentDate.getHours().toString().padStart(2, '0');
-    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
-    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
-
-    const fileName = `verenigingen_${day}${month}${year}_${hours}${minutes}${seconds}.xlsx`;
-    const style = { font: { sz: 14, bold: true } };
-    const generalRowStyle = { rows: [], width: [] };
-    generalData.map((item, index) => {
-      const key = Object.keys(item)[index];
-      if (key) {
-        generalRowStyle.rows.push({ v: key, t: 's', s: style });
-        generalRowStyle.width.push({ wch: key.length + 6 });
-      }
-    });
-
-    const workbook = XLSX.utils.book_new();
-    const worksheetAlgemeen = XLSX.utils.json_to_sheet(generalData, {
-      origin: 'A2',
-    });
-    XLSX.utils.sheet_add_aoa(
-      worksheetAlgemeen,
-      [
-        [
-          {
-            v: 'Vereniging',
-            t: 's',
-            s: {
-              font: { sz: 18, bold: true },
-              alignment: { horizontal: 'center' },
-            },
-          },
-        ],
-      ],
-      { origin: 'A1' },
+    const toast = this.toaster.loading(
+      `Het downloaden van het bestand is begonnen.`,
+      'Download gestart',
     );
-    XLSX.utils.sheet_add_aoa(worksheetAlgemeen, [generalRowStyle.rows], {
-      origin: 'A2',
-    });
-    XLSX.utils.book_append_sheet(workbook, worksheetAlgemeen, 'Algemeen');
-    worksheetAlgemeen['!cols'] = generalRowStyle.width;
-    if (!worksheetAlgemeen['!merges']) worksheetAlgemeen['!merges'] = [];
-    worksheetAlgemeen['!merges'].push(XLSX.utils.decode_range('A1:J1'));
+    try {
+      const associations = yield this.store.query('association', {
+        filter: {
+          [':id:']: this.associations
+            .map((association) => association.id)
+            .join(','),
+        },
+        include: [
+          'classification',
+          'target-audience',
+          'primary-site.address',
+          'sites.address',
+          'identifiers.structured-identifier',
+          'organization-status',
+          'activities',
+          'parent-organization',
+          'change-events.result',
+          'members.person.site.contact-points',
+        ].join(','),
+      });
 
-    // locaties
-    const locationRowStyle = { rows: [], width: [] };
-    locationData.map((item, index) => {
-      const key = Object.keys(item)[index];
-      if (key) {
-        locationRowStyle.rows.push({ v: key, t: 's', s: style });
-        locationRowStyle.width.push({ wch: key.length + 6 });
-      }
-    });
-    const worksheetLocaties = XLSX.utils.json_to_sheet(locationData, {
-      origin: 'A2',
-    });
-    worksheetLocaties['!cols'] = locationRowStyle.width;
-    XLSX.utils.sheet_add_aoa(
-      worksheetLocaties,
-      [
-        [
-          {
-            v: 'Locaties',
-            t: 's',
-            s: {
-              font: { sz: 18, bold: true },
-              alignment: { horizontal: 'center' },
-            },
-          },
-        ],
-      ],
-      { origin: 'A1' },
-    );
-    XLSX.utils.sheet_add_aoa(worksheetLocaties, [locationRowStyle.rows], {
-      origin: 'A2',
-    });
-    XLSX.utils.book_append_sheet(workbook, worksheetLocaties, 'Locaties');
-    if (!worksheetLocaties['!merges']) worksheetLocaties['!merges'] = [];
-    worksheetLocaties['!merges'].push(XLSX.utils.decode_range('A1:J1'));
-    XLSX.writeFile(workbook, fileName);
+      const generalSheet = yield this.getGeneralSheet.perform(associations);
+      const locationSheet = yield this.getLocationSheet.perform(associations);
+      const representativeSheet =
+        yield this.getRepresentativesSheet.perform(associations);
+      const currentDate = new Date();
+      const timestamp = currentDate
+        .toISOString()
+        .replace(/[-:]/g, '_')
+        .replace(/\.\d+/, '');
+      const fileName = `verenigingen_${timestamp}.xlsx`;
+      const style = { font: { sz: 14, bold: true } };
+
+      const createSheet = (data, sheetName) => {
+        const rowStyle = { rows: [], width: [] };
+        if (data && data.length > 0) {
+          const keys = Object.keys(data[0]);
+          keys.forEach((key) => {
+            if (key) {
+              rowStyle.rows.push({ v: key, t: 's', s: style });
+              rowStyle.width.push({ wch: key.length + 6 });
+            }
+          });
+        }
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        worksheet['!cols'] = rowStyle.width;
+        XLSX.utils.sheet_add_aoa(worksheet, [rowStyle.rows]);
+
+        return { worksheet, sheetName };
+      };
+
+      const workbook = XLSX.utils.book_new();
+      const { worksheet: generalWorksheet, sheetName: generalSheetName } =
+        createSheet(generalSheet, 'Algemeen');
+      const { worksheet: locationWorksheet, sheetName: locationSheetName } =
+        createSheet(locationSheet, 'Locaties');
+
+      const {
+        worksheet: representativeWorksheet,
+        sheetName: representativeSheetName,
+      } = createSheet(representativeSheet, 'Vertegenwoordigers');
+
+      XLSX.utils.book_append_sheet(
+        workbook,
+        generalWorksheet,
+        generalSheetName,
+      );
+      XLSX.utils.book_append_sheet(
+        workbook,
+        locationWorksheet,
+        locationSheetName,
+      );
+      XLSX.utils.book_append_sheet(
+        workbook,
+        representativeWorksheet,
+        representativeSheetName,
+      );
+      yield XLSX.writeFile(workbook, fileName);
+
+      this.downloadFinished(toast);
+    } catch (error) {
+      this.downloadFailed(toast);
+      console.error(error);
+    }
   }
 
   @task
-  *getGeneralData() {
-    const generalDataPromises = this.associations.map(async (item) => {
-      const [
-        classification,
-        identifiers,
-        activities,
-        targetAudience,
-        parentOrganization,
-        changeEvents,
-      ] = await Promise.all([
-        item.get('classification'),
-        item.get('identifiers'),
-        item.get('activities'),
-        item.get('targetAudience'),
-        item.get('parentOrganization'),
-        item.get('changeEvents'),
-      ]);
+  *getGeneralSheet(associations) {
+    return yield Promise.all([
+      ...associations.map(async (item) => {
+        const classification = await item.classification;
+        const primarySite = await item.primarySite;
+        const address = await primarySite.address;
+        const targetAudience = await item.targetAudience;
+        const activities = await item.activities;
+        const identifiers = await item.identifiers;
+        const parentOrganization = await item.parentOrganization;
+        const changeEvents = await item.changeEvents;
 
-      const identifiersLabel = { kboNummer: '', vCode: '' };
-      const activitiesLabel = activities
-        .map((activity) => activity.label)
-        .join(',');
+        const activitiesLabel = activities
+          .map((activity) => activity.label)
+          .join(',');
 
-      let startdatum = '';
+        let startdatum = '';
+        const [_, identifier] = await Promise.all([
+          changeEvents.map(async (changeEvent) => {
+            const result = await changeEvent.result;
+            if (result.label === 'Oprichting') {
+              startdatum = changeEvent.date;
+            }
+          }),
+          this.getIdentifiers.perform(identifiers),
+        ]);
 
-      await Promise.all([
-        ...changeEvents.map(async (changeEvent) => {
-          const result = await changeEvent.get('result');
-          if (result.label === 'Oprichting') {
-            startdatum = changeEvent.date;
-          }
-        }),
-        ...identifiers.map(async (identifier) => {
-          const structuredIdentifier = await identifier.get(
-            'structuredIdentifier',
-          );
-          if (identifier.idName === 'vCode') {
-            identifiersLabel.vCode = structuredIdentifier.localId;
-          }
-          if (identifier.idName === 'KBO nummer') {
-            identifiersLabel.kboNummer = structuredIdentifier.localId;
-          }
-        }),
-      ]);
-
-      return {
-        vCode: identifiersLabel.vCode,
-        naam: item.name,
-        type: classification ? classification.notation : '',
-        hoofdactiviteiten: activitiesLabel,
-        beschrijving: item.description,
-        minLeeftijd: targetAudience ? targetAudience.minimumLeeftijd : '',
-        maxLeeftijd: targetAudience ? targetAudience.maximumLeeftijd : '',
-        koepel: parentOrganization ? parentOrganization.name : '',
-        startdatum,
-        kboNummer: identifiersLabel.kboNummer,
-      };
-    });
-
-    return yield Promise.all(generalDataPromises);
+        return {
+          vCode: identifier?.vCode || '',
+          Naam: item.name,
+          Type: classification?.notation || '',
+          Hoofdactiviteiten: activitiesLabel,
+          Beschrijving: item.description,
+          'Minimum Leeftijd': targetAudience?.minimumLeeftijd || '',
+          'Maximum Leeftijd': targetAudience?.maximumLeeftijd || '',
+          Koepel: parentOrganization?.name || '',
+          Startdatum: startdatum || '',
+          'KBO Nummer': identifier?.kboNummer || '',
+          ...this.getAddress(address),
+        };
+      }),
+    ]);
   }
+
   @task
-  *getLocationData(generalData) {
-    const locationDataPromises = this.associations.map(async (item) => {
-      const [classification] = await Promise.all([item.get('classification')]);
+  *getLocationSheet(associations) {
+    const locationData = [];
+    for (const item of associations) {
+      const locations = yield item.sites;
+      const identifiers = yield item.identifiers;
+      const identifier = yield this.getIdentifiers.perform(identifiers);
+      for (const location of locations) {
+        const address = yield location.address;
+        locationData.push({
+          vCode: identifier.vCode,
+          Naam: item.name,
+          ...this.getAddress(address),
+        });
+      }
+    }
+    return locationData;
+  }
 
-      return {
-        vCode: generalData.find((data) => data.naam === item.name).vCode,
-        naam: item.name,
-      };
-    });
-
-    return yield Promise.all(locationDataPromises);
+  @task
+  *getRepresentativesSheet(associations) {
+    const data = [];
+    for (const item of associations) {
+      const representatives = yield item.members;
+      const identifiers = yield item.identifiers;
+      const identifier = yield this.getIdentifiers.perform(identifiers);
+      for (const representative of representatives) {
+        const person = yield representative.person;
+        const site = yield person.site;
+        const contactPoints = yield site.contactPoints;
+        const { telephone, email, website, socialMedia } =
+          this.contactPoints.getDetails(contactPoints);
+        data.push({
+          vCode: identifier.vCode,
+          Naam: item.name,
+          Voornaam: person.givenName,
+          Achternaam: person.familyName,
+          'E-mail': email,
+          Telefoonnummer: telephone.join(', '),
+          Website: website,
+          'Sociale media': socialMedia.map((media) => media.url).join(', '),
+        });
+      }
+    }
+    return data;
   }
   @action
-  downloadCallback() {
-    this.toaster.success('Download voltooid', 'Bestand Downloaden', {
-      timeOut: 3000,
-    });
+  getAddress(address) {
+    return {
+      Straat: address.street,
+      Huisnummer: address.number,
+      Busnummer: '',
+      Postcode: address.postcode,
+      Gemeente: address.municipality,
+      Land: address.country,
+    };
+  }
+
+  @task
+  *getIdentifiers(identifiers) {
+    const identifiersLabel = { kboNummer: '', vCode: '' };
+    yield Promise.all(
+      identifiers.map(async (identifier) => {
+        const structuredIdentifier = await identifier.structuredIdentifier;
+        if (identifier.idName === 'vCode') {
+          identifiersLabel.vCode = structuredIdentifier.localId;
+        }
+        if (identifier.idName === 'KBO nummer') {
+          identifiersLabel.kboNummer = structuredIdentifier.localId;
+        }
+      }),
+    );
+    return identifiersLabel;
+  }
+
+  @action
+  downloadFinished(toast) {
+    this.toaster.close(toast);
+    this.toaster.success(
+      'Het bestand is succesvol gedownload.',
+      'Download Voltooid',
+      {
+        timeOut: 3000,
+      },
+    );
+  }
+  @action
+  downloadFailed(toast) {
+    this.toaster.close(toast);
+    this.toaster.error(
+      'Er is een fout opgetreden bij het downloaden van het bestand. Probeer het opnieuw.',
+      'Download Mislukt',
+      {
+        timeOut: 3000,
+      },
+    );
   }
 }

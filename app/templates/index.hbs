@@ -51,7 +51,7 @@
           class="au-u-flex au-u-flex--between au-u-flex--vertical-center"
         >
           <span>Verenigingen</span>
-          <AuButton @skin="secondary" {{on "click" (perform this.download)}}>
+          <AuButton @skin="secondary" {{on "click" (perform this.download)}} @disabled={{eq (readonly this.associations.length) 0}}>
             Download
           </AuButton>
         </AuHeading>
