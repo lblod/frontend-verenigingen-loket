@@ -26,9 +26,15 @@ export default class AssociationLocationRoute extends Route {
   @keepLatestTask({ cancelOn: 'deactivate' })
   *loadSites(params) {
     const { id } = this.paramsFor('association');
-    const model = yield this.store.findRecord('association', id);
+    const model = yield this.store.query('association', {
+      include: ['primary-site.address', 'primary-site.site-type'].join(','),
+      filter: {
+        id: id,
+      },
+    });
 
     const sites = yield this.store.query('site', {
+      include: ['address', 'site-type'].join(','),
       filter: {
         associations: {
           id: id,
@@ -36,10 +42,18 @@ export default class AssociationLocationRoute extends Route {
       },
       sort: params.sort ? `${params.sort},address.street` : 'address.street',
     });
-    const primarySite = yield model.get('primarySite');
-    if (primarySite) {
-      primarySite.address.isPrimary = true;
+    if (model && model.length > 0) {
+      const primarySite = yield model[0].get('primarySite');
+      if (primarySite) {
+        primarySite.address.isPrimary = true;
+      }
+      if (params.sort === '-address.full-address') {
+        return A([...sites, primarySite]);
+      } else {
+        return A([primarySite, ...sites]);
+      }
+    } else {
+      return sites;
     }
-    return A([primarySite, ...sites]);
   }
 }
