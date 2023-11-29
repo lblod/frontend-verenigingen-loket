@@ -9,6 +9,7 @@ export default class IndexController extends Controller {
   @service router;
   @service toaster;
   @service contactPoints;
+  @service queryBuilder;
 
   size = 0;
   @tracked page = 0;
@@ -93,13 +94,16 @@ export default class IndexController extends Controller {
       'Download gestart',
     );
     try {
-      const associations = yield this.store.query('association', {
-        filter: {
-          [':id:']: this.associations
-            .map((association) => association.id)
-            .join(','),
+      const associations = yield this.queryBuilder.buildAndExecuteQuery.perform(
+        {
+          sort: this.sort,
+          page: this.page,
+          search: this.search,
+          activities: this.activities,
+          status: this.status,
+          postalCodes: this.postalCodes,
         },
-        include: [
+        [
           'classification',
           'target-audience',
           'primary-site.address',
@@ -111,8 +115,8 @@ export default class IndexController extends Controller {
           'change-events.result',
           'members.person.site.contact-points',
         ].join(','),
-      });
-
+        500,
+      );
       const generalSheet = yield this.getGeneralSheet.perform(associations);
       const locationSheet = yield this.getLocationSheet.perform(associations);
       const representativeSheet =
@@ -183,41 +187,11 @@ export default class IndexController extends Controller {
   *getGeneralSheet(associations) {
     return yield Promise.all([
       ...associations.map(async (item) => {
-        const classification = await item.classification;
         const primarySite = await item.primarySite;
         const address = await primarySite.address;
-        const targetAudience = await item.targetAudience;
-        const activities = await item.activities;
-        const identifiers = await item.identifiers;
-        const parentOrganization = await item.parentOrganization;
-        const changeEvents = await item.changeEvents;
-
-        const activitiesLabel = activities
-          .map((activity) => activity.label)
-          .join(',');
-
-        let startdatum = '';
-        const [identifier] = await Promise.all([
-          this.getIdentifiers.perform(identifiers),
-          changeEvents.map(async (changeEvent) => {
-            const result = await changeEvent.result;
-            if (result.label === 'Oprichting') {
-              startdatum = changeEvent.date;
-            }
-          }),
-        ]);
-
+        const associationData = await this.getAssociationData.perform(item);
         return {
-          vCode: identifier?.vCode || '',
-          Naam: item.name,
-          Type: classification?.notation || '',
-          Hoofdactiviteiten: activitiesLabel,
-          Beschrijving: item.description,
-          'Minimum Leeftijd': targetAudience?.minimumLeeftijd || '',
-          'Maximum Leeftijd': targetAudience?.maximumLeeftijd || '',
-          Koepel: parentOrganization?.name || '',
-          Startdatum: startdatum,
-          'KBO Nummer': identifier?.kboNummer || '',
+          ...associationData,
           ...this.getAddress(address),
         };
       }),
@@ -229,14 +203,14 @@ export default class IndexController extends Controller {
     const locationData = [];
     for (const item of associations) {
       const locations = yield item.sites;
-      const identifiers = yield item.identifiers;
-      const identifier = yield this.getIdentifiers.perform(identifiers);
+      const { vCode, ...association } =
+        yield this.getAssociationData.perform(item);
       for (const location of locations) {
         const address = yield location.address;
         locationData.push({
-          vCode: identifier.vCode,
-          Naam: item.name,
+          vCode,
           ...this.getAddress(address),
+          ...association,
         });
       }
     }
@@ -247,9 +221,9 @@ export default class IndexController extends Controller {
   *getRepresentativesSheet(associations) {
     const data = [];
     for (const item of associations) {
+      const { vCode, ...association } =
+        yield this.getAssociationData.perform(item);
       const representatives = yield item.members;
-      const identifiers = yield item.identifiers;
-      const identifier = yield this.getIdentifiers.perform(identifiers);
       for (const representative of representatives) {
         const person = yield representative.person;
         const site = yield person.site;
@@ -257,19 +231,20 @@ export default class IndexController extends Controller {
         const { telephone, email, website, socialMedia } =
           this.contactPoints.getDetails(contactPoints);
         data.push({
-          vCode: identifier.vCode,
-          Naam: item.name,
+          vCode,
           Voornaam: person.givenName,
           Achternaam: person.familyName,
           'E-mail': email,
           Telefoonnummer: telephone.join(', '),
           Website: website,
           'Sociale media': socialMedia.map((media) => media.url).join(', '),
+          ...association,
         });
       }
     }
     return data;
   }
+
   @action
   getAddress(address) {
     return {
@@ -297,6 +272,49 @@ export default class IndexController extends Controller {
       }),
     );
     return identifiersLabel;
+  }
+
+  @task
+  *getStartDate(changeEvents) {
+    for (const changeEvent of changeEvents) {
+      const result = yield changeEvent.result;
+      if (result.label === 'Oprichting') {
+        return yield changeEvent.date;
+      }
+    }
+    return '';
+  }
+
+  @task
+  *getAssociationData(item) {
+    const classification = yield item.classification;
+    const targetAudience = yield item.targetAudience;
+    const activities = yield item.activities;
+    const identifiers = yield item.identifiers;
+    const parentOrganization = yield item.parentOrganization;
+    const changeEvents = yield item.changeEvents;
+
+    const activitiesLabel = activities
+      .map((activity) => activity.label)
+      .join(',');
+
+    const [identifier, startdatum] = yield Promise.all([
+      this.getIdentifiers.perform(identifiers),
+      this.getStartDate.perform(changeEvents),
+    ]);
+
+    return {
+      vCode: identifier ? identifier.vCode : '',
+      Naam: item ? item.name : '',
+      Type: classification ? classification.notation : '',
+      Hoofdactiviteiten: activitiesLabel,
+      Beschrijving: item.description,
+      'Minimum Leeftijd': targetAudience ? targetAudience.minimumLeeftijd : '',
+      'Maximum Leeftijd': targetAudience ? targetAudience.maximumLeeftijd : '',
+      Koepel: parentOrganization ? parentOrganization.name : '',
+      Startdatum: startdatum,
+      'KBO Nummer': identifier ? identifier.kboNummer : '',
+    };
   }
 
   @action
