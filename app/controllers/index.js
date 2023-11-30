@@ -113,6 +113,7 @@ export default class IndexController extends Controller {
           activities: this.activities,
           status: this.status,
           postalCodes: this.postalCodes,
+          targetAudiences: this.targetAudiences,
         },
         [
           'classification',

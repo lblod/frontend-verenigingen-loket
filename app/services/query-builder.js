@@ -66,23 +66,7 @@ export default class QueryBuilderService extends Service {
       };
     }
 
-    if (params.postalCodes !== '') {
-      const postalCodes = params.postalCodes.split(',');
-      let postalCodeQuery = postalCodes.map(
-        (code) => `filter[:or:][primary-site][address][postcode]=${code}`,
-      );
-      customQuery += postalCodeQuery.join('&');
-    }
-
-    if (params.activities !== '') {
-      query.filters.activities = { ':id:': params.activities };
-    }
-
-    if (params.status !== '') {
-      query.filters['organization-status'] = { ':id:': params.status };
-    }
-
-    if (params.targetAudiences !== '') {
+    if (params.targetAudiences && params.targetAudiences !== '') {
       const targetAudiences = params.targetAudiences.split(',');
       let minAge = 0;
       let maxAge = 100;
