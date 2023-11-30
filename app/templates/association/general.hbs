@@ -1,5 +1,5 @@
 <div class="au-o-box au-o-flow au-o-flow--large">
-  <section class="au-u-flex au-u-flex--between">
+  <section class="au-u-flex au-u-flex--between au-u-max-width-large">
     <div>
       <AuHeading @level="1" @skin="1">Algemeen</AuHeading>
       <AuHeading @level="3" @skin="3">{{this.model.name}}</AuHeading>
@@ -7,15 +7,121 @@
     <div
       class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
     >
-      <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
-        22-02-2022</AuPill>
       <ReportWrongData @model={{this.model}} />
     </div>
   </section>
   <section>
     <DataCard>
       <:title>
-        Vereniging
+        <div class="au-u-flex au-u-flex--between au-u-flex--vertical-end">
+          Huidige erkenning
+          <AuButton
+            @skin="secondary"
+            @icon="pencil"
+            class="au-u-margin-bottom-tiny"
+            {{on "click" (perform this.edit)}}
+            @disabled={{not this.this.model.recognition}}
+          >
+            Bewerk
+          </AuButton>
+        </div>
+      </:title>
+      <:card as |Card|>
+        {{#if this.model.recognition}}
+          {{! Erkenning actief }}
+          <Card.Columns>
+            <:left as |Item|>
+              <Item>
+                <:label>Status</:label>
+                <:content>
+                  <AuPill @skin="success">Erkend</AuPill>
+                </:content>
+              </Item>
+              <Item>
+                <:label>Ingangsdatum</:label>
+                <:content>
+                  12-02-2023
+                </:content>
+              </Item>
+              <Item>
+                <:label>Erkend door</:label>
+                <:content>
+                  College van burgemeester en schepenen
+                </:content>
+              </Item>
+            </:left>
+            <:right as |Item|>
+              <Item>
+                <:label>Erkend op</:label>
+                <:content>
+                  12-02-2023
+                </:content>
+              </Item>
+              <Item>
+                <:label>Einddatum</:label>
+                <:content>
+                  12-02-2023
+                </:content>
+              </Item>
+              <Item>
+                <:label>Erkenningsbesluit</:label>
+                <:content>
+                  <AuLinkExternal href={{this.href}} @icon="external-link">
+                    Beslissing (externe link)
+                  </AuLinkExternal>
+                </:content>
+              </Item>
+            </:right>
+          </Card.Columns>
+        {{else if this.model.recognition}}
+          {{! Erkenning niet meer actief }}
+          <Card.Columns>
+            <:left as |Item|>
+              <Item>
+                <:label>Status</:label>
+                <:content>
+                  <AuPill @skin="warning">Niet erkend</AuPill>
+                </:content>
+              </Item>
+            </:left>
+            <:right as |Item|>
+              <Item>
+                <:label>Einddatum</:label>
+                <:content>
+                  12-02-2023
+                </:content>
+              </Item>
+
+            </:right>
+          </Card.Columns>
+        {{else}}
+          {{! Geen erkenning }}
+          <div class="au-u-flex au-u-flex--center">
+            <p><span
+                class="au-c-help-text--tertiary au-u-padding-right-tiny"
+              >Deze vereniging heeft geen erkenning.</span>
+              <AuLink @skin="link">
+                Voeg de erkenning toe.
+              </AuLink>
+            </p>
+          </div>
+        {{/if}}
+
+      </:card>
+    </DataCard>
+  </section>
+
+  <section>
+    <DataCard>
+      <:title>
+        <div class="au-u-flex au-u-flex--between au-u-flex--vertical-end">
+          Vereniging
+          <AuPill
+            @skin="default"
+            class="au-u-margin-bottom-tiny"
+            @icon="clock-rewind"
+          >Laatst gewijzigd op 22-02-2022</AuPill>
+        </div>
       </:title>
       <:card as |Card|>
         <Card.Columns>
