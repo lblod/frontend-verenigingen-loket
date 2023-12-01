@@ -1,0 +1,39 @@
+import Component from '@glimmer/component';
+import { inject as service } from '@ember/service';
+import { task } from 'ember-concurrency';
+import { tracked } from '@glimmer/tracking';
+
+export default class ActivityMultipleSelectComponent extends Component {
+  @service router;
+  @service store;
+
+  @tracked activitiesQuery = '';
+  @tracked activities;
+
+  constructor() {
+    super(...arguments);
+    this.activitiesQuery = this.router.currentRoute.queryParams.activities;
+    this.loadActivities.perform();
+  }
+
+  selectedActivities() {
+    return this.activitiesQuery
+      ? this.activitiesQuery
+          .split(',')
+          .map((id) => this.findActivityById(id))
+          .filter(Boolean)
+      : [];
+  }
+
+  findActivityById(id) {
+    return this.activities.find((activity) => activity.id === id);
+  }
+
+  @task
+  *loadActivities() {
+    this.activities = yield this.store.query('activity', {
+      sort: 'label',
+    });
+    this.args.onChange(this.selectedActivities());
+  }
+}

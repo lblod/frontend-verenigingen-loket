@@ -15,6 +15,7 @@ export default class IndexRoute extends Route {
     activities: { refreshModel: true },
     status: { refreshModel: true },
     postalCodes: { refreshModel: true },
+    types: { refreshModel: true },
     targetAudiences: { refreshModel: true },
   };
 
@@ -91,6 +92,10 @@ function buildQuery(params, include) {
 
   if (params.activities !== '') {
     query.filters.activities = { ':id:': params.activities };
+  }
+
+  if (params.types !== '') {
+    query.filters.classification = { ':id:': params.types };
   }
 
   if (params.status !== '') {
