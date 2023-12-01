@@ -15,6 +15,7 @@ export default class IndexRoute extends Route {
     activities: { refreshModel: true },
     status: { refreshModel: true },
     postalCodes: { refreshModel: true },
+    types: { refreshModel: true },
     targetAudiences: { refreshModel: true },
   };
 

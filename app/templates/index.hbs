@@ -18,19 +18,23 @@
                 value="target.value"
               }}
             />
-            <ActivitySelect
+            <Filters::ActivitySelect
               @onChange={{this.setActivities}}
               @selected={{this.selectedActivities}}
             />
-            <PostalSelect
+            <Filters::PostalSelect
               @onChange={{this.setPostalCodes}}
               @selected={{this.selectedPostalCodes}}
             />
-            <OrganizationStatusSelect
+            <Filters::OrganizationStatusSelect
               @onChange={{this.setOrganizationStatus}}
               @selected={{this.selectedOrganizationStatus}}
             />
-            <TargetAudienceSelect
+            <Filters::TypeSelect
+              @onChange={{this.setTypes}}
+              @selected={{this.selectedTypes}}
+            />
+            <Filters::TargetAudienceSelect
               @onChange={{this.setTargetAudiences}}
               @selected={{this.selectedTargetAudiences}}
             />

@@ -41,6 +41,10 @@ export default class QueryBuilderService extends Service {
       query.filters['organization-status'] = { ':id:': params.status };
     }
 
+    if (params.types !== '') {
+      query.filters.classification = { ':id:': params.types };
+    }
+
     const name = params.search.split(' ');
     const [firstName, ...lastName] = name;
 

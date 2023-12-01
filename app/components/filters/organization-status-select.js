@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { task } from 'ember-concurrency';
-import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class OrganizationStatusSelectComponent extends Component {
