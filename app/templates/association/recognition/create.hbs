@@ -1,0 +1,137 @@
+<div class="au-o-box au-o-flow au-o-flow--large">
+  <section class="au-u-flex au-u-flex--between">
+    <div>
+      <AuHeading @level="1" @skin="1">Voeg erkenning toe</AuHeading>
+      <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
+    </div>
+    <div class="au-u-flex au-u-flex--end au-u-flex--vertical-end">
+      <AuButton
+        class="au-u-margin-right-small"
+        @skin="primary"
+        @iconAlignment="left"
+        @disabled={{this.disabled}}
+        @onClick={{this.onAddAssociation}}
+      >
+        <span>Opslaan</span>
+      </AuButton>
+
+      <AuButton
+        @skin="secondary"
+        @iconAlignment="left"
+        @disabled={{this.disabled}}
+        @onClick={{this.onCancel}}
+      >
+        <span>Annuleer</span>
+      </AuButton>
+
+    </div>
+  </section>
+  <section>
+    <DataCard>
+      <:title>
+        Erkenning
+      </:title>
+      <:card as |Card|>
+        <Card.Columns>
+          <:left as |Item|>
+            <Item>
+              <:label>Erkend op</:label>
+              <:content>
+                <AuDatePicker
+                  @alignment={{this.alignment}}
+                  @label={{this.label}}
+                  @value={{this.value}}
+                  @min={{this.min}}
+                  @max={{this.max}}
+                  @first-day={{this.firstDay}}
+                  @error={{this.error}}
+                  @warning={{this.warning}}
+                  @disabled={{this.disabled}}
+                  @localization={{this.localization}}
+                  @adapter={{this.adapter}}
+                  @onChange={{this.onChange}}
+                />
+              </:content>
+            </Item>
+            <Item>
+              <:label>Ingangsdatum</:label>
+              <:content>
+                <AuDatePicker
+                  @alignment={{this.alignment}}
+                  @label={{this.label}}
+                  @value={{this.value}}
+                  @min={{this.min}}
+                  @max={{this.max}}
+                  @first-day={{this.firstDay}}
+                  @error={{this.error}}
+                  @warning={{this.warning}}
+                  @disabled={{this.disabled}}
+                  @localization={{this.localization}}
+                  @adapter={{this.adapter}}
+                  @onChange={{this.onChange}}
+                />
+              </:content>
+            </Item>
+            <Item>
+              <:label>Erkend door</:label>
+              <:content>
+                <PowerSelect
+                  @options={{this.items}}
+                  @selected={{this.selectedItem}}
+                  @onChange={{fn (mut this.selectedItem)}}
+                  as |name|
+                >
+                  {{name}}
+                </PowerSelect>
+              </:content>
+            </Item>
+          </:left>
+          <:right as |Item|>
+            <Item>
+              <:label>Einddatum</:label>
+              <:content>
+                <AuDatePicker
+                  @alignment={{this.alignment}}
+                  @id={{this.id}}
+                  @label={{this.label}}
+                  @value={{this.value}}
+                  @min={{this.min}}
+                  @max={{this.max}}
+                  @first-day={{this.firstDay}}
+                  @error={{this.error}}
+                  @warning={{this.warning}}
+                  @disabled={{this.disabled}}
+                  @localization={{this.localization}}
+                  @adapter={{this.adapter}}
+                  @onChange={{this.onChange}}
+                />
+              </:content>
+            </Item>
+            <Item>
+              <:label>Erkenningsbesluit</:label>
+              <:content>
+                <AuInput
+                  @error={{this.error}}
+                  @warning={{this.warning}}
+                  @disabled={{this.disabled}}
+                  @icon={{this.icon}}
+                  @iconAlignment={{this.iconAlignment}}
+                  @width={{"block"}}
+                  value={{this.value}}
+                  id="input"
+                />
+                <div class="au-u-flex au-u-flex--end">
+                  <AuHelpText @skin="tertiary">Geen link?
+                    <AuLink @skin="link">
+                      Voeg bestand toe
+                    </AuLink>
+                  </AuHelpText>
+                </div>
+              </:content>
+            </Item>
+          </:right>
+        </Card.Columns>
+      </:card>
+    </DataCard>
+  </section>
+</div>

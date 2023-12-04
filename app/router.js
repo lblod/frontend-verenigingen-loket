@@ -23,6 +23,9 @@ Router.map(function () {
     this.route('contact-detail');
     this.route('location');
     this.route('representatives');
+    this.route('recognition', function () {
+      this.route('create');
+    });
   });
 
   this.route('route-not-found', {
