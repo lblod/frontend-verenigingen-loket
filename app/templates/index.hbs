@@ -54,6 +54,9 @@
     <AuDataTable
       @content={{this.associations}}
       @isLoading={{this.isLoading}}
+      @page={{this.page}}
+      @sort={{this.sort}}
+      @size={{this.size}}
       @noDataMessage="Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of probeer een andere zoekopdracht."
       as |t|
     >
@@ -188,5 +191,6 @@
         {{/if}}
       </t.content>
     </AuDataTable>
+
   </m.content>
 </AuMainContainer>
