@@ -51,138 +51,142 @@
   </m.sidebar>
 
   <m.content @scroll={{true}}>
-    <div class="au-d-component-block au-d-component-block--overflow">
-      <div class="au-u-padding">
-        <AuHeading
-          @level="1"
-          @skin="3"
-          class="au-u-flex au-u-flex--between au-u-flex--vertical-center"
-        >
-          <span>Verenigingen</span>
-          <AuButton @skin="secondary" {{on "click" (perform this.download)}} @disabled={{eq (readonly this.associations.length) 0}}>
-            Download
-          </AuButton>
-        </AuHeading>
-        <AuHr />
-        <AuHeading @level="1" @skin="5">
-          {{this.associations.meta.count}}
-          Resultaten
-        </AuHeading>
-      </div>
-      <AuDataTable
-        @content={{this.associations}}
-        @isLoading={{this.isLoading}}
-        @page={{this.page}}
-        @sort={{this.sort}}
-        @size={{this.size}}
-        @noDataMessage="Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of probeer een andere zoekopdracht."
-        as |t|
-      >
-        <t.content class="au-c-data-table__table--small" as |c|>
-          <c.header>
-            <AuDataTableThSortable
-              @field="name"
-              @currentSorting={{this.sort}}
-              @label="Naam"
-              @class="data-table__header-title"
-            />
-            <AuDataTableThSortable
-              @field="primarySite.address.postcode"
-              @currentSorting={{this.sort}}
-              @label="Postcode"
-              @class="data-table__header-title"
-            />
-            <th class="data-table__header-title">Hoofdactiviteiten</th>
-            <AuDataTableThSortable
-              @field="identifiers.structured-identifier.local-id"
-              @currentSorting={{this.sort}}
-              @label="vCode"
-              @class="data-table__header-title"
-            />
-            <AuDataTableThSortable
-              @field="targetAudience.minimumLeeftijd,targetAudience.maximumLeeftijd"
-              @currentSorting={{this.sort}}
-              @label="Leeftijd"
-              @class="data-table__header-title"
-            />
-            <AuDataTableThSortable
-              @field="organization-status"
-              @currentSorting={{this.sort}}
-              @label="Erkenning"
-              @class="data-table__header-title"
-            />
-          </c.header>
-          {{#if this.hasErrored}}
-            <TableMessage::Error />
-          {{else if this.hasNoResults}}
-            <TableMessage>
-              <p>
-                Er werden geen zoekresultaten gevonden. Kijk na op spelfouten,
-                of probeer een andere zoekopdracht. Indien een organisatie
-                ontbreekt, meldt dit aan
-                <a
-                  class="au-c-link"
-                  href="mailto:{{config 'contactEmail'}}"
-                >{{config "contactEmail"}}</a>
-                of
-                <AuLink @route="administrative-units.new">maak een organisatie
-                  aan.</AuLink>
-              </p>
-            </TableMessage>
-          {{else}}
-            <c.body as |association|>
-              <td>
-                <LinkTo
-                  class="au-c-link"
-                  @model={{association.id}}
-                  @route="association"
-                >
-                  {{association.name}}
-                </LinkTo>
-              </td>
-              <td>
-                {{association.primarySite.address.postcode}}
-              </td>
-              <td>
-                {{#each association.activities as |activity index|}}
-                  {{activity.label}}{{#unless
-                    (last-index index association.activities)
-                  }},{{/unless}}
-                {{/each}}
-              </td>
-              <td>
-                {{#each association.identifiers as |identifier|}}
-                  {{#if (eq identifier.idName "vCode")}}
-                    {{get identifier.structuredIdentifier "localId"}}
-                  {{/if}}
-                {{/each}}
-              </td>
-              <td>
-                {{#if association.targetAudience}}
-                  {{association.targetAudience.minimumLeeftijd}}
-                  -
-                  {{association.targetAudience.maximumLeeftijd}}
+    <AuDataTable
+      @content={{this.associations}}
+      @isLoading={{this.isLoading}}
+      @noDataMessage="Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of probeer een andere zoekopdracht."
+      as |t|
+    >
+      <t.menu>
+        <section class="au-o-box au-o-flow au-o-flow--large">
+          <div class="au-u-1-1">
+            <div
+              class="au-u-flex au-u-flex--between au-u-flex--vertical-center"
+            >
+              <AuHeading @level="1" @skin="3">
+                <span>Verenigingen</span>
+              </AuHeading>
+              <AuButton
+                @skin="secondary"
+                {{on "click" (perform this.download)}}
+                @disabled={{eq (readonly this.associations.length) 0}}
+              >
+                Download
+              </AuButton>
+            </div>
+            <AuHr />
+            <AuHeading @level="1" @skin="5">
+              {{this.associations.meta.count}}
+              Resultaten
+            </AuHeading>
+          </div>
+        </section>
+
+      </t.menu>
+      <t.content class="au-c-data-table__table--small" as |c|>
+        <c.header>
+          <AuDataTableThSortable
+            @field="name"
+            @currentSorting={{this.sort}}
+            @label="Naam"
+            @class="data-table__header-title"
+          />
+          <AuDataTableThSortable
+            @field="primarySite.address.postcode"
+            @currentSorting={{this.sort}}
+            @label="Postcode"
+            @class="data-table__header-title"
+          />
+          <th class="data-table__header-title">Hoofdactiviteiten</th>
+          <AuDataTableThSortable
+            @field="identifiers.structured-identifier.local-id"
+            @currentSorting={{this.sort}}
+            @label="vCode"
+            @class="data-table__header-title"
+          />
+          <AuDataTableThSortable
+            @field="targetAudience.minimumLeeftijd,targetAudience.maximumLeeftijd"
+            @currentSorting={{this.sort}}
+            @label="Leeftijd"
+            @class="data-table__header-title"
+          />
+          <AuDataTableThSortable
+            @field="organization-status"
+            @currentSorting={{this.sort}}
+            @label="Erkenning"
+            @class="data-table__header-title"
+          />
+        </c.header>
+        {{#if this.hasErrored}}
+          <TableMessage::Error />
+        {{else if this.hasNoResults}}
+          <TableMessage>
+            <p>
+              Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of
+              probeer een andere zoekopdracht. Indien een organisatie ontbreekt,
+              meldt dit aan
+              <a
+                class="au-c-link"
+                href="mailto:{{config 'contactEmail'}}"
+              >{{config "contactEmail"}}</a>
+              of
+              <AuLink @route="administrative-units.new">maak een organisatie
+                aan.</AuLink>
+            </p>
+          </TableMessage>
+        {{else}}
+          <c.body as |association|>
+            <td>
+              <LinkTo
+                class="au-c-link"
+                @model={{association.id}}
+                @route="association"
+              >
+                {{association.name}}
+              </LinkTo>
+            </td>
+            <td>
+              {{association.primarySite.address.postcode}}
+            </td>
+            <td>
+              {{#each association.activities as |activity index|}}
+                {{activity.label}}{{#unless
+                  (last-index index association.activities)
+                }},{{/unless}}
+              {{/each}}
+            </td>
+            <td>
+              {{#each association.identifiers as |identifier|}}
+                {{#if (eq identifier.idName "vCode")}}
+                  {{get identifier.structuredIdentifier "localId"}}
                 {{/if}}
-              </td>
-              <td>
-                {{#if (eq association.organizationStatus.label "Erkend")}}
-                  <AuPill
-                    @skin="success"
-                  >{{association.organizationStatus.label}}</AuPill>
-                {{else if
-                  (eq association.organizationStatus.label "Niet erkend")
-                }}
-                  <AuPill
-                    @skin="warning"
-                  >{{association.organizationStatus.label}}</AuPill>
-                {{else}}
-                  <AuPill @skin="warning">Niet erkend</AuPill>
-                {{/if}}
-              </td>
-            </c.body>
-          {{/if}}
-        </t.content>
-      </AuDataTable>
-    </div>
+              {{/each}}
+            </td>
+            <td>
+              {{#if association.targetAudience}}
+                {{association.targetAudience.minimumLeeftijd}}
+                -
+                {{association.targetAudience.maximumLeeftijd}}
+              {{/if}}
+            </td>
+            <td>
+              {{#if (eq association.organizationStatus.label "Erkend")}}
+                <AuPill
+                  @skin="success"
+                >{{association.organizationStatus.label}}</AuPill>
+              {{else if
+                (eq association.organizationStatus.label "Niet erkend")
+              }}
+                <AuPill
+                  @skin="warning"
+                >{{association.organizationStatus.label}}</AuPill>
+              {{else}}
+                <AuPill @skin="warning">Niet erkend</AuPill>
+              {{/if}}
+            </td>
+          </c.body>
+        {{/if}}
+      </t.content>
+    </AuDataTable>
   </m.content>
 </AuMainContainer>
