@@ -22,6 +22,9 @@ export default class IndexController extends Controller {
   @tracked selectedTypes = [];
   @tracked targetAudiences = '';
   @tracked selectedTargetAudiences = [];
+  @tracked selectedDates = {};
+  @tracked end = '';
+  @tracked start = '';
 
   queryParams = [
     'sort',
@@ -32,6 +35,8 @@ export default class IndexController extends Controller {
     'postalCodes',
     'types',
     'targetAudiences',
+    'end',
+    'start',
   ];
 
   getVcode(identifier) {
@@ -75,6 +80,16 @@ export default class IndexController extends Controller {
   }
 
   @action
+  setDates(selectedDates) {
+    this.page = 0;
+    this.selectedDates = selectedDates;
+    if (selectedDates !== '') {
+      this.start = selectedDates.value.start;
+      this.end = selectedDates.value.end;
+    }
+  }
+
+  @action
   setTargetAudiences(selectedTargetAudiences) {
     this.page = 0;
     this.selectedTargetAudiences = selectedTargetAudiences;
@@ -110,6 +125,9 @@ export default class IndexController extends Controller {
     this.targetAudiences = '';
     this.selectedTargetAudiences = [];
     this.search = '';
+    this.start = '';
+    this.end = '';
+    this.selectedDates = [];
     this.page = null;
     this.sort = 'name';
   }

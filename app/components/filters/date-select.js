@@ -1,39 +1,68 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
-import { task } from 'ember-concurrency';
 import { tracked } from '@glimmer/tracking';
 
-export default class ActivityMultipleSelectComponent extends Component {
+export default class DateSelectFilter extends Component {
   @service router;
   @service store;
 
-  @tracked activitiesQuery = '';
-  @tracked activities;
+  @tracked start = '';
+  @tracked end = '';
+
+  @tracked dates;
 
   constructor() {
     super(...arguments);
-    this.activitiesQuery = this.router.currentRoute.queryParams.activities;
-    this.loadActivities.perform();
+    this.start = this.router.currentRoute.queryParams.start;
+    this.end = this.router.currentRoute.queryParams.end;
+
+    this.loadDates();
   }
 
-  selectedActivities() {
-    return this.activitiesQuery
-      ? this.activitiesQuery
-          .split(',')
-          .map((id) => this.findActivityById(id))
-          .filter(Boolean)
-      : [];
+  selectedDates() {
+    if (this.start && this.end) {
+      return this.findDateByValue({ start: this.start, end: this.end });
+    }
+    return '';
   }
 
-  findActivityById(id) {
-    return this.activities.find((activity) => activity.id === id);
+  findDateByValue(value) {
+    return this.dates.find(
+      (date) =>
+        date.value.start === value.start && date.value.end === value.end,
+    );
   }
 
-  @task
-  *loadActivities() {
-    this.activities = yield this.store.query('activity', {
-      sort: 'label',
-    });
-    this.args.onChange(this.selectedActivities());
+  loadDates() {
+    const year = new Date().getFullYear();
+
+    this.dates = [
+      {
+        label: `oktober-december ${year}`,
+        value: { start: `${year}-10-01`, end: `${year}-12-31` },
+      },
+      {
+        label: `juli-september ${year}`,
+        value: { start: `${year}-07-01`, end: `${year}-09-30` },
+      },
+      {
+        label: `april-juni ${year}`,
+        value: { start: `${year}-04-01`, end: `${year}-06-30` },
+      },
+      {
+        label: `januari-maart ${year}`,
+        value: { start: `${year}-01-01`, end: `${year}-03-31` },
+      },
+      {
+        label: `${year - 1}`,
+        value: { start: `${year - 1}-01-01`, end: `${year - 1}-12-31` },
+      },
+      {
+        label: `${year - 2}`,
+        value: { start: `${year - 2}-01-01`, end: `${year - 2}-12-31` },
+      },
+    ];
+
+    this.args.onChange(this.selectedDates());
   }
 }

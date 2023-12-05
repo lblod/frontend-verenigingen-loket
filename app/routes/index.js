@@ -17,6 +17,8 @@ export default class IndexRoute extends Route {
     postalCodes: { refreshModel: true },
     types: { refreshModel: true },
     targetAudiences: { refreshModel: true },
+    start: { refreshModel: true },
+    end: { refreshModel: true },
   };
 
   async beforeModel(transition) {
@@ -100,6 +102,13 @@ function buildQuery(params, include) {
 
   if (params.status !== '') {
     query.filters['organization-status'] = { ':id:': params.status };
+  }
+
+  if (params.end !== '' && params.start !== '') {
+    query.filter = {
+      ':gte:last-updated': params.start,
+      ':lte:last-updated': params.end,
+    };
   }
 
   if (params.targetAudiences !== '') {
