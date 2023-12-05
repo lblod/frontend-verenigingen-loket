@@ -1,0 +1,88 @@
+<AuDataTable
+  @content={{this.recognitions}}
+  @isLoading={{this.isLoading}}
+  @noDataMessage="Deze vereniging heeft geen erkenningen"
+  as |t|
+>
+  <t.menu>
+    <section
+      class="au-u-flex au-u-flex--between au-o-box au-o-flow au-o-flow--large"
+    >
+      <div>
+        <AuHeading @level="1" @skin="1">Erkenningen</AuHeading>
+        <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
+      </div>
+      <div
+        class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
+      >
+        <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
+          22-02-2022</AuPill>
+        {{#if this.association}}
+          <ReportWrongData @model={{this.association}} />
+        {{/if}}
+      </div>
+    </section>
+
+  </t.menu>
+  <t.content class="au-c-data-table__table--small" as |c|>
+    <c.header>
+      <th width="80px" class="data-table__header-title"></th>
+      <AuDataTableThSortable
+        @field="address.fullAddress"
+        @currentSorting={{this.sort}}
+        @label="Erkenning"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="siteType.label"
+        @currentSorting={{this.sort}}
+        @label="Ingangsdatum"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="description"
+        @currentSorting={{this.sort}}
+        @label="Einddatum"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="description"
+        @currentSorting={{this.sort}}
+        @label="Erkend door"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="description"
+        @currentSorting={{this.sort}}
+        @label="Erkend op"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="description"
+        @currentSorting={{this.sort}}
+        @label="Erkenningsbesluit"
+        @class="data-table__header-title"
+      />
+    </c.header>
+    {{#if this.hasErrored}}
+      <TableMessage::Error />
+    {{else}}
+      <c.body as |site|>
+        <td>
+          {{#if site.address.isPrimary}}
+            <AuBadge @icon="vote-star-filled" />
+          {{/if}}
+        </td>
+        <td>
+          {{site.address.fullAddress}}
+        </td>
+        <td>
+          {{site.siteType.label}}
+        </td>
+        <td>
+          {{site.description}}
+        </td>
+      </c.body>
+    {{/if}}
+  </t.content>
+</AuDataTable>
