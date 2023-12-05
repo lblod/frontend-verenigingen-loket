@@ -10,3 +10,19 @@
   flex-direction: column;
   gap: 1.2rem;
 }
+
+.au-c-toaster--top {
+  top: 6rem;
+  flex-direction: column;
+}
+.au-c-toaster {
+  position: fixed;
+  display: flex;
+  gap: 1.2rem;
+  right: 2.4rem;
+  z-index: 9999999;
+  width: 320px;
+}
+.au-c-alert {
+  margin-bottom: 0rem; 
+}
