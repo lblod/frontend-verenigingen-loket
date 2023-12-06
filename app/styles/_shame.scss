@@ -1,8 +1,8 @@
 .au-c-badge {
-    background-color: var(--au-blue-200);
-    color: var(--au-blue-700);
-    width: 28px;
-    height: 28px;
+  background-color: var(--au-blue-200);
+  color: var(--au-blue-700);
+  width: 28px;
+  height: 28px;
 }
 
 .au-c-control-group {
@@ -24,5 +24,16 @@
   width: 320px;
 }
 .au-c-alert {
-  margin-bottom: 0rem; 
+  margin-bottom: 0rem;
+}
+
+@media (min-width: 100em) {
+  .au-c-main-container__sidebar {
+    flex-basis: 356px;
+  }
+}
+@media (min-width: 63.9375em) {
+  .au-c-main-container__sidebar {
+    --sidebar: 300px;
+  }
 }
