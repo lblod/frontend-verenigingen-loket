@@ -1,5 +1,8 @@
 import Controller from '@ember/controller';
-export default class AssociationLocationController extends Controller {
+import { inject as service } from '@ember/service';
+export default class AssociationRepresentativesController extends Controller {
+  @service contactPoints;
+
   get isLoading() {
     return this.model.members.isRunning;
   }

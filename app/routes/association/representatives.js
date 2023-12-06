@@ -4,6 +4,7 @@ import { keepLatestTask } from 'ember-concurrency';
 
 export default class AssociationRepresentativesRoute extends Route {
   @service store;
+
   queryParams = {
     sort: { refreshModel: true },
   };
@@ -28,6 +29,7 @@ export default class AssociationRepresentativesRoute extends Route {
     const { id } = this.paramsFor('association');
 
     const members = yield this.store.query('membership', {
+      include: 'person.site.contact-points',
       filter: {
         association: {
           id: id,
