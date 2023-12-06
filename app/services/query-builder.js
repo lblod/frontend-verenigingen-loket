@@ -37,6 +37,13 @@ export default class QueryBuilderService extends Service {
       query.filters.activities = { ':id:': params.activities };
     }
 
+    if (params.end !== '' && params.start !== '') {
+      query.filter = {
+        ':gte:last-updated': params.start,
+        ':lte:last-updated': params.end,
+      };
+    }
+
     if (params.status !== '') {
       query.filters['organization-status'] = { ':id:': params.status };
     }
