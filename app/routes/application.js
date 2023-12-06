@@ -6,11 +6,19 @@ export default class ApplicationRoute extends Route {
   @service currentSession;
   @service session;
   @service router;
+  @service store;
 
   async beforeModel() {
     await this.session.setup();
 
     return this._loadCurrentSession();
+  }
+
+  async model() {
+    const { id } = this.paramsFor('association');
+    if (id != undefined) {
+      return this.store.findRecord('association', id);
+    }
   }
 
   async _loadCurrentSession() {
