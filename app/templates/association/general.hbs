@@ -7,8 +7,7 @@
     <div
       class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
     >
-      <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
-        22-02-2022</AuPill>
+      <LastUpdated @lastUpdated={{this.model.lastUpdated}} />
       <ReportWrongData @model={{this.model}} />
     </div>
   </section>

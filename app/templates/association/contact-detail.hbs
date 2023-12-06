@@ -1,4 +1,10 @@
- {{#if (or this.isLoading (not this.association.primarySite.isLoaded) this.association.contactPoints.isPending)}}
+{{#if
+  (or
+    this.isLoading
+    (not this.association.primarySite.isLoaded)
+    this.association.contactPoints.isPending
+  )
+}}
   <AuLoader @padding="large" />
 {{else}}
   <div class="au-o-box au-o-flow au-o-flow--large">
@@ -10,9 +16,10 @@
       <div
         class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
       >
-        <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
-          22-02-2022</AuPill>
-        <ReportWrongData @model={{this.association}} />
+        {{#if this.association}}
+          <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
+          <ReportWrongData @model={{this.association}} />
+        {{/if}}
       </div>
     </section>
     <section>
