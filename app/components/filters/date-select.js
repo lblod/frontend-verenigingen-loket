@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 
-export default class DateSelectFilter extends Component {
+export default class DateSelectFilterComponent extends Component {
   @service router;
   @service store;
 
