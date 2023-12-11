@@ -6,22 +6,16 @@
 >
   <t.menu>
     <section
-      class="au-u-flex au-u-flex--between au-o-box au-o-flow au-o-flow--large"
+      class="au-u-flex au-u-flex--between au-o-box au-u-flex--vertical-start au-o-flow"
     >
       <div>
         <AuHeading @level="1" @skin="1">Erkenningen</AuHeading>
         <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
       </div>
-      <div
-        class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
-      >
-        {{#if this.association}}
-          <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
-          <ReportWrongData @model={{this.association}} />
-        {{/if}}
-      </div>
+      <AuButton @skin="secondary" @icon="plus">
+        Voeg nieuwe erkenning toe
+      </AuButton>
     </section>
-
   </t.menu>
   <t.content class="au-c-data-table__table--small" as |c|>
     <c.header>
