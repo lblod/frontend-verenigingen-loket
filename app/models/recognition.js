@@ -1,12 +1,13 @@
-import Model, { belongsTo } from '@ember-data/model';
+import Model, { attr, belongsTo } from '@ember-data/model';
 
 export default class RecognitionModel extends Model {
-  @belongsTo('validity-period', {
+  @attr dateDocument;
+  @belongsTo('period', {
     inverse: null,
     async: true,
   })
   validityPeriod;
-  @belongsTo('awarded-by', {
+  @belongsTo('administrative-unit', {
     inverse: null,
     async: true,
   })

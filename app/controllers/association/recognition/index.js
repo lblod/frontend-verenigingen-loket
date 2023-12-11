@@ -1,19 +1,22 @@
 import Controller from '@ember/controller';
-import { inject as service } from '@ember/service';
-import { tracked } from '@glimmer/tracking';
 
-export default class AssociationRecognitionCreateController extends Controller {
-  items = ['College van burgemeester en schepenen', 'Andere'];
-  @service contactPoints;
-  @tracked selectedItem = this.items[0];
-
+export default class AssociationRecognitionController extends Controller {
   get isLoading() {
-    return this.model.association.isRunning;
+    return (
+      this.model.association.isRunning || this.model.recognitions.isRunning
+    );
   }
 
   get association() {
-    return this.model.association.isFinished
+    const association = this.model.association.isFinished
       ? this.model.association.value
+      : null;
+    return association;
+  }
+
+  get recognitions() {
+    return this.model.recognitions.isFinished
+      ? this.model.recognitions.value
       : null;
   }
 }

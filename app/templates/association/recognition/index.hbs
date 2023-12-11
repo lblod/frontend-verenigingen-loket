@@ -27,37 +27,37 @@
     <c.header>
       <th width="80px" class="data-table__header-title"></th>
       <AuDataTableThSortable
-        @field="address.fullAddress"
+        @field="validity-period.start-time"
         @currentSorting={{this.sort}}
         @label="Erkenning"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="siteType.label"
+        @field="validity-period.start-time"
         @currentSorting={{this.sort}}
         @label="Ingangsdatum"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="description"
+        @field="validity-period.end-time"
         @currentSorting={{this.sort}}
         @label="Einddatum"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="description"
+        @field="awarded-by.name"
         @currentSorting={{this.sort}}
         @label="Erkend door"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="description"
+        @field="date-document"
         @currentSorting={{this.sort}}
         @label="Erkend op"
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field="description"
+        @field=""
         @currentSorting={{this.sort}}
         @label="Erkenningsbesluit"
         @class="data-table__header-title"
@@ -66,20 +66,36 @@
     {{#if this.hasErrored}}
       <TableMessage::Error />
     {{else}}
-      <c.body as |site|>
+      <c.body as |recognition|>
         <td>
-          {{#if site.address.isPrimary}}
+          {{#if
+            (check-if-active
+              recognition.validityPeriod.startTime
+              recognition.validityPeriod.endTime
+            )
+          }}
             <AuBadge @icon="vote-star-filled" />
           {{/if}}
         </td>
         <td>
-          {{site.address.fullAddress}}
+          <AuLink>Erkenning
+            {{date-year recognition.validityPeriod.startTime}}
+            -
+            {{date-year recognition.validityPeriod.endTime}}</AuLink>
         </td>
         <td>
-          {{site.siteType.label}}
+          {{date-format recognition.validityPeriod.startTime}}
         </td>
         <td>
-          {{site.description}}
+          {{date-format recognition.validityPeriod.endTime}}
+        </td>
+        <td>
+          {{recognition.awardedBy.name}}
+        </td>
+        <td>
+          {{date-format recognition.dateDocument}}
+        </td>
+        <td>
         </td>
       </c.body>
     {{/if}}

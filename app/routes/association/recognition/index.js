@@ -1,17 +1,37 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { keepLatestTask } from 'ember-concurrency';
-export default class AssociationRecognitionCreateRoute extends Route {
+export default class AssociationRecognitionRoute extends Route {
   @service store;
-  async model() {
+
+  queryParams = {
+    sort: { refreshModel: true },
+  };
+
+  async model(params) {
+    const { id } = this.paramsFor('association');
     return {
-      association: this.loadAssociation.perform(),
+      association: this.loadAssociation.perform(id),
+      recognitions: this.loadRecognition.perform(id, params),
     };
   }
 
   @keepLatestTask({ cancelOn: 'deactivate' })
-  *loadAssociation() {
-    const { id } = this.paramsFor('association');
-    return yield this.store.findRecord('association', id, {});
+  *loadAssociation(id) {
+    return yield this.store.findRecord('association', id);
+  }
+  @keepLatestTask({ cancelOn: 'deactivate' })
+  *loadRecognition(id, params) {
+    return yield this.store.query('recognition', {
+      include: ['awarded-by', 'validity-period'].join(','),
+      filter: {
+        associations: {
+          id: id,
+        },
+      },
+      sort: params.sort
+        ? `${params.sort},-validity-period.start-time`
+        : '-validity-period.start-time',
+    });
   }
 }
