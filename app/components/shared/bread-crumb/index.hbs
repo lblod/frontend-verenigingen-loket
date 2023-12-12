@@ -6,16 +6,18 @@
           Loket voor lokale besturen
         </AuLink>
       </li>
-      {{#each this.crumbsForRoute as |crumb|}}
+      {{#each this.crumbsForRoute as |crumb index|}}
         <li class="au-c-list-horizontal__item" role="menu">
           {{#if crumb.link}}
             <AuLink @route={{crumb.link}} role="menuitem">
               {{crumb.label}}
             </AuLink>
           {{else}}
-            <strong role="menuitem">
-              {{crumb.label}}
-            </strong>
+            {{#if (last-index index this.crumbsForRoute)}}
+              <strong role="menuitem">{{crumb.label}}</strong>
+            {{else}}
+              <p role="menuitem">{{crumb.label}}</p>
+            {{/if}}
           {{/if}}
         </li>
       {{/each}}

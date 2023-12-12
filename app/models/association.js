@@ -3,6 +3,7 @@ import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
 export default class AssociationModel extends Model {
   @attr name;
   @attr description;
+  @attr lastUpdated;
   @hasMany('identifier', { inverse: null, async: true }) identifiers;
   @hasMany('site', { inverse: null, async: true }) sites;
   @belongsTo('site', { inverse: null, async: true }) primarySite;
@@ -18,4 +19,6 @@ export default class AssociationModel extends Model {
   classification;
   @belongsTo('target-audience', { inverse: null, async: true })
   targetAudience;
+  @hasMany('recognition', { inverse: null, async: true })
+  recognitions;
 }

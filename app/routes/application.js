@@ -6,10 +6,10 @@ export default class ApplicationRoute extends Route {
   @service currentSession;
   @service session;
   @service router;
+  @service store;
 
   async beforeModel() {
     await this.session.setup();
-
     return this._loadCurrentSession();
   }
 
