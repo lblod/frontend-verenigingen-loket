@@ -121,9 +121,13 @@ export default class IndexController extends Controller {
         'https://verenigingen.oscart-dev.s.redhost.be/download',
       );
       const blob = res.blob();
-      const file = window.URL.createObjectURL(blob);
-      window.location.assign(file);
-      console.log({ res });
+      const aElement = document.createElement('a');
+      aElement.setAttribute('download', 'test.xlsx');
+      const href = URL.createObjectURL(blob);
+      aElement.href = href;
+      aElement.setAttribute('target', '_blank');
+      aElement.click();
+      URL.revokeObjectURL(href);
       this.downloadFinished(toast);
     } catch (error) {
       this.downloadFailed(toast);
