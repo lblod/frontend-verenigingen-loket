@@ -64,7 +64,11 @@
                   <:content>
                     <AuDatePicker
                       @value={{recognition.dateDocument}}
-                      @onChange={{fn (mut this.recognitionModel.dateDocument)}}
+                      @onChange={{fn
+                        (mut
+                          this.currentRecognition.recognitionModel.dateDocument
+                        )
+                      }}
                     />
                   </:content>
                 </Item>
@@ -77,7 +81,9 @@
                     <AuDatePicker
                       required
                       @value={{this.getStartDate}}
-                      @onChange={{fn (mut this.recognitionModel.startTime)}}
+                      @onChange={{fn
+                        (mut this.currentRecognition.recognitionModel.startTime)
+                      }}
                     />
                   </:content>
                 </Item>
@@ -108,7 +114,9 @@
                           class="au-c-card-item__label au-c-card-item__label--data"
                         >namelijk</label>
                         <AuInput
-                          @value={{mut this.recognitionModel.awardedBy}}
+                          @value={{mut
+                            this.currentRecognition.recognitionModel.awardedBy
+                          }}
                           id="awardedBy"
                           @width={{"block"}}
                         />
@@ -124,7 +132,9 @@
                     <AuDatePicker
                       required
                       @value={{this.getEndDate}}
-                      @onChange={{fn (mut this.recognitionModel.endTime)}}
+                      @onChange={{fn
+                        (mut this.currentRecognition.recognitionModel.endTime)
+                      }}
                     />
                   </:content>
                 </Item>
@@ -135,10 +145,13 @@
                   )
                 }}
                   <Item>
-                    <:label>Erkenningsbesluit</:label>
+                    <:label>Erkenningsbesluit
+                    </:label>
                     <:content>
                       <AuInput
-                        @value={{mut this.recognitionModel.legalResource}}
+                        @value={{mut
+                          this.currentRecognition.recognitionModel.legalResource
+                        }}
                         @width={{"block"}}
                         id="erkenningsbesluit"
                       />

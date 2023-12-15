@@ -11,23 +11,7 @@ export default class AssociationRecognitionCreateController extends Controller {
   @service router;
   @service toaster;
   @service dateYear;
-
   @tracked isFormLoading = false;
-  @tracked recognitionModel = {
-    startTime: null,
-    endTime: null,
-    dateDocument: this.currentRecognition.recognition
-      ? this.currentRecognition.recognition.dateDocument
-      : null,
-    awardedBy:
-      this.currentRecognition.awardedBy &&
-      this.currentRecognition.awardedBy !== this.items[0]
-        ? this.currentRecognition.awardedBy
-        : null,
-    legalResource: this.currentRecognition.recognition
-      ? this.currentRecognition.recognition.legalResource
-      : null,
-  };
 
   get isLoading() {
     return this.model.association.isRunning;
@@ -95,8 +79,11 @@ export default class AssociationRecognitionCreateController extends Controller {
   @action
   async newRecognition() {
     const recognition = await this.store.createRecord('recognition', {
-      dateDocument: this.recognitionModel.dateDocument,
-      legalResource: this.recognitionModel.legalResource,
+      dateDocument: this.currentRecognition.recognitionModel.dateDocument,
+      legalResource:
+        this.currentRecognition.selectedItem === this.items[0]
+          ? this.currentRecognition.recognitionModel.legalResource
+          : null,
       association: this.association,
       validityPeriod: await this.getValidityPeriod(),
       awardedBy: await this.getAwardedBy(),
@@ -104,7 +91,7 @@ export default class AssociationRecognitionCreateController extends Controller {
     await recognition.save();
     this.toaster.notify(
       'is opgeslagen.',
-      `Erkenning ${this.recognitionModel.startTime} - ${this.recognitionModel.endTime}`,
+      `Erkenning ${this.currentRecognition.recognitionModel.startTime} - ${this.currentRecognition.recognitionModel.endTime}`,
       {
         type: 'success',
         timeOut: 4000,
@@ -116,26 +103,32 @@ export default class AssociationRecognitionCreateController extends Controller {
   @action
   async editRecognition() {
     const recognition = {};
-    recognition.dateDocument = this.recognitionModel.dateDocument;
+    recognition.dateDocument =
+      this.currentRecognition.recognitionModel.dateDocument;
     recognition.legalResource =
       this.currentRecognition.selectedItem === this.items[0]
-        ? this.recognitionModel.legalResource
+        ? this.currentRecognition.recognitionModel.legalResource
         : null;
     recognition.awardedBy = await this.getAwardedBy();
-    if (this.recognitionModel.startTime || this.recognitionModel.endTime) {
+    if (
+      this.currentRecognition.recognitionModel.startTime ||
+      this.currentRecognition.recognitionModel.endTime
+    ) {
       await this.store
         .findRecord(
           'period',
           this.currentRecognition.recognition.validityPeriod.get('id'),
         )
         .then((validityPeriod) => {
-          if (this.recognitionModel.startTime) {
+          if (this.currentRecognition.recognitionModel.startTime) {
             validityPeriod.startTime = new Date(
-              this.recognitionModel.startTime,
+              this.currentRecognition.recognitionModel.startTime,
             );
           }
-          if (this.recognitionModel.endTime) {
-            validityPeriod.endTime = new Date(this.recognitionModel.endTime);
+          if (this.currentRecognition.recognitionModel.endTime) {
+            validityPeriod.endTime = new Date(
+              this.currentRecognition.recognitionModel.endTime,
+            );
           }
           validityPeriod.save();
           // this.currentRecognition.recognition.validityPeriod.setProperties({
@@ -143,7 +136,6 @@ export default class AssociationRecognitionCreateController extends Controller {
           // });
         });
     }
-    console.log(recognition);
     await this.currentRecognition.recognition.setProperties({ ...recognition });
     await this.currentRecognition.recognition.save();
     this.toaster.notify(
@@ -164,11 +156,11 @@ export default class AssociationRecognitionCreateController extends Controller {
   @action
   async getValidityPeriod() {
     const validityPeriod = this.store.createRecord('period', {
-      startTime: this.recognitionModel.startTime
-        ? new Date(this.recognitionModel.startTime)
+      startTime: this.currentRecognition.recognitionModel.startTime
+        ? new Date(this.currentRecognition.recognitionModel.startTime)
         : null,
-      endTime: this.recognitionModel.endTime
-        ? new Date(this.recognitionModel.endTime)
+      endTime: this.currentRecognition.recognitionModel.endTime
+        ? new Date(this.currentRecognition.recognitionModel.endTime)
         : null,
     });
     await validityPeriod.save();
@@ -179,12 +171,12 @@ export default class AssociationRecognitionCreateController extends Controller {
   async getAwardedBy() {
     let awardedByValue = this.items[0];
     if (this.currentRecognition.selectedItem !== this.items[0]) {
-      awardedByValue = this.recognitionModel.awardedBy;
+      awardedByValue = this.currentRecognition.recognitionModel.awardedBy;
     }
 
     const administrativeUnits = await this.store.query('administrative-unit', {
       filter: {
-        name: awardedByValue,
+        ':exact:name': awardedByValue,
       },
     });
     let awardedBy = administrativeUnits?.[0];
