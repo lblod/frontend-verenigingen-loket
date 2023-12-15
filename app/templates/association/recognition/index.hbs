@@ -12,9 +12,14 @@
         <AuHeading @level="1" @skin="1">Erkenningen</AuHeading>
         <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
       </div>
-      <AuButton @skin="secondary" @icon="plus">
+      <AuLink
+        @skin="button-secondary"
+        @icon="plus"
+        @model="0"
+        @route="association.recognition.create"
+      >
         Voeg nieuwe erkenning toe
-      </AuButton>
+      </AuLink>
     </section>
   </t.menu>
   <t.content class="au-c-data-table__table--small" as |c|>
@@ -51,7 +56,7 @@
         @class="data-table__header-title"
       />
       <AuDataTableThSortable
-        @field=""
+        @field="legal-resource"
         @currentSorting={{this.sort}}
         @label="Erkenningsbesluit"
         @class="data-table__header-title"
@@ -72,7 +77,10 @@
           {{/if}}
         </td>
         <td>
-          <AuLink>Erkenning
+          <AuLink
+            @route="association.recognition.create"
+            @model={{recognition.id}}
+          >Erkenning
             {{date-year recognition.validityPeriod.startTime}}
             -
             {{date-year recognition.validityPeriod.endTime}}</AuLink>
@@ -90,6 +98,11 @@
           {{date-format recognition.dateDocument}}
         </td>
         <td>
+          {{#if recognition.legalResource}}
+            <AuLinkExternal href={{recognition.legalResource}}>
+              Beslissing (externe link)
+            </AuLinkExternal>
+          {{/if}}
         </td>
       </c.body>
     {{/if}}

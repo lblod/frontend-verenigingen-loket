@@ -31,6 +31,17 @@ export default class SharedBreadCrumbComponent extends Component {
         ],
       },
       {
+        route: 'association.recognition.create',
+        crumbs: [
+          { label: 'Verenigingen', link: 'index' },
+          {
+            label: name,
+          },
+          { label: 'Erkenningen', link: 'association.recognition.index' },
+          { label: 'Aanmaken' },
+        ],
+      },
+      {
         route: 'association.contact-detail',
         crumbs: [
           { label: 'Verenigingen', link: 'index' },
