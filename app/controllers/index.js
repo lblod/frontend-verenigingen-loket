@@ -120,9 +120,12 @@ export default class IndexController extends Controller {
       const res = yield fetch(
         'https://verenigingen.oscart-dev.s.redhost.be/download',
       );
+      const header = res.headers.get('Content-Disposition');
+      const parts = header.split(';');
+      const filename = parts[1].split('=')[1];
       const blob = yield res.blob();
       const aElement = document.createElement('a');
-      aElement.setAttribute('download', 'test.xlsx');
+      aElement.setAttribute('download', filename);
       const href = URL.createObjectURL(blob);
       aElement.href = href;
       aElement.setAttribute('target', '_blank');
