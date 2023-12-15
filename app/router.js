@@ -25,7 +25,7 @@ Router.map(function () {
     this.route('representatives');
     this.route('recognition', { path: 'erkenningen' }, function () {
       this.route('index', { path: '/' });
-      this.route('create');
+      this.route('create', { path: 'create/:recognition_id' });
     });
   });
 
