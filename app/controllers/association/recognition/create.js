@@ -178,7 +178,7 @@ export default class AssociationRecognitionCreateController extends Controller {
   @action
   async getAwardedBy() {
     let awardedByValue = this.items[0];
-    if (this.selectedItem !== this.items[0]) {
+    if (this.currentRecognition.selectedItem !== this.items[0]) {
       awardedByValue = this.recognitionModel.awardedBy;
     }
 

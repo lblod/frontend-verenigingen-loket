@@ -8,10 +8,10 @@ export default class CurrentRecognitionService extends Service {
   @tracked selectedItem = this.items[0];
 
   async setCurrentRecognition(recognition) {
+    this.selectedItem = null;
     this.recognition = recognition;
     this.awardedBy = await recognition.awardedBy.get('name');
     this.selectedItem =
       this.awardedBy === this.items[0] ? this.items[0] : this.items[1];
-    console.log(this.selectedItem);
   }
 }
