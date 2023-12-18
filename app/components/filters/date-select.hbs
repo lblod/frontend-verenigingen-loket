@@ -1,0 +1,17 @@
+<AuLabel class="au-u-margin-top" for="filter-name">Laatste wijziging</AuLabel>
+<div class={{if @error "ember-power-select--error"}}>
+  <PowerSelect
+    @noMatchesMessage="Geen resultaten"
+    @searchEnabled={{true}}
+    @searchField="label"
+    @placeholder="Selecteer een datum"
+    @searchMessage="Typ om te zoeken"
+    @options={{this.dates}}
+    @selected={{@selected}}
+    @onChange={{@onChange}}
+    @triggerId={{@id}}
+    as |date|
+  >
+    {{date.label}}
+  </PowerSelect>
+</div>

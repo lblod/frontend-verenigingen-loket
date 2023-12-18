@@ -1,0 +1,17 @@
+<AuLabel class="au-u-margin-top" for="filter-name">Selecteer type(s)</AuLabel>
+<div class={{if @error "ember-power-select--error"}}>
+  <PowerSelectMultiple
+    @noMatchesMessage="Geen resultaten"
+    @searchEnabled={{true}}
+    @searchField="label"
+    @placeholder="Selecteer een type"
+    @searchMessage="Typ om te zoeken"
+    @options={{this.types}}
+    @selected={{@selected}}
+    @onChange={{@onChange}}
+    @triggerId={{@id}}
+    as |type|
+  >
+    {{type.notation}}
+  </PowerSelectMultiple>
+</div>

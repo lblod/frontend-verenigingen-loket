@@ -15,9 +15,8 @@
       <div
         class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
       >
-        <AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
-          22-02-2022</AuPill>
         {{#if this.association}}
+          <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
           <ReportWrongData @model={{this.association}} />
         {{/if}}
       </div>
