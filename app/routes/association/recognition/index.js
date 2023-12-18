@@ -25,13 +25,13 @@ export default class AssociationRecognitionRoute extends Route {
     return yield this.store.query('recognition', {
       include: ['awarded-by', 'validity-period'].join(','),
       filter: {
-        associations: {
+        association: {
           id: id,
         },
       },
       sort: params.sort
-        ? `${params.sort},-validity-period.start-time`
-        : '-validity-period.start-time',
+        ? `${params.sort},-validity-period.end-time`
+        : '-validity-period.end-time',
     });
   }
 }

@@ -2,12 +2,15 @@
   <section class="au-u-flex au-u-flex--between">
     <div>
       <AuHeading @level="1" @skin="1">Algemeen</AuHeading>
-      <AuHeading @level="3" @skin="3">{{this.model.name}}</AuHeading>
+      <AuHeading
+        @level="3"
+        @skin="3"
+      >{{this.model.association.name}}</AuHeading>
     </div>
     <div
       class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
     >
-      <ReportWrongData @model={{this.model}} />
+      <ReportWrongData @model={{this.model.association}} />
     </div>
   </section>
   <section>
@@ -15,98 +18,129 @@
       <:title>
         <div class="au-u-flex au-u-flex--between au-u-flex--vertical-end">
           Huidige erkenning
-          <AuButton
-            @skin="secondary"
-            @icon="pencil"
-            class="au-u-margin-bottom-tiny"
-            {{on "click" (perform this.edit)}}
-            @disabled={{not this.this.model.recognition}}
-          >
-            Bewerk
-          </AuButton>
+          {{#if this.recognition}}
+            {{#if
+              (check-if-active
+                this.recognition.validityPeriod.startTime
+                this.recognition.validityPeriod.endTime
+              )
+            }}
+              <AuLink
+                class="au-u-margin-bottom-tiny"
+                @skin="button-secondary"
+                @icon="pencil"
+                @model={{this.recognition.id}}
+                @route="association.recognition.create"
+              >
+                Bewerk
+              </AuLink>
+            {{else}}
+              <AuLink
+                class="au-u-margin-bottom-tiny"
+                @skin="button-secondary"
+                @icon="plus"
+                @model="0"
+                @route="association.recognition.create"
+              >
+                Voeg nieuwe erkenning toe
+              </AuLink>
+            {{/if}}
+          {{/if}}
         </div>
       </:title>
       <:card as |Card|>
-        {{#if this.model.recognition}}
-          {{! Erkenning actief }}
-          <Card.Columns>
-            <:left as |Item|>
-              <Item>
-                <:label>Status</:label>
-                <:content>
-                  <AuPill @skin="success">Erkend</AuPill>
-                </:content>
-              </Item>
-              <Item>
-                <:label>Ingangsdatum</:label>
-                <:content>
-                  12-02-2023
-                </:content>
-              </Item>
-              <Item>
-                <:label>Erkend door</:label>
-                <:content>
-                  College van burgemeester en schepenen
-                </:content>
-              </Item>
-            </:left>
-            <:right as |Item|>
-              <Item>
-                <:label>Erkend op</:label>
-                <:content>
-                  12-02-2023
-                </:content>
-              </Item>
-              <Item>
-                <:label>Einddatum</:label>
-                <:content>
-                  12-02-2023
-                </:content>
-              </Item>
-              <Item>
-                <:label>Erkenningsbesluit</:label>
-                <:content>
-                  <AuLinkExternal href={{this.href}} @icon="external-link">
-                    Beslissing (externe link)
-                  </AuLinkExternal>
-                </:content>
-              </Item>
-            </:right>
-          </Card.Columns>
-        {{else if this.model.recognition}}
-          {{! Erkenning niet meer actief }}
-          <Card.Columns>
-            <:left as |Item|>
-              <Item>
-                <:label>Status</:label>
-                <:content>
-                  <AuPill @skin="warning">Niet erkend</AuPill>
-                </:content>
-              </Item>
-            </:left>
-            <:right as |Item|>
-              <Item>
-                <:label>Einddatum</:label>
-                <:content>
-                  12-02-2023
-                </:content>
-              </Item>
+        {{#if this.recognition}}
+          {{#if
+            (check-if-active
+              this.recognition.validityPeriod.startTime
+              this.recognition.validityPeriod.endTime
+            )
+          }}
+            <Card.Columns>
+              <:left as |Item|>
+                <Item>
+                  <:label>Status</:label>
+                  <:content>
+                    <AuPill @skin="success">Erkend</AuPill>
+                  </:content>
+                </Item>
+                <Item>
+                  <:label>Ingangsdatum</:label>
+                  <:content>
+                    {{date-format this.recognition.validityPeriod.startTime}}
+                  </:content>
+                </Item>
+                <Item>
+                  <:label>Erkend door</:label>
+                  <:content>
+                    {{this.recognition.awardedBy.name}}
+                  </:content>
+                </Item>
+              </:left>
+              <:right as |Item|>
+                <Item>
+                  <:label>Erkend op</:label>
+                  <:content>
+                    {{date-format this.recognition.dateDocument}}
+                  </:content>
+                </Item>
+                <Item>
+                  <:label>Einddatum</:label>
+                  <:content>
+                    {{date-format this.recognition.validityPeriod.endTime}}
+                  </:content>
+                </Item>
+                {{#if this.recognition.legalResource}}
+                  <Item>
+                    <:label>Erkenningsbesluit</:label>
+                    <:content>
+                      <AuLinkExternal
+                        href={{this.recognition.legalResource}}
+                        @icon="external-link"
+                      >
+                        Beslissing (externe link)
+                      </AuLinkExternal>
+                    </:content>
+                  </Item>
+                {{/if}}
+              </:right>
+            </Card.Columns>
+          {{else}}
+            <Card.Columns>
+              <:left as |Item|>
+                <Item>
+                  <:label>Status</:label>
+                  <:content>
+                    <AuPill @skin="warning">Niet erkend</AuPill>
+                  </:content>
+                </Item>
+              </:left>
+              <:right as |Item|>
+                <Item>
+                  <:label>Sluitingsdatum</:label>
+                  <:content>
+                    {{date-format this.recognition.validityPeriod.endTime}}
+                  </:content>
+                </Item>
 
-            </:right>
-          </Card.Columns>
+              </:right>
+            </Card.Columns>
+          {{/if}}
         {{else}}
-          {{! Geen erkenning }}
           <div class="au-u-flex au-u-flex--center">
             <p><span
                 class="au-c-help-text--tertiary au-u-padding-right-tiny"
               >Deze vereniging heeft geen erkenning.</span>
-              <AuLink @skin="link">
+              <AuLink
+                @skin="link"
+                @model="0"
+                @route="association.recognition.create"
+              >
                 Voeg de erkenning toe.
               </AuLink>
             </p>
           </div>
         {{/if}}
-
       </:card>
     </DataCard>
   </section>
@@ -129,15 +163,17 @@
             <Item>
               <:label>Naam</:label>
               <:content>
-                {{this.model.name}}
+                {{this.model.association.name}}
               </:content>
             </Item>
             <Item>
               <:label>Type</:label>
               <:content>
-                {{#if this.model.classification}}
-                  <span title="{{this.model.classification.prefLabel}}">
-                    {{this.model.classification.notation}}
+                {{#if this.model.association.classification}}
+                  <span
+                    title="{{this.model.association.classification.prefLabel}}"
+                  >
+                    {{this.model.association.classification.notation}}
                   </span>
                 {{else}}
                   Niet opgegeven
@@ -147,10 +183,13 @@
             <Item>
               <:label>Hoofdactiviteiten</:label>
               <:content>
-                {{#if this.model.activities}}
-                  {{#each this.model.activities as |activity index|}}
+                {{#if this.model.association.activities}}
+                  {{#each
+                    this.model.association.activities
+                    as |activity index|
+                  }}
                     {{activity.label}}{{#unless
-                      (last-index index this.model.activities)
+                      (last-index index this.model.association.activities)
                     }},{{/unless}}
                   {{/each}}
                 {{else}}
@@ -162,8 +201,8 @@
             <Item>
               <:label>Beschrijving</:label>
               <:content>
-                {{#if this.model.description}}
-                  {{this.model.description}}
+                {{#if this.model.association.description}}
+                  {{this.model.association.description}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -174,8 +213,8 @@
             <Item>
               <:label>Minimum leeftijd</:label>
               <:content>
-                {{#if this.model.targetAudience}}
-                  {{this.model.targetAudience.minimumLeeftijd}}
+                {{#if this.model.association.targetAudience}}
+                  {{this.model.association.targetAudience.minimumLeeftijd}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -184,8 +223,8 @@
             <Item>
               <:label>Maximum leeftijd</:label>
               <:content>
-                {{#if this.model.targetAudience}}
-                  {{this.model.targetAudience.maximumLeeftijd}}
+                {{#if this.model.association.targetAudience}}
+                  {{this.model.association.targetAudience.maximumLeeftijd}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -194,8 +233,8 @@
             <Item>
               <:label>Koepel</:label>
               <:content>
-                {{#if this.model.parentOrganization.name}}
-                  {{this.model.parentOrganization.name}}
+                {{#if this.model.association.parentOrganization.name}}
+                  {{this.model.association.parentOrganization.name}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -204,7 +243,7 @@
             <Item>
               <:label>Startdatum</:label>
               <:content>
-                {{#each this.model.changeEvents as |changeEvent|}}
+                {{#each this.model.association.changeEvents as |changeEvent|}}
                   {{#let (get changeEvent.result "label") as |result|}}
                     {{#if (eq result "Oprichting")}}
                       {{date-format changeEvent.date}}
@@ -218,7 +257,7 @@
             <Item>
               <:label>vCode</:label>
               <:content>
-                {{#each this.model.identifiers as |identifier|}}
+                {{#each this.model.association.identifiers as |identifier|}}
                   {{#if (eq identifier.idName "vCode")}}
                     {{#if (get identifier.structuredIdentifier "localId")}}
                       {{get identifier.structuredIdentifier "localId"}}
@@ -232,7 +271,7 @@
             <Item>
               <:label>KBO nummer</:label>
               <:content>
-                {{#each this.model.identifiers as |identifier|}}
+                {{#each this.model.association.identifiers as |identifier|}}
                   {{#if (eq identifier.idName "KBO nummer")}}
                     {{#if (get identifier.structuredIdentifier "localId")}}
                       {{get identifier.structuredIdentifier "localId"}}
