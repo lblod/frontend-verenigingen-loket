@@ -13,6 +13,7 @@ export default class CurrentSessionService extends Service {
   @tracked group;
   @tracked groupClassification;
   @tracked roles = [];
+  @tracked currentAssociation;
 
   async load() {
     if (this.session.isAuthenticated) {
@@ -45,5 +46,9 @@ export default class CurrentSessionService extends Service {
     if (!this.groupClassification)
       throw new Error('Group classification not loaded');
     return this.groupClassification.label;
+  }
+
+  setCurrentAssociation(association) {
+    this.currentAssociation = association;
   }
 }
