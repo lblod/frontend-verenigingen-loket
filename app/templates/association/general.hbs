@@ -1,5 +1,5 @@
 <div class="au-o-box au-o-flow au-o-flow--large">
-  <section class="au-u-flex au-u-flex--between au-u-max-width-large">
+  <section class="au-u-flex au-u-flex--between">
     <div>
       <AuHeading @level="1" @skin="1">Algemeen</AuHeading>
       <AuHeading @level="3" @skin="3">{{this.model.name}}</AuHeading>
@@ -7,7 +7,6 @@
     <div
       class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
     >
-      <LastUpdated @lastUpdated={{this.model.lastUpdated}} />
       <ReportWrongData @model={{this.model}} />
     </div>
   </section>
