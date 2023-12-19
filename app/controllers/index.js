@@ -118,17 +118,19 @@ export default class IndexController extends Controller {
     );
     try {
       const params = {
-        search: this.search,
-        activities: this.activities,
-        status: this.status,
-        postalCodes: this.postalCodes,
-        types: this.types,
-        targetAudiences: this.targetAudiences,
+        ...(this.search ? { search: this.search } : {}),
+        ...(this.activities ? { activities: this.activities } : {}),
+        ...(this.status ? { status: this.status } : {}),
+        ...(this.postalCodes ? { postalCodes: this.postalCodes } : {}),
+        ...(this.types ? { types: this.types } : {}),
+        ...(this.targetAudiences
+          ? { targetAudiences: this.targetAudiences }
+          : {}),
       };
 
       const res = yield fetch(
-        'https://verenigingen.oscart-dev.s.redhost.be/download',
-        params,
+        'https://verenigingen.oscart-dev.s.redhost.be/download?' +
+          new URLSearchParams(params),
       );
 
       const currentDate = new Date();
