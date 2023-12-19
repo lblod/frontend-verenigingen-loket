@@ -117,13 +117,20 @@ export default class IndexController extends Controller {
       'Download gestart',
     );
     try {
+      const params = {
+        search: this.search,
+        activities: this.activities,
+        status: this.status,
+        postalCodes: this.postalCodes,
+        types: this.types,
+        targetAudiences: this.targetAudiences,
+      };
+
       const res = yield fetch(
         'https://verenigingen.oscart-dev.s.redhost.be/download',
+        params,
       );
-      // const header = res.headers.get('Content-Disposition');
-      // const parts = header.split(';');
-      // const filename = parts[1].split('=')[1];
-      // console.log({ filename });
+
       const currentDate = new Date();
       const timestamp = currentDate
         .toISOString()
