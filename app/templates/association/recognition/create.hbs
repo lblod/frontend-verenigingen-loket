@@ -73,13 +73,11 @@
                   </:content>
                 </Item>
                 <Item
-                  @required={{true}}
                   @errorMessage={{@model.administrativeUnitChangeset.error.name.validation}}
                 >
                   <:label>Ingangsdatum</:label>
                   <:content>
                     <AuDatePicker
-                      required
                       @value={{this.getStartDate}}
                       @onChange={{fn
                         (mut this.currentRecognition.recognitionModel.startTime)
@@ -91,7 +89,6 @@
                   <:label>Erkend door</:label>
                   <:content>
                     <PowerSelect
-                      required
                       @options={{this.items}}
                       @selected={{this.currentRecognition.selectedItem}}
                       @onChange={{fn
@@ -130,7 +127,6 @@
                   <:label>Einddatum</:label>
                   <:content>
                     <AuDatePicker
-                      required
                       @value={{this.getEndDate}}
                       @onChange={{fn
                         (mut this.currentRecognition.recognitionModel.endTime)

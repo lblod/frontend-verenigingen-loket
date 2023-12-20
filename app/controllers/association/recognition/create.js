@@ -2,7 +2,7 @@ import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-
+import { errorValidation } from '../../../validations/recognition-validation';
 export default class AssociationRecognitionCreateController extends Controller {
   items = ['College van burgemeester en schepenen', 'Andere'];
   @service contactPoints;
@@ -58,6 +58,15 @@ export default class AssociationRecognitionCreateController extends Controller {
     return year + '-' + month + '-' + day;
   }
 
+  validateFormData(validationData) {
+    const errorValidationResult = errorValidation.validate(validationData);
+    return {
+      errors: errorValidationResult.error
+        ? errorValidationResult.error.details
+        : {},
+    };
+  }
+
   @action
   async handleRecognition(event) {
     event.preventDefault();
@@ -68,7 +77,7 @@ export default class AssociationRecognitionCreateController extends Controller {
       } else {
         await this.newRecognition();
       }
-      this.router.transitionTo('association.recognition.index');
+      // this.router.transitionTo('association.recognition.index');
     } catch (error) {
       console.error(error);
     } finally {
@@ -78,16 +87,30 @@ export default class AssociationRecognitionCreateController extends Controller {
 
   @action
   async newRecognition() {
-    const recognition = await this.store.createRecord('recognition', {
+    const validationData = {
+      dateDocument: this.currentRecognition.recognitionModel.dateDocument,
+      legalResource:
+        this.currentRecognition.selectedItem === this.items[0]
+          ? this.currentRecognition.recognitionModel.legalResource
+          : null,
+      startTime: this.currentRecognition.recognitionModel.startTime,
+      endTime: this.currentRecognition.recognitionModel.endTime,
+    };
+
+    const validityPeriod = await this.getValidityPeriod();
+    const awardedBy = await this.getAwardedBy();
+    const data = {
       dateDocument: this.currentRecognition.recognitionModel.dateDocument,
       legalResource:
         this.currentRecognition.selectedItem === this.items[0]
           ? this.currentRecognition.recognitionModel.legalResource
           : null,
       association: this.association,
-      validityPeriod: await this.getValidityPeriod(),
-      awardedBy: await this.getAwardedBy(),
-    });
+      validityPeriod,
+      awardedBy,
+    };
+    console.log(this.validateFormData(validationData));
+    const recognition = await this.store.createRecord('recognition', data);
     await recognition.save();
     this.toaster.notify(
       'is opgeslagen.',
