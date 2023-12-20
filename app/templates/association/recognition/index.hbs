@@ -90,6 +90,11 @@
           {{date-format recognition.dateDocument}}
         </td>
         <td>
+          {{#if recognition.legalResource}}
+            <AuLinkExternal href={{recognition.legalResource}}>
+              Beslissing (externe link)
+            </AuLinkExternal>
+          {{/if}}
         </td>
       </c.body>
     {{/if}}

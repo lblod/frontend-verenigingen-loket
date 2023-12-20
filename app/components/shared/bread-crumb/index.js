@@ -3,7 +3,7 @@ import { inject as service } from '@ember/service';
 
 export default class SharedBreadCrumbComponent extends Component {
   @service router;
-  @service() currentSession;
+  @service() currentAssociation;
   bread(name) {
     return [
       {
@@ -65,7 +65,9 @@ export default class SharedBreadCrumbComponent extends Component {
 
   get crumbsForRoute() {
     const results = this.bread(
-      this.currentSession.currentAssociation.name,
+      this.currentAssociation.association
+        ? this.currentAssociation.association.name
+        : null,
     ).filter((value) => value.route === this.router.currentRouteName);
     if (results.length <= 0) return [];
     return results[0].crumbs;
