@@ -147,7 +147,7 @@ export default class IndexController extends Controller {
       };
 
       const res = yield fetch(
-        'https://verenigingen.oscart-dev.s.redhost.be/download?' +
+        `https://${window.location.hostname}/download?` +
           new URLSearchParams(params),
       );
 
