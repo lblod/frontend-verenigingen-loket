@@ -23,6 +23,10 @@ Router.map(function () {
     this.route('contact-detail');
     this.route('location');
     this.route('representatives');
+    this.route('recognition', { path: 'erkenningen' }, function () {
+      this.route('index', { path: '/' });
+      this.route('create');
+    });
   });
 
   this.route('route-not-found', {

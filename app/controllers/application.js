@@ -4,6 +4,9 @@ import { inject as service } from '@ember/service';
 export default class ApplicationController extends Controller {
   @service() session;
   @service() currentSession;
+  @service() currentAssociation;
+
+  @service store;
   @service router;
   appTitle = 'Verenigingen';
 }

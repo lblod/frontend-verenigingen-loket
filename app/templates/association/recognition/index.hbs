@@ -1,0 +1,102 @@
+<AuDataTable
+  @content={{this.recognitions}}
+  @isLoading={{this.isLoading}}
+  @noDataMessage="Deze vereniging heeft geen erkenningen"
+  as |t|
+>
+  <t.menu>
+    <section
+      class="au-u-flex au-u-flex--between au-o-box au-u-flex--vertical-start au-o-flow"
+    >
+      <div>
+        <AuHeading @level="1" @skin="1">Erkenningen</AuHeading>
+        <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
+      </div>
+      <AuButton @skin="secondary" @icon="plus">
+        Voeg nieuwe erkenning toe
+      </AuButton>
+    </section>
+  </t.menu>
+  <t.content class="au-c-data-table__table--small" as |c|>
+    <c.header>
+      <th width="80px" class="data-table__header-title"></th>
+      <AuDataTableThSortable
+        @field="validity-period.start-time"
+        @currentSorting={{this.sort}}
+        @label="Erkenning"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="validity-period.start-time"
+        @currentSorting={{this.sort}}
+        @label="Ingangsdatum"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="validity-period.end-time"
+        @currentSorting={{this.sort}}
+        @label="Einddatum"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="awarded-by.name"
+        @currentSorting={{this.sort}}
+        @label="Erkend door"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field="date-document"
+        @currentSorting={{this.sort}}
+        @label="Erkend op"
+        @class="data-table__header-title"
+      />
+      <AuDataTableThSortable
+        @field=""
+        @currentSorting={{this.sort}}
+        @label="Erkenningsbesluit"
+        @class="data-table__header-title"
+      />
+    </c.header>
+    {{#if this.hasErrored}}
+      <TableMessage::Error />
+    {{else}}
+      <c.body as |recognition|>
+        <td>
+          {{#if
+            (check-if-active
+              recognition.validityPeriod.startTime
+              recognition.validityPeriod.endTime
+            )
+          }}
+            <AuBadge @icon="vote-star-filled" />
+          {{/if}}
+        </td>
+        <td>
+          <AuLink>Erkenning
+            {{date-year recognition.validityPeriod.startTime}}
+            -
+            {{date-year recognition.validityPeriod.endTime}}</AuLink>
+        </td>
+        <td>
+          {{date-format recognition.validityPeriod.startTime}}
+        </td>
+        <td>
+          {{date-format recognition.validityPeriod.endTime}}
+        </td>
+        <td>
+          {{recognition.awardedBy.name}}
+        </td>
+        <td>
+          {{date-format recognition.dateDocument}}
+        </td>
+        <td>
+          {{#if recognition.legalResource}}
+            <AuLinkExternal href={{recognition.legalResource}}>
+              Beslissing (externe link)
+            </AuLinkExternal>
+          {{/if}}
+        </td>
+      </c.body>
+    {{/if}}
+  </t.content>
+</AuDataTable>

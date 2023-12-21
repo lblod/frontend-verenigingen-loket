@@ -8,10 +8,18 @@ module('Integration | Helper | last-index', function (hooks) {
 
   // TODO: Replace this with your real tests.
   test('it renders', async function (assert) {
-    this.set('inputValue', '1234');
+    this.set('inputValue', ['1', '2', '3', '4']);
 
-    await render(hbs`{{last-index this.inputValue}}`);
+    await render(hbs`
+    {{#each this.inputValue as |value index|}}
+      {{#if
+        (last-index index this.inputValue)
+      }}
+        {{ value }}
+      {{/if}}
+    {{/each}}
+  `);
 
-    assert.dom().hasText('1234');
+    assert.dom().hasAnyText('4');
   });
 });

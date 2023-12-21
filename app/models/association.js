@@ -19,4 +19,6 @@ export default class AssociationModel extends Model {
   classification;
   @belongsTo('target-audience', { inverse: null, async: true })
   targetAudience;
+  @hasMany('recognition', { inverse: null, async: true })
+  recognitions;
 }
