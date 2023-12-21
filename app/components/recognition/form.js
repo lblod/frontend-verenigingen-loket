@@ -12,22 +12,35 @@ export default class FormComponent extends Component {
   @service toaster;
   @service dateYear;
 
+  notify(message, title, type = 'success') {
+    this.toaster.notify(message, title, {
+      type,
+      timeOut: 4000,
+      closable: false,
+    });
+  }
+
   get getStartDate() {
     if (this.currentRecognition.recognition) {
-      const newDate = new Date(
-        this.currentRecognition.recognition.validityPeriod.get('startTime'),
-      );
-      return this.formatDate(newDate);
+      const startTime =
+        this.currentRecognition.recognition.validityPeriod.get('startTime');
+
+      if (startTime && !isNaN(new Date(startTime))) {
+        const newDate = new Date(startTime);
+        return this.formatDate(newDate);
+      }
     }
     return null;
   }
-
   get getEndDate() {
     if (this.currentRecognition.recognition) {
-      const newDate = new Date(
-        this.currentRecognition.recognition.validityPeriod.get('endTime'),
-      );
-      return this.formatDate(newDate);
+      const endTime =
+        this.currentRecognition.recognition.validityPeriod.get('endTime');
+
+      if (endTime && !isNaN(new Date(endTime))) {
+        const newDate = new Date(endTime);
+        return this.formatDate(newDate);
+      }
     }
     return null;
   }
@@ -60,84 +73,101 @@ export default class FormComponent extends Component {
 
   @action
   async newRecognition() {
+    const { recognitionModel, selectedItem } = this.currentRecognition;
+
     const recognition = await this.store.createRecord('recognition', {
-      dateDocument: this.currentRecognition.recognitionModel.dateDocument,
+      dateDocument: recognitionModel.dateDocument,
       legalResource:
-        this.currentRecognition.selectedItem === this.items[0]
-          ? this.currentRecognition.recognitionModel.legalResource
-          : null,
+        selectedItem === this.items[0] ? recognitionModel.legalResource : null,
       association: this.currentAssociation.association,
-      validityPeriod: await this.getValidityPeriod(),
+      validityPeriod: await this.updateOrGetPeriod(recognitionModel),
       awardedBy: await this.getAwardedBy(),
     });
-    await recognition.save();
-    this.toaster.notify(
-      'is opgeslagen.',
-      `Erkenning ${this.dateYear.getCurrentYear(
-        this.currentRecognition.recognitionModel.startTime,
-      )} - ${this.dateYear.getCurrentYear(
-        this.currentRecognition.recognitionModel.endTime,
-      )}`,
-      {
-        type: 'success',
-        timeOut: 4000,
-        closable: false,
-      },
-    );
+
+    try {
+      await recognition.save();
+      const startYear = this.dateYear.getCurrentYear(
+        recognitionModel.startTime,
+      );
+      const endYear = this.dateYear.getCurrentYear(recognitionModel.endTime);
+      this.notify(
+        `De erkenning voor de periode ${startYear} - ${endYear} is aangemaakt.`,
+        `Erkenning succesvol aangemaakt.`,
+      );
+    } catch (error) {
+      this.notify(
+        'Er is een fout opgetreden bij het opslaan van de erkenning.',
+      );
+      console.error('Error saving recognition:', error);
+    }
   }
 
   @action
   async editRecognition() {
-    const recognition = {};
-    recognition.dateDocument =
-      this.currentRecognition.recognitionModel.dateDocument;
-    recognition.legalResource =
-      this.currentRecognition.selectedItem === this.items[0]
-        ? this.currentRecognition.recognitionModel.legalResource
-        : null;
-    recognition.awardedBy = await this.getAwardedBy();
-    if (
-      this.currentRecognition.recognitionModel.startTime ||
-      this.currentRecognition.recognitionModel.endTime
-    ) {
-      await this.store
-        .findRecord(
-          'period',
-          this.currentRecognition.recognition.validityPeriod.get('id'),
-        )
-        .then((validityPeriod) => {
-          if (this.currentRecognition.recognitionModel.startTime) {
-            validityPeriod.startTime = new Date(
-              this.currentRecognition.recognitionModel.startTime,
-            );
-          }
-          if (this.currentRecognition.recognitionModel.endTime) {
-            validityPeriod.endTime = new Date(
-              this.currentRecognition.recognitionModel.endTime,
-            );
-          }
-          validityPeriod.save();
-        });
+    const { recognitionModel, selectedItem } = this.currentRecognition;
+    const validityPeriod = await this.updateOrGetPeriod(recognitionModel);
+    const recognition = {
+      dateDocument: recognitionModel.dateDocument,
+      legalResource:
+        selectedItem === this.items[0] ? recognitionModel.legalResource : null,
+      awardedBy: await this.getAwardedBy(),
+      validityPeriod,
+    };
+
+    try {
+      await this.currentRecognition.recognition.setProperties({
+        ...recognition,
+      });
+      await this.currentRecognition.recognition.save();
+      const startYear = this.dateYear.getCurrentYear(validityPeriod.startTime);
+      const endYear = this.dateYear.getCurrentYear(validityPeriod.endTime);
+      this.notify(
+        `De erkenning voor de periode ${startYear} - ${endYear} is bijgewerkt.`,
+        `Erkenning succesvol bijgewerkt.`,
+      );
+    } catch (error) {
+      this.notify(
+        'Er is een fout opgetreden bij het bijwerken van de erkenning.',
+      );
+      console.error('Error updating recognition:', error);
     }
-    await this.currentRecognition.recognition.setProperties({ ...recognition });
-    await this.currentRecognition.recognition.save();
-    this.toaster.notify(
-      'is aangepast.',
-      `Erkenning ${this.dateYear.getCurrentYear(
-        this.currentRecognition.recognition.validityPeriod.get('startTime'),
-      )} - ${this.dateYear.getCurrentYear(
-        this.currentRecognition.recognition.validityPeriod.get('endTime'),
-      )}`,
-      {
-        type: 'success',
-        timeOut: 4000,
-        closable: false,
-      },
-    );
   }
 
   @action
-  async getValidityPeriod() {
+  async updateOrGetPeriod(recognitionModel) {
+    if (
+      this.currentRecognition.recognition &&
+      this.currentRecognition.recognition.validityPeriod.get('id')
+    ) {
+      const validityPeriodId =
+        this.currentRecognition.recognition.validityPeriod.get('id');
+      return await this.updateValidityPeriod(
+        recognitionModel,
+        validityPeriodId,
+      );
+    } else {
+      return await this.createValidityPeriod();
+    }
+  }
+  @action
+  async updateValidityPeriod(recognitionModel, validityPeriodId) {
+    const validityPeriod = await this.store.findRecord(
+      'period',
+      validityPeriodId,
+    );
+
+    if (recognitionModel.startTime) {
+      validityPeriod.startTime = new Date(recognitionModel.startTime);
+    }
+
+    if (recognitionModel.endTime) {
+      validityPeriod.endTime = new Date(recognitionModel.endTime);
+    }
+
+    return await validityPeriod.save();
+  }
+
+  async createValidityPeriod() {
     const validityPeriod = this.store.createRecord('period', {
       startTime: this.currentRecognition.recognitionModel.startTime
         ? new Date(this.currentRecognition.recognitionModel.startTime)
@@ -146,6 +176,7 @@ export default class FormComponent extends Component {
         ? new Date(this.currentRecognition.recognitionModel.endTime)
         : null,
     });
+
     await validityPeriod.save();
     return validityPeriod;
   }
