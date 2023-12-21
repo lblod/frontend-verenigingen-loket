@@ -4,7 +4,7 @@ import { action } from '@ember/object';
 
 export default class FormComponent extends Component {
   items = ['College van burgemeester en schepenen', 'Andere'];
-  @service() currentAssociation;
+  @service currentAssociation;
   @service contactPoints;
   @service currentRecognition;
   @service store;

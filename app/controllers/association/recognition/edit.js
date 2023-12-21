@@ -5,10 +5,6 @@ export default class AssociationRecognitionEditController extends Controller {
   @service currentRecognition;
   @service currentAssociation;
 
-  get isLoading() {
-    return this.model.association.isRunning;
-  }
-
   get recognition() {
     return this.model.recognition?.isFinished
       ? this.model.recognition.value
