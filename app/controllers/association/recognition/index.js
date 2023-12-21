@@ -1,17 +1,9 @@
 import Controller from '@ember/controller';
-
+import { inject as service } from '@ember/service';
 export default class AssociationRecognitionController extends Controller {
+  @service() currentAssociation;
   get isLoading() {
-    return (
-      this.model.association.isRunning || this.model.recognitions.isRunning
-    );
-  }
-
-  get association() {
-    const association = this.model.association.isFinished
-      ? this.model.association.value
-      : null;
-    return association;
+    return this.model.recognitions.isRunning;
   }
 
   get recognitions() {

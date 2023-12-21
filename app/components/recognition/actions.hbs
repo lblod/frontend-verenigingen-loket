@@ -1,0 +1,22 @@
+<div class="au-u-flex au-u-flex--vertical-end">
+  <AuButton
+    class="au-u-margin-right-small"
+    type="submit"
+    form="recognition-form"
+    @skin="primary"
+    @iconAlignment="left"
+    @loading={{@isLoading}}
+  >
+    <span>Opslaan</span>
+  </AuButton>
+
+  <AuLink
+    @route="association.recognition.index"
+    @skin="button-secondary"
+    @iconAlignment="left"
+    @disabled={{this.disabled}}
+    @onClick={{this.onCancel}}
+  >
+    <span>Annuleer</span>
+  </AuLink>
+</div>

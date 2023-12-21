@@ -1,177 +1,23 @@
-{{#let this.currentRecognition.recognition as |recognition|}}
-  <div class="au-o-box au-o-flow au-o-flow--large">
-    <form
-      id="recognition-form"
-      aria-label="recognition-form"
-      class="au-c-form"
-      {{on "submit" this.handleRecognition}}
+<div class="au-o-box au-o-flow au-o-flow--large">
+  <section class="au-u-flex au-u-flex--between">
+    <div>
+      <AuHeading @level="1" @skin="1">
+        Voeg nieuwe erkenning toe
+      </AuHeading>
+      <AuHeading
+        @level="3"
+        @skin="3"
+      >{{this.currentAssociation.association.name}}</AuHeading>
+    </div>
+    <div
+      class="au-u-flex au-u-flex--column au-u-flex--end au-u-flex--vertical-end"
     >
-      <section class="au-u-flex au-u-flex--between">
-        <div>
-          <AuHeading @level="1" @skin="1">
-            {{#if recognition}}
-              Bewerk erkenning
-              {{date-year recognition.validityPeriod.startTime}}
-              -
-              {{date-year recognition.validityPeriod.endTime}}
-            {{else}}
-              Voeg nieuwe erkenning toe
-            {{/if}}
-          </AuHeading>
-          <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
-        </div>
-        <div
-          class="au-u-flex au-u-flex--column au-u-flex--end au-u-flex--vertical-end"
-        >
-          <div class="au-u-flex au-u-flex--vertical-end">
-            <AuButton
-              class="au-u-margin-right-small"
-              type="submit"
-              form="recognition-form"
-              @skin="primary"
-              @iconAlignment="left"
-              @loading={{this.isFormLoading}}
-            >
-              <span>Opslaan</span>
-            </AuButton>
-
-            <AuLink
-              @route="association.recognition.index"
-              @skin="button-secondary"
-              @iconAlignment="left"
-              @disabled={{this.disabled}}
-              @onClick={{this.onCancel}}
-            >
-              <span>Annuleer</span>
-            </AuLink>
-          </div>
-          {{#if @showSaveError}}
-            <AuHelpText @error={{true}}>Je kan deze pagina niet opslaan omdat
-              een verplicht veld niet is ingevuld.</AuHelpText>
-          {{/if}}
-        </div>
-      </section>
-      <section>
-        <DataCard>
-          <:title>
-            Erkenning
-          </:title>
-          <:card as |Card|>
-            <Card.Columns>
-              <:left as |Item|>
-                <Item>
-                  <:label>Erkend op</:label>
-                  <:content>
-                    <AuDatePicker
-                      @value={{recognition.dateDocument}}
-                      @onChange={{fn
-                        (mut
-                          this.currentRecognition.recognitionModel.dateDocument
-                        )
-                      }}
-                    />
-                  </:content>
-                </Item>
-                <Item
-                  @required={{true}}
-                  @errorMessage={{@model.administrativeUnitChangeset.error.name.validation}}
-                >
-                  <:label>Ingangsdatum</:label>
-                  <:content>
-                    <AuDatePicker
-                      required
-                      @value={{this.getStartDate}}
-                      @onChange={{fn
-                        (mut this.currentRecognition.recognitionModel.startTime)
-                      }}
-                    />
-                  </:content>
-                </Item>
-                <Item>
-                  <:label>Erkend door</:label>
-                  <:content>
-                    <PowerSelect
-                      required
-                      @options={{this.items}}
-                      @selected={{this.currentRecognition.selectedItem}}
-                      @onChange={{fn
-                        (mut this.currentRecognition.selectedItem)
-                      }}
-                      as |name|
-                    >
-                      {{name}}
-                    </PowerSelect>
-                    {{#if
-                      (eq
-                        (get this "currentRecognition.selectedItem")
-                        (get this "items.1")
-                      )
-                    }}
-                      <section
-                        class="au-u-margin-top-small au-u-flex au-u-flex--vertical-center"
-                      >
-                        <label
-                          class="au-c-card-item__label au-c-card-item__label--data"
-                        >namelijk</label>
-                        <AuInput
-                          @value={{mut
-                            this.currentRecognition.recognitionModel.awardedBy
-                          }}
-                          id="awardedBy"
-                          @width={{"block"}}
-                        />
-                      </section>
-                    {{/if}}
-                  </:content>
-                </Item>
-              </:left>
-              <:right as |Item|>
-                <Item>
-                  <:label>Einddatum</:label>
-                  <:content>
-                    <AuDatePicker
-                      required
-                      @value={{this.getEndDate}}
-                      @onChange={{fn
-                        (mut this.currentRecognition.recognitionModel.endTime)
-                      }}
-                    />
-                  </:content>
-                </Item>
-                {{#if
-                  (eq
-                    (get this "currentRecognition.selectedItem")
-                    (get this "items.0")
-                  )
-                }}
-                  <Item>
-                    <:label>Erkenningsbesluit
-                    </:label>
-                    <:content>
-                      <AuInput
-                        @value={{mut
-                          this.currentRecognition.recognitionModel.legalResource
-                        }}
-                        @width={{"block"}}
-                        id="erkenningsbesluit"
-                      />
-                      {{! <div class="au-u-flex au-u-flex--end">
-                        <AuHelpText @skin="tertiary">Geen link?
-                          <AuLink @skin="link">
-                            Voeg bestand toe
-                          </AuLink>
-                        </AuHelpText>
-                      </div> }}
-                    </:content>
-                  </Item>
-                {{/if}}
-
-              </:right>
-            </Card.Columns>
-          </:card>
-        </DataCard>
-      </section>
-    </form>
-  </div>
-
-{{/let}}
+      <Recognition::Actions @isLoading={{this.currentRecognition.isLoading}} />
+      {{#if @showSaveError}}
+        <AuHelpText @error={{true}}>Je kan deze pagina niet opslaan omdat een
+          verplicht veld niet is ingevuld.</AuHelpText>
+      {{/if}}
+    </div>
+  </section>
+  <Recognition::Form />
+</div>

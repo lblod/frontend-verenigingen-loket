@@ -1,0 +1,127 @@
+<form
+  id="recognition-form"
+  aria-label="recognition-form"
+  class="au-c-form"
+  {{on "submit" this.handleRecognition}}
+>
+  {{#let this.currentRecognition.recognition as |recognition|}}
+    <section>
+      <DataCard>
+        <:title>
+          Erkenning
+        </:title>
+        <:card as |Card|>
+          <Card.Columns>
+            <:left as |Item|>
+              <Item>
+                <:label>Erkend op</:label>
+                <:content>
+                  <AuDatePicker
+                    @value={{recognition.dateDocument}}
+                    @onChange={{fn
+                      (mut
+                        this.currentRecognition.recognitionModel.dateDocument
+                      )
+                    }}
+                  />
+                </:content>
+              </Item>
+              <Item
+                @required={{true}}
+                @errorMessage={{@model.administrativeUnitChangeset.error.name.validation}}
+              >
+                <:label>Ingangsdatum</:label>
+                <:content>
+                  <AuDatePicker
+                    required
+                    @value={{this.getStartDate}}
+                    @onChange={{fn
+                      (mut this.currentRecognition.recognitionModel.startTime)
+                    }}
+                  />
+                </:content>
+              </Item>
+              <Item>
+                <:label>Erkend door</:label>
+                <:content>
+                  <PowerSelect
+                    required
+                    @options={{this.items}}
+                    @selected={{this.currentRecognition.selectedItem}}
+                    @onChange={{fn (mut this.currentRecognition.selectedItem)}}
+                    as |name|
+                  >
+                    {{name}}
+                  </PowerSelect>
+                  {{#if
+                    (eq
+                      (get this "currentRecognition.selectedItem")
+                      (get this "items.1")
+                    )
+                  }}
+                    <section
+                      class="au-u-margin-top-small au-u-flex au-u-flex--vertical-center"
+                    >
+                      <label
+                        class="au-c-card-item__label au-c-card-item__label--data"
+                      >namelijk</label>
+                      <AuInput
+                        @value={{mut
+                          this.currentRecognition.recognitionModel.awardedBy
+                        }}
+                        id="awardedBy"
+                        @width={{"block"}}
+                      />
+                    </section>
+                  {{/if}}
+                </:content>
+              </Item>
+            </:left>
+            <:right as |Item|>
+              <Item>
+                <:label>Einddatum</:label>
+                <:content>
+                  <AuDatePicker
+                    required
+                    @value={{this.getEndDate}}
+                    @onChange={{fn
+                      (mut this.currentRecognition.recognitionModel.endTime)
+                    }}
+                  />
+                </:content>
+              </Item>
+              {{#if
+                (eq
+                  (get this "currentRecognition.selectedItem")
+                  (get this "items.0")
+                )
+              }}
+                <Item>
+                  <:label>Erkenningsbesluit
+                  </:label>
+                  <:content>
+                    <AuInput
+                      @value={{mut
+                        this.currentRecognition.recognitionModel.legalResource
+                      }}
+                      @width={{"block"}}
+                      id="erkenningsbesluit"
+                    />
+                    {{! <div class="au-u-flex au-u-flex--end">
+                        <AuHelpText @skin="tertiary">Geen link?
+                          <AuLink @skin="link">
+                            Voeg bestand toe
+                          </AuLink>
+                        </AuHelpText>
+                      </div> }}
+                  </:content>
+                </Item>
+              {{/if}}
+
+            </:right>
+          </Card.Columns>
+        </:card>
+      </DataCard>
+    </section>
+  {{/let}}
+</form>

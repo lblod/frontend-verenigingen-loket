@@ -10,12 +10,14 @@
     >
       <div>
         <AuHeading @level="1" @skin="1">Erkenningen</AuHeading>
-        <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
+        <AuHeading
+          @level="3"
+          @skin="3"
+        >{{this.currentAssociation.association.name}}</AuHeading>
       </div>
       <AuLink
         @skin="button-secondary"
         @icon="plus"
-        @model="0"
         @route="association.recognition.create"
       >
         Voeg nieuwe erkenning toe
@@ -78,7 +80,7 @@
         </td>
         <td>
           <AuLink
-            @route="association.recognition.create"
+            @route="association.recognition.edit"
             @model={{recognition.id}}
           >Erkenning
             {{date-year recognition.validityPeriod.startTime}}

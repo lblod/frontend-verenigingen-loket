@@ -5,6 +5,7 @@ export default class CurrentRecognitionService extends Service {
   items = ['College van burgemeester en schepenen', 'Andere'];
   @tracked recognition = null;
   @tracked selectedItem = this.items[0];
+  @tracked isLoading = false;
 
   @tracked recognitionModel = {
     startTime: null,
@@ -13,8 +14,12 @@ export default class CurrentRecognitionService extends Service {
     awardedBy: null,
     legalResource: null,
   };
+  setIsLoading(isLoading) {
+    this.isLoading = isLoading;
+  }
 
   async setCurrentRecognition(recognition) {
+    this.isLoading = false;
     this.recognitionModel = {
       startTime: null,
       endTime: null,
