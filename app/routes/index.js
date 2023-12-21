@@ -17,6 +17,8 @@ export default class IndexRoute extends Route {
     postalCodes: { refreshModel: true },
     types: { refreshModel: true },
     targetAudiences: { refreshModel: true },
+    start: { refreshModel: true },
+    end: { refreshModel: true },
   };
 
   async beforeModel(transition) {

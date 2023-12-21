@@ -38,6 +38,10 @@
               @onChange={{this.setTargetAudiences}}
               @selected={{this.selectedTargetAudiences}}
             />
+            <Filters::DateSelect
+              @onChange={{this.setDates}}
+              @selected={{this.selectedDates}}
+            />
           </div>
           <div class="au-o-grid__item">
             <AuButton @skin="link" type="reset" onclick={{this.resetFilters}}>
