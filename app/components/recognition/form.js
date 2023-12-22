@@ -1,6 +1,8 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
+import { errorValidation } from '../../validations/recognition-validation';
+import { tracked } from '@glimmer/tracking';
 
 export default class FormComponent extends Component {
   items = ['College van burgemeester en schepenen', 'Andere'];
@@ -11,6 +13,8 @@ export default class FormComponent extends Component {
   @service router;
   @service toaster;
   @service dateYear;
+
+  @tracked validationErrors = {};
 
   notify(message, title, type = 'success') {
     this.toaster.notify(message, title, {
@@ -52,18 +56,49 @@ export default class FormComponent extends Component {
 
     return year + '-' + month + '-' + day;
   }
+
+  mapValidationDetailsToErrors(validationDetails) {
+    return validationDetails.reduce((accumulator, detail) => {
+      accumulator[detail.context.key] = detail.message;
+      return accumulator;
+    }, {});
+  }
+
+  @action
+  clearFormError(errorField) {
+    this.validationErrors = {
+      ...this.validationErrors,
+      [errorField]: undefined,
+    };
+    console.log(this.validationErrors);
+  }
+
+  validateForm() {
+    const err = errorValidation.validate({
+      ...this.currentRecognition.recognitionModel,
+      awardedBy:
+        this.currentRecognition.recognitionModel.awardedBy ??
+        this.currentRecognition.selectedItem,
+    });
+    this.validationErrors = err.error
+      ? this.mapValidationDetailsToErrors(err.error.details)
+      : {};
+    console.log(this.validationErrors);
+  }
+
   @action
   async handleRecognition(event) {
     event.preventDefault();
     this.currentRecognition.setIsLoading(true);
     try {
-      if (this.currentRecognition.recognition) {
-        await this.editRecognition();
-      } else {
-        await this.newRecognition();
-      }
-      this.currentRecognition.setIsLoading(false);
-      this.router.transitionTo('association.recognition.index');
+      this.validateForm();
+      // if (this.currentRecognition.recognition) {
+      //   await this.editRecognition();
+      // } else {
+      //   await this.newRecognition();
+      // }
+      // this.currentRecognition.setIsLoading(false);
+      // this.router.transitionTo('association.recognition.index');
     } catch (error) {
       console.error(error);
     } finally {

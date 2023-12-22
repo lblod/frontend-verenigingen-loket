@@ -14,38 +14,48 @@
           <Card.Columns>
             <:left as |Item|>
               <Item>
-                <:label>Erkend op</:label>
+                <:label>
+                  <AuLabel @inline={{true}}>Erkend op</AuLabel></:label>
                 <:content>
                   <AuDatePicker
                     @value={{recognition.dateDocument}}
+                    @error={{this.validationErrors.dateDocument}}
                     @onChange={{fn
                       (mut
                         this.currentRecognition.recognitionModel.dateDocument
                       )
                     }}
                   />
-                </:content>
-              </Item>
-              <Item
-                @required={{true}}
-                @errorMessage={{@model.administrativeUnitChangeset.error.name.validation}}
-              >
-                <:label>Ingangsdatum</:label>
-                <:content>
-                  <AuDatePicker
-                    required
-                    @value={{this.getStartDate}}
-                    @onChange={{fn
-                      (mut this.currentRecognition.recognitionModel.startTime)
-                    }}
-                  />
+                  <AuHelpText
+                    @error={{this.validationErrors.dateDocument}}
+                  >{{this.validationErrors.dateDocument}}</AuHelpText>
                 </:content>
               </Item>
               <Item>
-                <:label>Erkend door</:label>
+                <:label>
+                  <AuLabel
+                    @inline={{true}}
+                    @required={{true}}
+                  >Ingangsdatum</AuLabel></:label>
+                <:content>
+                  <AuDatePicker
+                    @value={{this.getStartDate}}
+                    @onChange={{fn
+                      (mut this.currentRecognition.recognitionModel.startTime)
+                      (this.clearFormError "startTime")
+                    }}
+                    @error={{this.validationErrors.startTime}}
+                  />
+                  <AuHelpText
+                    @error={{this.validationErrors.startTime}}
+                  >{{this.validationErrors.startTime}}</AuHelpText>
+                </:content>
+              </Item>
+              <Item>
+                <:label>
+                  <AuLabel @inline={{true}} @required={{true}}>Erkend door</AuLabel></:label>
                 <:content>
                   <PowerSelect
-                    required
                     @options={{this.items}}
                     @selected={{this.currentRecognition.selectedItem}}
                     @onChange={{fn (mut this.currentRecognition.selectedItem)}}
@@ -70,8 +80,12 @@
                           this.currentRecognition.recognitionModel.awardedBy
                         }}
                         id="awardedBy"
+                        @error={{this.validationErrors.awardedBy}}
                         @width={{"block"}}
                       />
+                      <AuHelpText
+                        @error={{this.validationErrors.awardedBy}}
+                      >{{this.validationErrors.awardedBy}}</AuHelpText>
                     </section>
                   {{/if}}
                 </:content>
@@ -79,15 +93,30 @@
             </:left>
             <:right as |Item|>
               <Item>
-                <:label>Einddatum</:label>
+                <:content>
+                  {{! TODO: find better way to fix this? }}
+                  {{! template-lint-disable no-inline-styles }}
+                  <AuInput style="visibility: hidden;" />
+                </:content>
+              </Item>
+
+              <Item>
+                <:label>
+                  <AuLabel
+                    @inline={{true}}
+                    @required={{true}}
+                  >Einddatum</AuLabel></:label>
                 <:content>
                   <AuDatePicker
-                    required
+                    @error={{this.validationErrors.endTime}}
                     @value={{this.getEndDate}}
                     @onChange={{fn
                       (mut this.currentRecognition.recognitionModel.endTime)
                     }}
                   />
+                  <AuHelpText
+                    @error={{this.validationErrors.endTime}}
+                  >{{this.validationErrors.endTime}}</AuHelpText>
                 </:content>
               </Item>
               {{#if
@@ -97,7 +126,8 @@
                 )
               }}
                 <Item>
-                  <:label>Erkenningsbesluit
+                  <:label>
+                    <AuLabel @inline={{true}}>Erkenningsbesluit</AuLabel>
                   </:label>
                   <:content>
                     <AuInput
@@ -106,7 +136,11 @@
                       }}
                       @width={{"block"}}
                       id="erkenningsbesluit"
+                      @error={{this.validationErrors.legalResource}}
                     />
+                    <AuHelpText
+                      @error={{this.validationErrors.legalResource}}
+                    >{{this.validationErrors.legalResource}}</AuHelpText>
                     {{! <div class="au-u-flex au-u-flex--end">
                         <AuHelpText @skin="tertiary">Geen link?
                           <AuLink @skin="link">
