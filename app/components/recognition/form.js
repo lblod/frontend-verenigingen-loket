@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
-import { action } from '@ember/object';
+import { action, set } from '@ember/object';
 import { errorValidation } from '../../validations/recognition-validation';
 import { tracked } from '@glimmer/tracking';
 
@@ -66,11 +66,7 @@ export default class FormComponent extends Component {
 
   @action
   clearFormError(errorField) {
-    this.validationErrors = {
-      ...this.validationErrors,
-      [errorField]: undefined,
-    };
-    console.log(this.validationErrors);
+    set(this.validationErrors, errorField, null);
   }
 
   validateForm() {

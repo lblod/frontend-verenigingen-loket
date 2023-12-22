@@ -24,6 +24,7 @@
                       (mut
                         this.currentRecognition.recognitionModel.dateDocument
                       )
+                      (this.clearFormError "dateDocument")
                     }}
                   />
                   <AuHelpText
@@ -112,6 +113,7 @@
                     @value={{this.getEndDate}}
                     @onChange={{fn
                       (mut this.currentRecognition.recognitionModel.endTime)
+                      (this.clearFormError "endTime")
                     }}
                   />
                   <AuHelpText
