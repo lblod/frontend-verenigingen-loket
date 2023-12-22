@@ -73,13 +73,14 @@ export default class FormComponent extends Component {
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
       awardedBy:
-        this.currentRecognition.recognitionModel.awardedBy ??
-        this.currentRecognition.selectedItem,
+        this.items[0] === this.currentRecognition.selectedItem
+          ? this.currentRecognition.selectedItem
+          : this.currentRecognition.recognitionModel.awardedBy,
     });
     this.validationErrors = err.error
       ? this.mapValidationDetailsToErrors(err.error.details)
       : {};
-    console.log(this.validationErrors);
+    return err.error;
   }
 
   @action
@@ -87,14 +88,15 @@ export default class FormComponent extends Component {
     event.preventDefault();
     this.currentRecognition.setIsLoading(true);
     try {
-      this.validateForm();
-      // if (this.currentRecognition.recognition) {
-      //   await this.editRecognition();
-      // } else {
-      //   await this.newRecognition();
-      // }
-      // this.currentRecognition.setIsLoading(false);
-      // this.router.transitionTo('association.recognition.index');
+      const errors = this.validateForm();
+      if (errors) return;
+      if (this.currentRecognition.recognition) {
+        await this.editRecognition();
+      } else {
+        await this.newRecognition();
+      }
+      this.currentRecognition.setIsLoading(false);
+      this.router.transitionTo('association.recognition.index');
     } catch (error) {
       console.error(error);
     } finally {

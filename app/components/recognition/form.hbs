@@ -4,7 +4,7 @@
   class="au-c-form"
   {{on "submit" this.handleRecognition}}
 >
-  {{#let this.currentRecognition.recognition as |recognition|}}
+  {{#let this.currentRecognition.recognitionModel as |model|}}
     <section>
       <DataCard>
         <:title>
@@ -18,14 +18,10 @@
                   <AuLabel @inline={{true}}>Erkend op</AuLabel></:label>
                 <:content>
                   <AuDatePicker
-                    @value={{recognition.dateDocument}}
+                    @value={{model.dateDocument}}
                     @error={{this.validationErrors.dateDocument}}
-                    @onChange={{fn
-                      (mut
-                        this.currentRecognition.recognitionModel.dateDocument
-                      )
-                      (this.clearFormError "dateDocument")
-                    }}
+                    @onChange={{fn (mut model.dateDocument)}}
+                    {{on "input" (fn this.clearFormError "dateDocument")}}
                   />
                   <AuHelpText
                     @error={{this.validationErrors.dateDocument}}
@@ -41,10 +37,8 @@
                 <:content>
                   <AuDatePicker
                     @value={{this.getStartDate}}
-                    @onChange={{fn
-                      (mut this.currentRecognition.recognitionModel.startTime)
-                      (this.clearFormError "startTime")
-                    }}
+                    @onChange={{fn (mut model.startTime)}}
+                    {{on "input" (fn this.clearFormError "startTime")}}
                     @error={{this.validationErrors.startTime}}
                   />
                   <AuHelpText
@@ -76,28 +70,37 @@
                       <label
                         class="au-c-card-item__label au-c-card-item__label--data"
                       >namelijk</label>
-                      <AuInput
-                        @value={{mut
-                          this.currentRecognition.recognitionModel.awardedBy
-                        }}
-                        id="awardedBy"
-                        @error={{this.validationErrors.awardedBy}}
-                        @width={{"block"}}
-                      />
-                      <AuHelpText
-                        @error={{this.validationErrors.awardedBy}}
-                      >{{this.validationErrors.awardedBy}}</AuHelpText>
+                      <div class="au-u-flex au-u-flex--column au-u-1-1">
+                        <AuInput
+                          @value={{mut model.awardedBy}}
+                          {{on "input" (fn this.clearFormError "awardedBy")}}
+                          id="awardedBy"
+                          @error={{this.validationErrors.awardedBy}}
+                          @width={{"block"}}
+                        />
+                        <AuHelpText
+                          @error={{this.validationErrors.awardedBy}}
+                        >{{this.validationErrors.awardedBy}}</AuHelpText>
+                      </div>
                     </section>
+
                   {{/if}}
                 </:content>
               </Item>
             </:left>
             <:right as |Item|>
               <Item>
+                <:label>
+                  <AuLabel />
+                </:label>
                 <:content>
                   {{! TODO: find better way to fix this? }}
                   {{! template-lint-disable no-inline-styles }}
                   <AuInput style="visibility: hidden;" />
+                  <AuHelpText
+                    style="visibility: hidden;"
+                    @error={{this.validationErrors.dateDocument}}
+                  >{{this.validationErrors.dateDocument}}</AuHelpText>
                 </:content>
               </Item>
 
@@ -111,10 +114,8 @@
                   <AuDatePicker
                     @error={{this.validationErrors.endTime}}
                     @value={{this.getEndDate}}
-                    @onChange={{fn
-                      (mut this.currentRecognition.recognitionModel.endTime)
-                      (this.clearFormError "endTime")
-                    }}
+                    @onChange={{fn (mut model.endTime)}}
+                    {{on "input" (fn this.clearFormError "endTime")}}
                   />
                   <AuHelpText
                     @error={{this.validationErrors.endTime}}
@@ -133,9 +134,8 @@
                   </:label>
                   <:content>
                     <AuInput
-                      @value={{mut
-                        this.currentRecognition.recognitionModel.legalResource
-                      }}
+                      @value={{mut model.legalResource}}
+                      {{on "input" (fn this.clearFormError "legalResource")}}
                       @width={{"block"}}
                       id="erkenningsbesluit"
                       @error={{this.validationErrors.legalResource}}

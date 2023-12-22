@@ -17,16 +17,19 @@ export const errorValidation = Joi.object()
       'any.required': 'Gelieve een geldige ingangsdatum te kiezen.',
       'date.base': 'Gelieve een geldige ingangsdatum te kiezen.',
       'date.less':
-        'Gelieve een een ingangsdatum te kiezen dat voor de einddatum komt.',
+        'Gelieve een ingangsdatum te kiezen dat voor de einddatum komt.',
     }),
     endTime: Joi.date().required().greater(Joi.ref('startTime')).messages({
       'any.required': 'Gelieve een geldige einddatum te kiezen.',
       'date.base': 'Gelieve een geldige einddatum te kiezen.',
       'date.greater':
-        'Gelieve een een einddatum te kiezen dat na de ingangsdatum komt.',
+        'Gelieve een einddatum te kiezen dat na de ingangsdatum komt.',
     }),
-    awardedBy: Joi.string().required().messages({
-      'string.required': 'Gelieve een erkenner te kiezen.',
+    awardedBy: Joi.string().messages({
+      'string.empty':
+        'Gelieve de entiteit in te vullen die de erkenning toekent.',
+      'string.base':
+        'Gelieve de entiteit in te vullen die de erkenning toekent.',
     }),
   })
   .options({ abortEarly: false });
