@@ -4,9 +4,7 @@
   <Header />
 
   {{#if this.session.isAuthenticated}}
-    {{#if this.currentSession.currentAssociation}}
-      <Shared::BreadCrumb />
-    {{/if}}
+    <Shared::BreadCrumb />
     <AuMainContainer class="au-u-flex" as |m|>
       <m.content @scroll={{true}}>
         <AuBodyContainer>

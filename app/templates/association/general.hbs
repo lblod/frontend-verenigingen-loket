@@ -1,4 +1,4 @@
-<div class="au-o-box au-o-flow au-o-flow--large">
+<div class="au-o-box au-o-flow au-o-flow">
   <section class="au-u-flex au-u-flex--between">
     <div>
       <AuHeading @level="1" @skin="1">Algemeen</AuHeading>
@@ -14,7 +14,10 @@
     </div>
   </section>
   <section>
-    <Recognition::Card @recognition={{this.recognition}} />
+    <Recognition::Card
+      @recognition={{this.recognition}}
+      @title="Huidige erkenning"
+    />
   </section>
 
   <section>

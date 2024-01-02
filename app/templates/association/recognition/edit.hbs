@@ -1,0 +1,30 @@
+{{#let this.currentRecognition.recognition as |recognition|}}
+  <div class="au-o-box au-o-flow au-o-flow--large">
+    <section class="au-u-flex au-u-flex--between">
+      <div>
+        <AuHeading @level="1" @skin="1">
+          Bewerk erkenning
+          {{date-year recognition.validityPeriod.startTime}}
+          -
+          {{date-year recognition.validityPeriod.endTime}}
+        </AuHeading>
+        <AuHeading
+          @level="3"
+          @skin="3"
+        >{{this.currentAssociation.association.name}}</AuHeading>
+      </div>
+      <div
+        class="au-u-flex au-u-flex--column au-u-flex--end au-u-flex--vertical-end"
+      >
+        <Recognition::Actions
+          @isLoading={{this.currentRecognition.isLoading}}
+        />
+        {{#if @showSaveError}}
+          <AuHelpText @error={{true}}>Je kan deze pagina niet opslaan omdat een
+            verplicht veld niet is ingevuld.</AuHelpText>
+        {{/if}}
+      </div>
+    </section>
+    <Recognition::Form />
+  </div>
+{{/let}}

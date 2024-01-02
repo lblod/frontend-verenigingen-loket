@@ -1,35 +1,36 @@
 <DataCard>
   <:title>
     <div class="au-u-flex au-u-flex--between au-u-flex--vertical-end">
-      Huidige erkenning
-      {{#if @recognition}}
-        {{#if
-          (check-if-active
-            @recognition.validityPeriod.startTime
-            @recognition.validityPeriod.endTime
-          )
-        }}
-          <AuLink
-            class="au-u-margin-bottom-tiny"
-            @skin="button-secondary"
-            @icon="pencil"
-            @model={{@recognition.id}}
-            @route="association.recognition.create"
-          >
-            Bewerk
-          </AuLink>
-        {{else}}
-          <AuLink
-            class="au-u-margin-bottom-tiny"
-            @skin="button-secondary"
-            @icon="plus"
-            @model="0"
-            @route="association.recognition.create"
-          >
-            Voeg nieuwe erkenning toe
-          </AuLink>
+      {{@title}}
+      {{#unless @hideButtons}}
+        {{#if @recognition}}
+          {{#if
+            (check-if-active
+              @recognition.validityPeriod.startTime
+              @recognition.validityPeriod.endTime
+            )
+          }}
+            <AuLink
+              class="au-u-margin-bottom-tiny"
+              @skin="button-secondary"
+              @icon="pencil"
+              @model={{@recognition.id}}
+              @route="association.recognition.edit"
+            >
+              Bewerk
+            </AuLink>
+          {{else}}
+            <AuLink
+              class="au-u-margin-bottom-tiny"
+              @skin="button-secondary"
+              @icon="plus"
+              @route="association.recognition.create"
+            >
+              Voeg nieuwe erkenning toe
+            </AuLink>
+          {{/if}}
         {{/if}}
-      {{/if}}
+      {{/unless}}
     </div>
   </:title>
   <:card as |Card|>
@@ -114,11 +115,7 @@
       <div class="au-u-flex au-u-flex--center">
         <p><span class="au-c-help-text--tertiary au-u-padding-right-tiny">Deze
             vereniging heeft geen erkenning.</span>
-          <AuLink
-            @skin="link"
-            @model="0"
-            @route="association.recognition.create"
-          >
+          <AuLink @skin="link" @route="association.recognition.create">
             Voeg de erkenning toe.
           </AuLink>
         </p>

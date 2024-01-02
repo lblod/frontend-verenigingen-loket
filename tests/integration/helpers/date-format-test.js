@@ -6,12 +6,11 @@ import { hbs } from 'ember-cli-htmlbars';
 module('Integration | Helper | date-format', function (hooks) {
   setupRenderingTest(hooks);
 
-  // TODO: Replace this with your real tests.
   test('it renders', async function (assert) {
-    this.set('inputValue', '1234');
+    this.set('inputValue', '2023-12-06');
 
     await render(hbs`{{date-format this.inputValue}}`);
 
-    assert.dom().hasText('1234');
+    assert.dom().hasText('06-12-2023');
   });
 });

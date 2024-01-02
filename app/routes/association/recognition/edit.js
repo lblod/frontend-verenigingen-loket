@@ -2,7 +2,7 @@ import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { keepLatestTask } from 'ember-concurrency';
 
-export default class AssociationRecognitionShowRoute extends Route {
+export default class AssociationRecognitionEditRoute extends Route {
   @service store;
   @service currentRecognition;
   async model(params) {
@@ -15,6 +15,7 @@ export default class AssociationRecognitionShowRoute extends Route {
       console.error(`Error loading recognition (${recognition_id}):`, error);
     }
   }
+
   @keepLatestTask({ cancelOn: 'deactivate' })
   *loadRecognition(recognition_id) {
     return yield this.store.findRecord('recognition', recognition_id, {

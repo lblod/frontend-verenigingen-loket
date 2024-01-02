@@ -3,7 +3,9 @@ import { inject as service } from '@ember/service';
 
 export default class SharedBreadCrumbComponent extends Component {
   @service router;
-  @service() currentSession;
+  @service() currentAssociation;
+  @service() currentRecognition;
+  @service() dateYear;
   bread(name) {
     return [
       {
@@ -28,6 +30,51 @@ export default class SharedBreadCrumbComponent extends Component {
             label: name,
           },
           { label: 'Erkenningen' },
+        ],
+      },
+      {
+        route: 'association.recognition.create',
+        crumbs: [
+          { label: 'Verenigingen', link: 'index' },
+          {
+            label: name,
+          },
+          { label: 'Erkenningen', link: 'association.recognition.index' },
+          { label: 'Aanmaken' },
+        ],
+      },
+      {
+        route: 'association.recognition.edit',
+        crumbs: [
+          { label: 'Verenigingen', link: 'index' },
+          {
+            label: name,
+          },
+          { label: 'Erkenningen', link: 'association.recognition.index' },
+          { label: 'Bewerken' },
+        ],
+      },
+      {
+        route: 'association.recognition.show',
+        crumbs: [
+          { label: 'Verenigingen', link: 'index' },
+          {
+            label: name,
+          },
+          { label: 'Erkenningen', link: 'association.recognition.index' },
+          {
+            label: this.currentRecognition.recognition
+              ? `Erkenning ${this.dateYear.getCurrentYear(
+                  this.currentRecognition.recognition.validityPeriod.get(
+                    'startTime',
+                  ),
+                )} - ${this.dateYear.getCurrentYear(
+                  this.currentRecognition.recognition.validityPeriod.get(
+                    'endTime',
+                  ),
+                )}`
+              : '',
+          },
         ],
       },
       {
@@ -65,7 +112,9 @@ export default class SharedBreadCrumbComponent extends Component {
 
   get crumbsForRoute() {
     const results = this.bread(
-      this.currentSession.currentAssociation.name,
+      this.currentAssociation.association
+        ? this.currentAssociation.association.name
+        : null,
     ).filter((value) => value.route === this.router.currentRouteName);
     if (results.length <= 0) return [];
     return results[0].crumbs;

@@ -1,7 +1,7 @@
 import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 
-export default class AssociationRecognitionShowController extends Controller {
-  @service currentAssociation;
+export default class AssociationRecognitionEditController extends Controller {
   @service currentRecognition;
+  @service currentAssociation;
 }
