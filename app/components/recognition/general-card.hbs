@@ -1,36 +1,34 @@
 <DataCard>
   <:title>
     <div class="au-u-flex au-u-flex--between au-u-flex--vertical-end">
-      {{@title}}
-      {{#unless @hideButtons}}
-        {{#if @recognition}}
-          {{#if
-            (check-if-active
-              @recognition.validityPeriod.startTime
-              @recognition.validityPeriod.endTime
-            )
-          }}
-            <AuLink
-              class="au-u-margin-bottom-tiny"
-              @skin="button-secondary"
-              @icon="pencil"
-              @model={{@recognition.id}}
-              @route="association.recognition.edit"
-            >
-              Bewerk
-            </AuLink>
-          {{else}}
-            <AuLink
-              class="au-u-margin-bottom-tiny"
-              @skin="button-secondary"
-              @icon="plus"
-              @route="association.recognition.create"
-            >
-              Voeg nieuwe erkenning toe
-            </AuLink>
-          {{/if}}
+      Huidige erkenning
+      {{#if @recognition}}
+        {{#if
+          (check-if-active
+            @recognition.validityPeriod.startTime
+            @recognition.validityPeriod.endTime
+          )
+        }}
+          <AuLink
+            class="au-u-margin-bottom-tiny"
+            @skin="button-secondary"
+            @icon="pencil"
+            @model={{@recognition.id}}
+            @route="association.recognition.edit"
+          >
+            Bewerk
+          </AuLink>
+        {{else}}
+          <AuLink
+            class="au-u-margin-bottom-tiny"
+            @skin="button-secondary"
+            @icon="plus"
+            @route="association.recognition.create"
+          >
+            Voeg nieuwe erkenning toe
+          </AuLink>
         {{/if}}
-      {{/unless}}
+      {{/if}}
     </div>
   </:title>
   <:card as |Card|>
@@ -107,7 +105,6 @@
                 {{date-format @recognition.validityPeriod.endTime}}
               </:content>
             </Item>
-
           </:right>
         </Card.Columns>
       {{/if}}
