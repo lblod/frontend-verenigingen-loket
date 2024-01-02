@@ -1,0 +1,27 @@
+<div class="au-o-box au-o-flow au-o-flow--large">
+  {{#if this.isLoading}}
+    <AuLoader @padding="large" />
+  {{else}}
+    <section class="au-u-flex au-u-flex--between">
+      <div>
+        <AuHeading @level="1" @skin="1">
+          Erkenning
+          {{date-year this.recognition.validityPeriod.startTime}}
+          -
+          {{date-year this.recognition.validityPeriod.endTime}}</AuHeading>
+        <AuHeading
+          @level="3"
+          @skin="3"
+        >{{this.currentSession.currentAssociation.name}}</AuHeading>
+      </div>
+      <div
+        class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
+      >
+        <ReportWrongData @model={{this.currentSession.currentAssociation}} />
+      </div>
+    </section>
+    <section>
+      <Recognition::Card @recognition={{this.recognition}} />
+    </section>
+  {{/if}}
+</div>

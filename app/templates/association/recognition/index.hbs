@@ -72,7 +72,11 @@
           {{/if}}
         </td>
         <td>
-          <AuLink>Erkenning
+          <AuLink
+            @route="association.recognition.show"
+            @model={{recognition.id}}
+          >
+            Erkenning
             {{date-year recognition.validityPeriod.startTime}}
             -
             {{date-year recognition.validityPeriod.endTime}}</AuLink>
