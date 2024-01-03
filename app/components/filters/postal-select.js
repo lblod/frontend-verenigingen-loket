@@ -35,7 +35,9 @@ export default class PostalCodeMultipleSelectComponent extends Component {
   *loadPostalCodes() {
     this.postalCodes = yield this.store.query('postal-code', {
       page: { size: 100 },
+      sort: ':no-case:postal-code',
     });
+
     this.args.onChange(this.selectedPostalCodes());
   }
 
