@@ -6,6 +6,7 @@ export default class CurrentRecognitionService extends Service {
   @tracked recognition = null;
   @tracked selectedItem = this.items[0];
   @tracked isLoading = false;
+  @tracked generalError = '';
 
   @tracked recognitionModel = {
     startTime: null,
@@ -19,6 +20,7 @@ export default class CurrentRecognitionService extends Service {
   }
 
   async setCurrentRecognition(recognition) {
+    this.generalError = '';
     this.isLoading = false;
     this.recognitionModel = {
       startTime: null,

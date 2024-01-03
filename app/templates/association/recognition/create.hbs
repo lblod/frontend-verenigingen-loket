@@ -13,9 +13,10 @@
       class="au-u-flex au-u-flex--column au-u-flex--end au-u-flex--vertical-end"
     >
       <Recognition::Actions @isLoading={{this.currentRecognition.isLoading}} />
-      {{#if @showSaveError}}
-        <AuHelpText @error={{true}}>Je kan deze pagina niet opslaan omdat een
-          verplicht veld niet is ingevuld.</AuHelpText>
+      {{#if this.currentRecognition.generalError}}
+        <AuHelpText
+          @error={{true}}
+        >{{this.currentRecognition.generalError}}</AuHelpText>
       {{/if}}
     </div>
   </section>
