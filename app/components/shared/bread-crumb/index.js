@@ -7,13 +7,13 @@ export default class SharedBreadCrumbComponent extends Component {
   bread(name) {
     return [
       {
-        route: 'index',
+        route: 'associations',
         crumbs: [{ label: 'Verenigingen' }],
       },
       {
         route: 'association.general',
         crumbs: [
-          { label: 'Verenigingen', link: 'index' },
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },
@@ -23,7 +23,7 @@ export default class SharedBreadCrumbComponent extends Component {
       {
         route: 'association.recognition.index',
         crumbs: [
-          { label: 'Verenigingen', link: 'index' },
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },
@@ -33,7 +33,7 @@ export default class SharedBreadCrumbComponent extends Component {
       {
         route: 'association.contact-detail',
         crumbs: [
-          { label: 'Verenigingen', link: 'index' },
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },
@@ -43,7 +43,7 @@ export default class SharedBreadCrumbComponent extends Component {
       {
         route: 'association.location',
         crumbs: [
-          { label: 'Verenigingen', link: 'index' },
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },
@@ -53,7 +53,7 @@ export default class SharedBreadCrumbComponent extends Component {
       {
         route: 'association.representatives',
         crumbs: [
-          { label: 'Verenigingen', link: 'index' },
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },

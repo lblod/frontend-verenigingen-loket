@@ -14,9 +14,21 @@ Router.map(function () {
     this.route('logout');
     this.route('switch');
   });
+  this.route('login');
   this.route('mock-login');
 
+  this.route('legal', { path: '/legaal' }, function () {
+    this.route('accessibilitystatement', {
+      path: '/toegangkelijkheidsverklaring',
+    });
+    this.route('cookiestatement', {
+      path: '/cookieverklaring',
+    });
+    this.route('disclaimer');
+  });
+
   // Association
+  this.route('associations', { path: 'verenigingen' });
   this.route('association', { path: 'vereniging/:id' }, function () {
     this.route('general', { path: '/' });
     this.route('general', { path: '/algemeen' });

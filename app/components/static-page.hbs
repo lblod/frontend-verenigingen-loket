@@ -1,8 +1,5 @@
 <div ...attributes>
-  <AuContentHeader
-    @titlePartOne="Vlaanderen"
-    @titlePartTwo="Digitaal Loket"
-  >
+  <AuContentHeader @titlePartOne="Vlaanderen" @titlePartTwo="Digitaal Loket">
     <img
       sizes="50vw"
       src="/assets/images/loket-header-1600.jpg"
@@ -15,8 +12,7 @@
 
   <AuMainFooter>
     <AuHeading @level="3" @skin="4">
-      xxx.abb.vlaanderen.be is een officiële website van de Vlaamse
-      overheid
+      xxx.abb.vlaanderen.be is een officiële website van de Vlaamse overheid
     </AuHeading>
     <AuContent @skin="small">
       <p>Uitgegeven door
@@ -26,15 +22,24 @@
         >Agentschap Binnenlands Bestuur</a>
       </p>
       <ul class="au-c-list-horizontal">
-        {{!-- <li class="au-c-list-horizontal__item">
-          <AuLink @route="legal.disclaimer" @skin="secondary">Disclaimer</AuLink>
+        <li class="au-c-list-horizontal__item">
+          <AuLink
+            @route="legal.disclaimer"
+            @skin="secondary"
+          >Disclaimer</AuLink>
         </li>
         <li class="au-c-list-horizontal__item">
-          <AuLink @route="legal.cookiestatement" @skin="secondary">Cookieverklaring</AuLink>
+          <AuLink
+            @route="legal.cookiestatement"
+            @skin="secondary"
+          >Cookieverklaring</AuLink>
         </li>
         <li class="au-c-list-horizontal__item">
-          <AuLink @route="legal.accessibilitystatement" @skin="secondary">Toegankelijkheidsverklaring</AuLink>
-        </li> --}}
+          <AuLink
+            @route="legal.accessibilitystatement"
+            @skin="secondary"
+          >Toegankelijkheidsverklaring</AuLink>
+        </li>
       </ul>
     </AuContent>
   </AuMainFooter>

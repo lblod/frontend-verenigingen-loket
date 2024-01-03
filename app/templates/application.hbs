@@ -13,7 +13,13 @@
       </m.content>
     </AuMainContainer>
   {{else}}
-    {{outlet}}
+    <div
+      class="au-c-main-container__content au-c-main-container__content--scroll"
+      id="content"
+      tabindex="-1"
+    >
+      {{outlet}}
+    </div>
   {{/if}}
 </AuApp>
 <AuModalContainer />
