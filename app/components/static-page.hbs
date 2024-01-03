@@ -12,14 +12,15 @@
 
   <AuMainFooter>
     <AuHeading @level="3" @skin="4">
-      xxx.abb.vlaanderen.be is een officiële website van de Vlaamse overheid
+      {{this.host}}
+      is een officiële website van de Vlaamse overheid
     </AuHeading>
     <AuContent @skin="small">
       <p>Uitgegeven door
-        <a
+        <AuLinkExternal
           class="au-c-link"
           href="https://www.vlaanderen.be/organisaties/administratieve-diensten-van-de-vlaamse-overheid/beleidsdomein-kanselarij-en-bestuur/agentschap-binnenlands-bestuur"
-        >Agentschap Binnenlands Bestuur</a>
+        >Agentschap Binnenlands Bestuur</AuLinkExternal>
       </p>
       <ul class="au-c-list-horizontal">
         <li class="au-c-list-horizontal__item">
