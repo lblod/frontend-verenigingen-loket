@@ -1,7 +1,7 @@
 import Controller from '@ember/controller';
 export default class AssociationLocationController extends Controller {
   get isLoading() {
-    return this.model.sites.isRunning;
+    return this.model.recognitions.isRunning;
   }
 
   get recognition() {
