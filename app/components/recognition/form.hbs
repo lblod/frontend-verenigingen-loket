@@ -140,16 +140,6 @@
                       id="erkenningsbesluit"
                       @error={{this.validationErrors.legalResource}}
                     />
-                    <AuHelpText
-                      @error={{this.validationErrors.legalResource}}
-                    >{{this.validationErrors.legalResource}}</AuHelpText>
-                    {{! <div class="au-u-flex au-u-flex--end">
-                        <AuHelpText @skin="tertiary">Geen link?
-                          <AuLink @skin="link">
-                            Voeg bestand toe
-                          </AuLink>
-                        </AuHelpText>
-                      </div> }}
                   </:content>
                 </Item>
               {{/if}}
