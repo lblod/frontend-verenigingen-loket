@@ -11,14 +11,8 @@ export default class AssociationRecognitionRoute extends Route {
   async model(params) {
     const { id } = this.paramsFor('association');
     return {
-      association: this.loadAssociation.perform(id),
       recognitions: this.loadRecognition.perform(id, params),
     };
-  }
-
-  @keepLatestTask({ cancelOn: 'deactivate' })
-  *loadAssociation(id) {
-    return yield this.store.findRecord('association', id);
   }
   @keepLatestTask({ cancelOn: 'deactivate' })
   *loadRecognition(id, params) {
@@ -30,8 +24,8 @@ export default class AssociationRecognitionRoute extends Route {
         },
       },
       sort: params.sort
-        ? `${params.sort},-validity-period.start-time`
-        : '-validity-period.start-time',
+        ? `${params.sort},-validity-period.end-time`
+        : '-validity-period.end-time',
     });
   }
 }
