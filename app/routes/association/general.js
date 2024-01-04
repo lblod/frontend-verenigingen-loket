@@ -29,6 +29,7 @@ export default class AssociationGeneralRoute extends Route {
     const query = {
       include: ['awarded-by', 'validity-period'].join(','),
       filter: {
+        ':has-no:status': true,
         association: {
           id,
         },

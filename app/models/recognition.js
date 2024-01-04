@@ -3,6 +3,7 @@ import Model, { attr, belongsTo } from '@ember-data/model';
 export default class RecognitionModel extends Model {
   @attr dateDocument;
   @attr legalResource;
+  @attr status;
   @belongsTo('association', {
     inverse: 'recognitions',
     async: true,
