@@ -47,13 +47,31 @@ export default class AssociationLocationRoute extends Route {
       if (primarySite) {
         primarySite.address.isPrimary = true;
       }
-      if (params.sort === '-address.full-address') {
-        return A([...sites, primarySite]);
-      } else {
-        return A([primarySite, ...sites]);
+      if (params.sort) {
+        const key = params.sort.replace(/-([a-z])/g, (_, match) =>
+          match.toUpperCase(),
+        );
+        const camelCaseKey = key.charAt(0).toLowerCase() + key.slice(1);
+        return this.sortBy(
+          [...sites, primarySite],
+          camelCaseKey,
+          params.sort.startsWith('-'),
+        );
       }
+      return A([primarySite, ...sites]);
     } else {
       return sites;
     }
   }
+
+  sortBy = (array, key, reverse = false) => {
+    return A(array).sort((a, b) => {
+      const [mainKey, subKey] = key.split('.');
+      const valueA = subKey ? a[mainKey].get(subKey) : a[mainKey];
+      const valueB = subKey ? b[mainKey].get(subKey) : b[mainKey];
+      return reverse
+        ? valueB.localeCompare(valueA)
+        : valueA.localeCompare(valueB);
+    });
+  };
 }
