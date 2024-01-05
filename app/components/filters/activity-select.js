@@ -32,6 +32,7 @@ export default class ActivityMultipleSelectComponent extends Component {
   @task
   *loadActivities() {
     this.activities = yield this.store.query('activity', {
+      page: { size: 100 },
       sort: 'label',
     });
     this.args.onChange(this.selectedActivities());
