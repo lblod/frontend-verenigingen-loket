@@ -70,18 +70,23 @@ export default class FormComponent extends Component {
   }
 
   async getRecognitionInPeriod(date) {
-    return await this.store.query('recognition', {
-      include: 'validity-period',
-      filter: {
-        'validity-period': {
-          ':lte:start-time': date,
-          ':gte:end-time': date,
+    return (
+      await this.store.query('recognition', {
+        include: 'validity-period',
+        filter: {
+          'validity-period': {
+            ':lte:start-time': date,
+            ':gte:end-time': date,
+          },
+          association: {
+            id: this.currentAssociation.association.id,
+          },
         },
-        association: {
-          id: this.currentAssociation.association.id,
-        },
-      },
-    });
+      })
+    ).filter(
+      (recognition) =>
+        recognition.id !== this.currentRecognition.recognition.id,
+    );
   }
 
   async validateForm() {
@@ -94,6 +99,8 @@ export default class FormComponent extends Component {
       ),
     ]);
 
+    console.log({ startDateExist, endDateExist });
+
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
       awardedBy:
@@ -105,6 +112,7 @@ export default class FormComponent extends Component {
       ? this.mapValidationDetailsToErrors(err.error.details)
       : {};
     if (startDateExist.length > 0 || endDateExist.length > 0) {
+      err.error = true;
       this.currentRecognition.generalError =
         'Pas de erkenningsperiodes aan of annuleer de erkenning.';
     }
