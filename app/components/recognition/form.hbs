@@ -4,7 +4,7 @@
   class="au-c-form"
   {{on "submit" this.handleRecognition}}
 >
-  {{#let this.currentRecognition.recognition as |recognition|}}
+  {{#let this.currentRecognition.recognitionModel as |model|}}
     <section>
       <DataCard>
         <:title>
@@ -14,38 +14,43 @@
           <Card.Columns>
             <:left as |Item|>
               <Item>
-                <:label>Erkend op</:label>
+                <:label>
+                  <AuLabel @inline={{true}}>Erkend op</AuLabel></:label>
                 <:content>
                   <AuDatePicker
-                    @value={{recognition.dateDocument}}
-                    @onChange={{fn
-                      (mut
-                        this.currentRecognition.recognitionModel.dateDocument
-                      )
-                    }}
+                    @value={{model.dateDocument}}
+                    @error={{this.validationErrors.dateDocument}}
+                    @onChange={{fn (mut model.dateDocument)}}
+                    {{on "input" (fn this.clearFormError "dateDocument")}}
                   />
-                </:content>
-              </Item>
-              <Item
-                @required={{true}}
-                @errorMessage={{@model.administrativeUnitChangeset.error.name.validation}}
-              >
-                <:label>Ingangsdatum</:label>
-                <:content>
-                  <AuDatePicker
-                    required
-                    @value={{this.getStartDate}}
-                    @onChange={{fn
-                      (mut this.currentRecognition.recognitionModel.startTime)
-                    }}
-                  />
+                  <AuHelpText
+                    @error={{this.validationErrors.dateDocument}}
+                  >{{this.validationErrors.dateDocument}}</AuHelpText>
                 </:content>
               </Item>
               <Item>
-                <:label>Erkend door</:label>
+                <:label>
+                  <AuLabel
+                    @inline={{true}}
+                    @required={{true}}
+                  >Ingangsdatum</AuLabel></:label>
+                <:content>
+                  <AuDatePicker
+                    @value={{this.getStartDate}}
+                    @onChange={{fn (mut model.startTime)}}
+                    {{on "input" (fn this.clearFormError "startTime")}}
+                    @error={{this.validationErrors.startTime}}
+                  />
+                  <AuHelpText
+                    @error={{this.validationErrors.startTime}}
+                  >{{this.validationErrors.startTime}}</AuHelpText>
+                </:content>
+              </Item>
+              <Item>
+                <:label>
+                  <AuLabel @inline={{true}} @required={{true}}>Erkend door</AuLabel></:label>
                 <:content>
                   <PowerSelect
-                    required
                     @options={{this.items}}
                     @selected={{this.currentRecognition.selectedItem}}
                     @onChange={{fn (mut this.currentRecognition.selectedItem)}}
@@ -65,29 +70,54 @@
                       <label
                         class="au-c-card-item__label au-c-card-item__label--data"
                       >namelijk</label>
-                      <AuInput
-                        @value={{mut
-                          this.currentRecognition.recognitionModel.awardedBy
-                        }}
-                        id="awardedBy"
-                        @width={{"block"}}
-                      />
+                      <div class="au-u-flex au-u-flex--column au-u-1-1">
+                        <AuInput
+                          @value={{mut model.awardedBy}}
+                          {{on "input" (fn this.clearFormError "awardedBy")}}
+                          id="awardedBy"
+                          @error={{this.validationErrors.awardedBy}}
+                          @width={{"block"}}
+                        />
+                        <AuHelpText
+                          @error={{this.validationErrors.awardedBy}}
+                        >{{this.validationErrors.awardedBy}}</AuHelpText>
+                      </div>
                     </section>
+
                   {{/if}}
                 </:content>
               </Item>
             </:left>
             <:right as |Item|>
               <Item>
-                <:label>Einddatum</:label>
+                <:label>
+                  <AuLabel />
+                </:label>
+                <:content>
+                  <AuInput class="visibility-hidden" />
+                  <AuHelpText
+                    class="visibility-hidden"
+                    @error={{this.validationErrors.dateDocument}}
+                  >{{this.validationErrors.dateDocument}}</AuHelpText>
+                </:content>
+              </Item>
+
+              <Item>
+                <:label>
+                  <AuLabel
+                    @inline={{true}}
+                    @required={{true}}
+                  >Einddatum</AuLabel></:label>
                 <:content>
                   <AuDatePicker
-                    required
+                    @error={{this.validationErrors.endTime}}
                     @value={{this.getEndDate}}
-                    @onChange={{fn
-                      (mut this.currentRecognition.recognitionModel.endTime)
-                    }}
+                    @onChange={{fn (mut model.endTime)}}
+                    {{on "input" (fn this.clearFormError "endTime")}}
                   />
+                  <AuHelpText
+                    @error={{this.validationErrors.endTime}}
+                  >{{this.validationErrors.endTime}}</AuHelpText>
                 </:content>
               </Item>
               {{#if
@@ -97,15 +127,16 @@
                 )
               }}
                 <Item>
-                  <:label>Erkenningsbesluit
+                  <:label>
+                    <AuLabel @inline={{true}}>Erkenningsbesluit</AuLabel>
                   </:label>
                   <:content>
                     <AuInput
-                      @value={{mut
-                        this.currentRecognition.recognitionModel.legalResource
-                      }}
+                      @value={{mut model.legalResource}}
+                      {{on "input" (fn this.clearFormError "legalResource")}}
                       @width={{"block"}}
                       id="erkenningsbesluit"
+                      @error={{this.validationErrors.legalResource}}
                     />
                   </:content>
                 </Item>

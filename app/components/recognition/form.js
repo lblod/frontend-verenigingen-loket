@@ -1,6 +1,8 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
-import { action } from '@ember/object';
+import { action, set } from '@ember/object';
+import { errorValidation } from '../../validations/recognition-validation';
+import { tracked } from '@glimmer/tracking';
 
 export default class FormComponent extends Component {
   items = ['College van burgemeester en schepenen', 'Andere'];
@@ -11,6 +13,8 @@ export default class FormComponent extends Component {
   @service router;
   @service toaster;
   @service dateYear;
+
+  @tracked validationErrors = {};
 
   notify(message, title, type = 'success') {
     this.toaster.notify(message, title, {
@@ -52,11 +56,77 @@ export default class FormComponent extends Component {
 
     return year + '-' + month + '-' + day;
   }
+
+  mapValidationDetailsToErrors(validationDetails) {
+    return validationDetails.reduce((accumulator, detail) => {
+      accumulator[detail.context.key] = detail.message;
+      return accumulator;
+    }, {});
+  }
+
+  @action
+  clearFormError(errorField) {
+    set(this.validationErrors, errorField, null);
+  }
+
+  async getRecognitionInPeriod(date) {
+    return await this.store.query('recognition', {
+      include: 'validity-period',
+      filter: {
+        'validity-period': {
+          ':lte:start-time': date,
+          ':gte:end-time': date,
+        },
+        association: {
+          id: this.currentAssociation.association.id,
+        },
+      },
+    });
+  }
+
+  async validateForm() {
+    const [startDateExist, endDateExist] = await Promise.all([
+      this.getRecognitionInPeriod(
+        this.currentRecognition.recognitionModel.startTime,
+      ),
+      this.getRecognitionInPeriod(
+        this.currentRecognition.recognitionModel.endTime,
+      ),
+    ]);
+
+    const err = errorValidation.validate({
+      ...this.currentRecognition.recognitionModel,
+      awardedBy:
+        this.items[0] === this.currentRecognition.selectedItem
+          ? this.currentRecognition.selectedItem
+          : this.currentRecognition.recognitionModel.awardedBy,
+    });
+    this.validationErrors = err.error
+      ? this.mapValidationDetailsToErrors(err.error.details)
+      : {};
+    if (startDateExist.length > 0 || endDateExist.length > 0) {
+      this.currentRecognition.generalError =
+        'Pas de erkenningsperiodes aan of annuleer de erkenning.';
+    }
+    if (startDateExist.length > 0) {
+      this.validationErrors.startTime =
+        'De startdatum komt al overeen met een eerder toegekende erkenning.';
+    }
+    if (endDateExist.length > 0) {
+      this.validationErrors.endTime =
+        'De einddatum komt al overeen met een eerder toegekende erkenning.';
+    }
+
+    return err.error;
+  }
+
   @action
   async handleRecognition(event) {
     event.preventDefault();
     this.currentRecognition.setIsLoading(true);
     try {
+      const errors = await this.validateForm();
+      if (errors) return;
       if (this.currentRecognition.recognition) {
         await this.editRecognition();
       } else {
