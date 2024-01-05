@@ -1,0 +1,67 @@
+<DataCard>
+  <:title>
+    <div class="au-u-flex au-u-flex--between au-u-flex--vertical-end">
+      Erkenning
+    </div>
+  </:title>
+  <:card as |Card|>
+    <Card.Columns>
+      <:left as |Item|>
+        <Item>
+          <:label>Status</:label>
+          <:content>
+            {{#if
+              (check-if-active
+                @recognition.validityPeriod.startTime
+                @recognition.validityPeriod.endTime
+              )
+            }}
+              <AuPill @skin="success">Erkend</AuPill>
+            {{else}}
+              <AuPill @skin="warning">Niet erkend</AuPill>
+            {{/if}}
+          </:content>
+        </Item>
+        <Item>
+          <:label>Ingangsdatum</:label>
+          <:content>
+            {{date-format @recognition.validityPeriod.startTime}}
+          </:content>
+        </Item>
+        <Item>
+          <:label>Erkend door</:label>
+          <:content>
+            {{@recognition.awardedBy.name}}
+          </:content>
+        </Item>
+      </:left>
+      <:right as |Item|>
+        <Item>
+          <:label>Erkend op</:label>
+          <:content>
+            {{date-format @recognition.dateDocument}}
+          </:content>
+        </Item>
+        <Item>
+          <:label>Einddatum</:label>
+          <:content>
+            {{date-format @recognition.validityPeriod.endTime}}
+          </:content>
+        </Item>
+        {{#if @recognition.legalResource}}
+          <Item>
+            <:label>Erkenningsbesluit</:label>
+            <:content>
+              <AuLinkExternal
+                href={{@recognition.legalResource}}
+                @icon="external-link"
+              >
+                Beslissing (externe link)
+              </AuLinkExternal>
+            </:content>
+          </Item>
+        {{/if}}
+      </:right>
+    </Card.Columns>
+  </:card>
+</DataCard>

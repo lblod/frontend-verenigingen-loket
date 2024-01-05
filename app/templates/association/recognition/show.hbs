@@ -1,0 +1,49 @@
+<div class="au-o-box au-o-flow au-o-flow">
+  {{#if this.isLoading}}
+    <AuLoader @padding="large" />
+  {{else}}
+    <section class="au-u-flex au-u-flex--between">
+      <div>
+        <AuHeading @level="1" @skin="1">
+          Erkenning
+          {{date-year
+            this.currentRecognition.recognition.validityPeriod.startTime
+          }}
+          -
+          {{date-year
+            this.currentRecognition.recognition.validityPeriod.endTime
+          }}</AuHeading>
+        <AuHeading
+          @level="3"
+          @skin="3"
+        >{{this.currentAssociation.association.name}}</AuHeading>
+      </div>
+      <div class="au-u-flex au-u-flex--center au-u-flex--vertical-center">
+        <AuLink
+          @skin="button-secondary"
+          @icon="pencil"
+          @model={{this.currentRecognition.recognition.id}}
+          @route="association.recognition.edit"
+        >
+          Bewerk
+        </AuLink>
+        <AuDropdown
+          @title="Acties"
+          role="menu"
+          @alignment="right"
+          class="au-u-margin-left-small"
+        >
+          <AuButton @skin="link" @icon="bin" role="menuitem" @alert={{true}}>
+            Verwijder erkenning
+          </AuButton>
+        </AuDropdown>
+      </div>
+    </section>
+    <section>
+      <Recognition::OverviewCard
+        @recognition={{this.currentRecognition.recognition}}
+        @title="Erkenning"
+      />
+    </section>
+  {{/if}}
+</div>

@@ -1,3 +1,8 @@
-<AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd op
-  {{date-format @lastUpdated}}
+<AuPill @skin="default" @icon="clock-rewind">Laatst gewijzigd
+  {{#if (date-format @lastUpdated)}}
+    op
+    {{date-format @lastUpdated}}
+  {{else}}
+    is niet opgegeven.
+  {{/if}}
 </AuPill>
