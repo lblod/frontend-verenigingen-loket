@@ -85,7 +85,7 @@ export default class FormComponent extends Component {
       })
     ).filter(
       (recognition) =>
-        recognition.id !== this.currentRecognition.recognition.id,
+        recognition.id !== this.currentRecognition?.recognition?.id,
     );
   }
 
@@ -98,8 +98,6 @@ export default class FormComponent extends Component {
         this.currentRecognition.recognitionModel.endTime,
       ),
     ]);
-
-    console.log({ startDateExist, endDateExist });
 
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
@@ -134,6 +132,7 @@ export default class FormComponent extends Component {
     this.currentRecognition.setIsLoading(true);
     try {
       const errors = await this.validateForm();
+      console.log({ errors });
       if (errors) return;
       if (this.currentRecognition.recognition) {
         await this.editRecognition();
