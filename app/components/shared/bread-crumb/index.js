@@ -4,6 +4,8 @@ import { inject as service } from '@ember/service';
 export default class SharedBreadCrumbComponent extends Component {
   @service router;
   @service() currentAssociation;
+  @service() currentRecognition;
+  @service() dateYear;
   bread(name) {
     return [
       {
@@ -50,6 +52,29 @@ export default class SharedBreadCrumbComponent extends Component {
           },
           { label: 'Erkenningen', link: 'association.recognition.index' },
           { label: 'Bewerken' },
+        ],
+      },
+      {
+        route: 'association.recognition.show',
+        crumbs: [
+          { label: 'Verenigingen', link: 'index' },
+          {
+            label: name,
+          },
+          { label: 'Erkenningen', link: 'association.recognition.index' },
+          {
+            label: this.currentRecognition.recognition
+              ? `Erkenning ${this.dateYear.getCurrentYear(
+                  this.currentRecognition.recognition.validityPeriod.get(
+                    'startTime',
+                  ),
+                )} - ${this.dateYear.getCurrentYear(
+                  this.currentRecognition.recognition.validityPeriod.get(
+                    'endTime',
+                  ),
+                )}`
+              : '',
+          },
         ],
       },
       {

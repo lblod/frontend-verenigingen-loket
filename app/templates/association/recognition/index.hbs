@@ -80,9 +80,10 @@
         </td>
         <td>
           <AuLink
-            @route="association.recognition.edit"
+            @route="association.recognition.show"
             @model={{recognition.id}}
-          >Erkenning
+          >
+            Erkenning
             {{date-year recognition.validityPeriod.startTime}}
             -
             {{date-year recognition.validityPeriod.endTime}}</AuLink>

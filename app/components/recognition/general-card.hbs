@@ -1,0 +1,127 @@
+<DataCard>
+  <:title>
+    <div class="au-u-flex au-u-flex--between au-u-flex--vertical-end">
+      Huidige erkenning
+
+      {{#if @recognition}}
+        {{#if
+          (check-if-active
+            @recognition.validityPeriod.startTime
+            @recognition.validityPeriod.endTime
+          )
+        }}
+          <AuLink
+            class="au-u-margin-bottom-tiny"
+            @skin="button-secondary"
+            @icon="pencil"
+            @model={{@recognition.id}}
+            @route="association.recognition.edit"
+          >
+            Bewerk
+          </AuLink>
+        {{else}}
+          <AuLink
+            class="au-u-margin-bottom-tiny"
+            @skin="button-secondary"
+            @icon="plus"
+            @route="association.recognition.create"
+          >
+            Voeg nieuwe erkenning toe
+          </AuLink>
+        {{/if}}
+      {{/if}}
+    </div>
+  </:title>
+  <:card as |Card|>
+    {{#if @isLoading}}
+      <AuLoader />
+    {{else}}
+      {{#if @recognition}}
+        {{#if
+          (check-if-active
+            @recognition.validityPeriod.startTime
+            @recognition.validityPeriod.endTime
+          )
+        }}
+          <Card.Columns>
+            <:left as |Item|>
+              <Item>
+                <:label>Status</:label>
+                <:content>
+                  <AuPill @skin="success">Erkend</AuPill>
+                </:content>
+              </Item>
+              <Item>
+                <:label>Ingangsdatum</:label>
+                <:content>
+                  {{date-format @recognition.validityPeriod.startTime}}
+                </:content>
+              </Item>
+              <Item>
+                <:label>Erkend door</:label>
+                <:content>
+                  {{@recognition.awardedBy.name}}
+                </:content>
+              </Item>
+            </:left>
+            <:right as |Item|>
+              <Item>
+                <:label>Erkend op</:label>
+                <:content>
+                  {{date-format @recognition.dateDocument}}
+                </:content>
+              </Item>
+              <Item>
+                <:label>Einddatum</:label>
+                <:content>
+                  {{date-format @recognition.validityPeriod.endTime}}
+                </:content>
+              </Item>
+              {{#if @recognition.legalResource}}
+                <Item>
+                  <:label>Erkenningsbesluit</:label>
+                  <:content>
+                    <AuLinkExternal
+                      href={{@recognition.legalResource}}
+                      @icon="external-link"
+                    >
+                      Beslissing (externe link)
+                    </AuLinkExternal>
+                  </:content>
+                </Item>
+              {{/if}}
+            </:right>
+          </Card.Columns>
+        {{else}}
+          <Card.Columns>
+            <:left as |Item|>
+              <Item>
+                <:label>Status</:label>
+                <:content>
+                  <AuPill @skin="warning">Niet erkend</AuPill>
+                </:content>
+              </Item>
+            </:left>
+            <:right as |Item|>
+              <Item>
+                <:label>Sluitingsdatum</:label>
+                <:content>
+                  {{date-format @recognition.validityPeriod.endTime}}
+                </:content>
+              </Item>
+            </:right>
+          </Card.Columns>
+        {{/if}}
+      {{else}}
+        <div class="au-u-flex au-u-flex--center">
+          <p><span class="au-c-help-text--tertiary au-u-padding-right-tiny">Deze
+              vereniging heeft geen erkenning.</span>
+            <AuLink @skin="link" @route="association.recognition.create">
+              Voeg de erkenning toe.
+            </AuLink>
+          </p>
+        </div>
+      {{/if}}
+    {{/if}}
+  </:card>
+</DataCard>
