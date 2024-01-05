@@ -1,20 +1,37 @@
-<div class="au-o-box au-o-flow au-o-flow--large">
+<div class="au-o-box au-o-flow au-o-flow">
   <section class="au-u-flex au-u-flex--between">
     <div>
       <AuHeading @level="1" @skin="1">Algemeen</AuHeading>
-      <AuHeading @level="3" @skin="3">{{this.model.name}}</AuHeading>
+      <AuHeading
+        @level="3"
+        @skin="3"
+      >{{this.model.association.name}}</AuHeading>
     </div>
     <div
       class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
     >
-      <LastUpdated @lastUpdated={{this.model.lastUpdated}} />
-      <ReportWrongData @model={{this.model}} />
+      <ReportWrongData @model={{this.model.association}} />
     </div>
   </section>
   <section>
+    <Recognition::GeneralCard
+      @recognition={{this.recognition}}
+      @title="Huidige erkenning"
+      @isLoading={{this.isLoading}}
+    />
+  </section>
+
+  <section>
     <DataCard>
       <:title>
-        Vereniging
+        <div class="au-u-flex au-u-flex--between au-u-flex--vertical-end">
+          Vereniging
+          <AuPill
+            @skin="default"
+            class="au-u-margin-bottom-tiny"
+            @icon="clock-rewind"
+          >Laatst gewijzigd op 22-02-2022</AuPill>
+        </div>
       </:title>
       <:card as |Card|>
         <Card.Columns>
@@ -22,15 +39,17 @@
             <Item>
               <:label>Naam</:label>
               <:content>
-                {{this.model.name}}
+                {{this.model.association.name}}
               </:content>
             </Item>
             <Item>
               <:label>Type</:label>
               <:content>
-                {{#if this.model.classification}}
-                  <span title="{{this.model.classification.prefLabel}}">
-                    {{this.model.classification.notation}}
+                {{#if this.model.association.classification}}
+                  <span
+                    title="{{this.model.association.classification.prefLabel}}"
+                  >
+                    {{this.model.association.classification.notation}}
                   </span>
                 {{else}}
                   Niet opgegeven
@@ -40,10 +59,13 @@
             <Item>
               <:label>Hoofdactiviteiten</:label>
               <:content>
-                {{#if this.model.activities}}
-                  {{#each this.model.activities as |activity index|}}
+                {{#if this.model.association.activities}}
+                  {{#each
+                    this.model.association.activities
+                    as |activity index|
+                  }}
                     {{activity.label}}{{#unless
-                      (last-index index this.model.activities)
+                      (last-index index this.model.association.activities)
                     }},{{/unless}}
                   {{/each}}
                 {{else}}
@@ -55,8 +77,8 @@
             <Item>
               <:label>Beschrijving</:label>
               <:content>
-                {{#if this.model.description}}
-                  {{this.model.description}}
+                {{#if this.model.association.description}}
+                  {{this.model.association.description}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -67,8 +89,8 @@
             <Item>
               <:label>Minimum leeftijd</:label>
               <:content>
-                {{#if this.model.targetAudience}}
-                  {{this.model.targetAudience.minimumLeeftijd}}
+                {{#if this.model.association.targetAudience}}
+                  {{this.model.association.targetAudience.minimumLeeftijd}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -77,8 +99,8 @@
             <Item>
               <:label>Maximum leeftijd</:label>
               <:content>
-                {{#if this.model.targetAudience}}
-                  {{this.model.targetAudience.maximumLeeftijd}}
+                {{#if this.model.association.targetAudience}}
+                  {{this.model.association.targetAudience.maximumLeeftijd}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -87,8 +109,8 @@
             <Item>
               <:label>Koepel</:label>
               <:content>
-                {{#if this.model.parentOrganization.name}}
-                  {{this.model.parentOrganization.name}}
+                {{#if this.model.association.parentOrganization.name}}
+                  {{this.model.association.parentOrganization.name}}
                 {{else}}
                   Niet opgegeven
                 {{/if}}
@@ -97,7 +119,7 @@
             <Item>
               <:label>Startdatum</:label>
               <:content>
-                {{#each this.model.changeEvents as |changeEvent|}}
+                {{#each this.model.association.changeEvents as |changeEvent|}}
                   {{#let (get changeEvent.result "label") as |result|}}
                     {{#if (eq result "Oprichting")}}
                       {{date-format changeEvent.date}}
@@ -111,7 +133,7 @@
             <Item>
               <:label>vCode</:label>
               <:content>
-                {{#each this.model.identifiers as |identifier|}}
+                {{#each this.model.association.identifiers as |identifier|}}
                   {{#if (eq identifier.idName "vCode")}}
                     {{#if (get identifier.structuredIdentifier "localId")}}
                       {{get identifier.structuredIdentifier "localId"}}
@@ -125,7 +147,7 @@
             <Item>
               <:label>KBO nummer</:label>
               <:content>
-                {{#each this.model.identifiers as |identifier|}}
+                {{#each this.model.association.identifiers as |identifier|}}
                   {{#if (eq identifier.idName "KBO nummer")}}
                     {{#if (get identifier.structuredIdentifier "localId")}}
                       {{get identifier.structuredIdentifier "localId"}}

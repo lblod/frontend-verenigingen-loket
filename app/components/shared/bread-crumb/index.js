@@ -4,16 +4,18 @@ import { inject as service } from '@ember/service';
 export default class SharedBreadCrumbComponent extends Component {
   @service router;
   @service() currentAssociation;
+  @service() currentRecognition;
+  @service() dateYear;
   bread(name) {
     return [
       {
-        route: 'index',
+        route: 'associations',
         crumbs: [{ label: 'Verenigingen' }],
       },
       {
         route: 'association.general',
         crumbs: [
-          { label: 'Verenigingen', link: 'index' },
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },
@@ -23,7 +25,7 @@ export default class SharedBreadCrumbComponent extends Component {
       {
         route: 'association.recognition.index',
         crumbs: [
-          { label: 'Verenigingen', link: 'index' },
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },
@@ -53,9 +55,32 @@ export default class SharedBreadCrumbComponent extends Component {
         ],
       },
       {
-        route: 'association.contact-detail',
+        route: 'association.recognition.show',
         crumbs: [
           { label: 'Verenigingen', link: 'index' },
+          {
+            label: name,
+          },
+          { label: 'Erkenningen', link: 'association.recognition.index' },
+          {
+            label: this.currentRecognition.recognition
+              ? `Erkenning ${this.dateYear.getCurrentYear(
+                  this.currentRecognition.recognition.validityPeriod.get(
+                    'startTime',
+                  ),
+                )} - ${this.dateYear.getCurrentYear(
+                  this.currentRecognition.recognition.validityPeriod.get(
+                    'endTime',
+                  ),
+                )}`
+              : '',
+          },
+        ],
+      },
+      {
+        route: 'association.contact-detail',
+        crumbs: [
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },
@@ -65,7 +90,7 @@ export default class SharedBreadCrumbComponent extends Component {
       {
         route: 'association.location',
         crumbs: [
-          { label: 'Verenigingen', link: 'index' },
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },
@@ -75,7 +100,7 @@ export default class SharedBreadCrumbComponent extends Component {
       {
         route: 'association.representatives',
         crumbs: [
-          { label: 'Verenigingen', link: 'index' },
+          { label: 'Verenigingen', link: 'associations' },
           {
             label: name,
           },

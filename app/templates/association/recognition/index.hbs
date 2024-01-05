@@ -75,14 +75,15 @@
               recognition.validityPeriod.endTime
             )
           }}
-            <AuBadge @icon="vote-star-filled" />
+            <AuBadge @icon="vote-star-filled" class="star-icon" />
           {{/if}}
         </td>
         <td>
           <AuLink
-            @route="association.recognition.edit"
+            @route="association.recognition.show"
             @model={{recognition.id}}
-          >Erkenning
+          >
+            Erkenning
             {{date-year recognition.validityPeriod.startTime}}
             -
             {{date-year recognition.validityPeriod.endTime}}</AuLink>

@@ -1,0 +1,70 @@
+<StaticPage>
+  <section class="au-o-layout au-o-region-large">
+    <div class="au-o-grid au-o-grid--small">
+      <div class="au-o-grid__item au-u-3-4@small au-u-1-2@medium">
+        <AuContent @skin="large">
+          <h1>Verenigingen</h1>
+          <p class="au-c-heading au-c-heading--4">Een webapplicatie waarmee
+            lokale besturen hun verenigingen, zoals bekend in het
+            Verenigingsregister, kunnen consulteren en hun erkenningen kunnen
+            beheren</p>
+          <p>Lukt het aanmelden niet? Neem contact op met uw interne beheerder.
+            Indien er zich een probleem voordoet, neem contact op met
+            Gebruikersbeheer Vlaanderen
+            <AuLinkExternal
+              href="https://overheid.vlaanderen.be/ict/ict-diensten/gebruikersbeheer"
+              @skin="primary"
+            >
+              Gebruikersbeheer Vlaanderen
+            </AuLinkExternal>.</p>
+        </AuContent>
+      </div>
+      <div
+        role="menu"
+        class="au-o-grid__item au-u-1-4@small au-u-1-2@medium au-u-text-right@medium"
+      >
+        <LoginButton />
+      </div>
+    </div>
+  </section>
+
+  <section class="au-o-region-large au-u-background-gray-200">
+    <div class="au-o-layout">
+      <AuHeading @level="2" @skin="3" class="au-u-margin-bottom">
+        De functionaliteiten van Verenigingen
+      </AuHeading>
+      <div class="au-o-grid au-o-grid--small">
+        <div class="au-o-grid__item au-u-1-2@small">
+          <AuCard @flex="true" as |c|>
+            <c.header @badgeSkin="brand" @badgeIcon="sitemap">
+              <AuHeading @level="3" @skin="4">
+                Verenigingen
+              </AuHeading>
+            </c.header>
+            <c.content>
+              <ul>
+                <li>Algemene gegevens</li>
+                <li>Erkenningen</li>
+                <li>Contactgegevens</li>
+                <li>Locaties</li>
+                <li>Vertegenwoordigers</li>
+              </ul>
+            </c.content>
+            <c.footer>
+              <p>
+
+                <AuLinkExternal
+                  href="https://abb-vlaanderen.gitbook.io/handleiding-loket/veelgestelde-vragen"
+                  @skin="secondary"
+                >
+                  <AuIcon @icon="manual" @alignment="left" />
+                  Handleiding (externe link)
+                </AuLinkExternal>
+              </p>
+            </c.footer>
+          </AuCard>
+        </div>
+      </div>
+    </div>
+  </section>
+</StaticPage>

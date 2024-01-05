@@ -94,11 +94,9 @@
                   <AuLabel />
                 </:label>
                 <:content>
-                  {{! TODO: find better way to fix this? }}
-                  {{! template-lint-disable no-inline-styles }}
-                  <AuInput style="visibility: hidden;" />
+                  <AuInput class="visibility-hidden" />
                   <AuHelpText
-                    style="visibility: hidden;"
+                    class="visibility-hidden"
                     @error={{this.validationErrors.dateDocument}}
                   >{{this.validationErrors.dateDocument}}</AuHelpText>
                 </:content>

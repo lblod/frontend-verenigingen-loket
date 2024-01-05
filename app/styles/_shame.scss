@@ -1,4 +1,4 @@
-.au-c-badge {
+.star-icon {
   background-color: var(--au-blue-200);
   color: var(--au-blue-700);
   width: 28px;
@@ -32,8 +32,13 @@
     flex-basis: 356px;
   }
 }
+
 @media (min-width: 63.9375em) {
   .au-c-main-container__sidebar {
     --sidebar: 300px;
   }
+}
+
+.visibility-hidden {
+  visibility: hidden;
 }
