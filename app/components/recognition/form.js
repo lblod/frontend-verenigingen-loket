@@ -132,7 +132,6 @@ export default class FormComponent extends Component {
     this.currentRecognition.setIsLoading(true);
     try {
       const errors = await this.validateForm();
-      console.log({ errors });
       if (errors) return;
       if (this.currentRecognition.recognition) {
         await this.editRecognition();
