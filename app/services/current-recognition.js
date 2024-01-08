@@ -6,6 +6,7 @@ export default class CurrentRecognitionService extends Service {
   @tracked recognition = null;
   @tracked selectedItem = this.items[0];
   @tracked isLoading = false;
+  @tracked generalError = '';
 
   @tracked recognitionModel = {
     startTime: null,
@@ -19,6 +20,7 @@ export default class CurrentRecognitionService extends Service {
   }
 
   async setCurrentRecognition(recognition) {
+    this.generalError = '';
     this.isLoading = false;
     this.recognitionModel = {
       startTime: null,
@@ -31,8 +33,12 @@ export default class CurrentRecognitionService extends Service {
     this.selectedItem = this.items[0];
     this.recognition = recognition;
     if (recognition) {
-      this.recognitionModel.dateDocument = recognition.dateDocument;
-      this.recognitionModel.legalResource = recognition.legalResource;
+      this.recognitionModel.dateDocument = recognition.dateDocument ?? null;
+      this.recognitionModel.startTime =
+        await recognition.validityPeriod.get('startTime');
+      this.recognitionModel.endTime =
+        await recognition.validityPeriod.get('endTime');
+      this.recognitionModel.legalResource = recognition.legalResource ?? null;
       this.recognitionModel.awardedBy = await recognition.awardedBy.get('name');
       this.selectedItem =
         this.recognitionModel.awardedBy === this.items[0]
