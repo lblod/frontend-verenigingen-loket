@@ -44,7 +44,8 @@ export default class PostalCodeMultipleSelectComponent extends Component {
   searchMethod(term, select) {
     return select.options.filter(
       (item) =>
-        item.postalCode.includes(term) || item.postalName.includes(term),
+        item.postalCode.includes(term) ||
+        item.postalName.toLowerCase().includes(term.toLowerCase()),
     );
   }
 }
