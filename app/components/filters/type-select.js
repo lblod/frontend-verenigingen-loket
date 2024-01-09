@@ -25,6 +25,14 @@ export default class ActivityMultipleSelectComponent extends Component {
       : [];
   }
 
+  searchMethod(term, select) {
+    return select.options.filter(
+      (item) =>
+        item.prefLabel.toLowerCase().includes(term.toLowerCase()) ||
+        item.notation.toLowerCase().includes(term.toLowerCase()),
+    );
+  }
+
   findTypeById(id) {
     return this.types.find((type) => type.id === id);
   }

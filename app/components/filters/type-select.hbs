@@ -3,7 +3,8 @@
   <PowerSelectMultiple
     @noMatchesMessage="Geen resultaten"
     @searchEnabled={{true}}
-    @searchField="label"
+    @searchField="prefLabel"
+    @search={{this.searchMethod}}
     @placeholder="Selecteer een type"
     @searchMessage="Typ om te zoeken"
     @options={{this.types}}
@@ -12,6 +13,7 @@
     @triggerId={{@id}}
     as |type|
   >
-    {{type.notation}}
+    {{type.prefLabel}}
+    ({{type.notation}})
   </PowerSelectMultiple>
 </div>
