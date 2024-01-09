@@ -107,16 +107,6 @@
               </:content>
             </Item>
             <Item>
-              <:label>Koepel</:label>
-              <:content>
-                {{#if this.model.association.parentOrganization.name}}
-                  {{this.model.association.parentOrganization.name}}
-                {{else}}
-                  Niet opgegeven
-                {{/if}}
-              </:content>
-            </Item>
-            <Item>
               <:label>Startdatum</:label>
               <:content>
                 {{#each this.model.association.changeEvents as |changeEvent|}}
