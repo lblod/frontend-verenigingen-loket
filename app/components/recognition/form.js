@@ -74,6 +74,7 @@ export default class FormComponent extends Component {
       await this.store.query('recognition', {
         include: 'validity-period',
         filter: {
+          ':has-no:status': true,
           'validity-period': {
             ':lte:start-time': date,
             ':gte:end-time': date,
