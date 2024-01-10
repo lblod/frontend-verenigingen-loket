@@ -7,8 +7,16 @@ export default class Router extends EmberRouter {
 }
 
 Router.map(function () {
-  this.route('auth', function () {
-    this.route('login');
-    this.route('logout');
+  this.route('legal', { path: '/legaal' }, function () {
+    this.route('accessibilitystatement', {
+      path: '/toegangkelijkheidsverklaring',
+    });
+    this.route('cookiestatement', {
+      path: '/cookieverklaring',
+    });
+    this.route('disclaimer');
+  });
+  this.route('route-not-found', {
+    path: '/*wildcard',
   });
 });
