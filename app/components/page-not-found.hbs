@@ -1,0 +1,15 @@
+<div class="au-o-layout au-o-region-large">
+  <div class="au-o-grid au-o-grid--middle">
+    <div class="au-o-grid__item au-u-2-3@small">
+      <h1 class="au-u-h1 au-u-medium">{{@title}}</h1>
+      <p class="au-u-margin-bottom au-u-margin-top">{{@content}}</p>
+      {{yield}}
+      <AuLink @skin="button" @route="index">Terug naar startpagina</AuLink>
+    </div>
+    {{#if @image}}
+      <div class="au-o-grid__item au-u-1-3@small">
+        <img src={{@image}} alt={{@title}} />
+      </div>
+    {{/if}}
+  </div>
+</div>

@@ -43,7 +43,7 @@ Router.map(function () {
     });
   });
 
-  this.route('route-not-found', {
+  this.route('404', {
     path: '/*wildcard',
   });
 });
