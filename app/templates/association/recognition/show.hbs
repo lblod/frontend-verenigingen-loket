@@ -1,5 +1,5 @@
 <div class="au-o-box au-o-flow au-o-flow">
-  {{#if this.isLoading}}
+  {{#if this.deleteRecognition.isRunning}}
     <AuLoader @padding="large" />
   {{else}}
     <section class="au-u-flex au-u-flex--between">
@@ -68,10 +68,10 @@
         <AuButton
           @skin="primary"
           @alert="true"
-          @loading={{this.isLoading}}
+          @loading={{this.deleteRecognition.isRunning}}
           {{on
             "click"
-            (fn this.deleteRecognition this.currentRecognition.recognition)
+            (perform this.deleteRecognition this.currentRecognition.recognition)
           }}
         >Erkenning verwijderen</AuButton>
       </div>

@@ -3,13 +3,13 @@ import { inject as service } from '@ember/service';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 import UndoToaster from 'frontend-verenigingen-loket/components/toasts/undo';
+import { task } from 'ember-concurrency';
 
 export default class AssociationRecognitionShowController extends Controller {
   @service router;
   @service toaster;
   @service currentAssociation;
   @service currentRecognition;
-  @tracked isLoading = false;
   @tracked isModalOpen = false;
 
   @action
@@ -17,10 +17,8 @@ export default class AssociationRecognitionShowController extends Controller {
     this.isModalOpen = !this.isModalOpen;
   }
 
-  @action
-  async deleteRecognition(recognition) {
+  deleteRecognition = task({ drop: true }, async (recognition) => {
     try {
-      this.isLoading = true;
       await recognition.setProperties({
         status: 'http://data.lblod.info/document-statuses/verwijderd',
       });
@@ -32,10 +30,9 @@ export default class AssociationRecognitionShowController extends Controller {
         closable: true,
       });
     } catch (error) {
-      console.error(error);
+      console.error('Error updating recognition status:', error);
     } finally {
-      this.isLoading = false;
       this.toggleModal();
     }
-  }
+  });
 }

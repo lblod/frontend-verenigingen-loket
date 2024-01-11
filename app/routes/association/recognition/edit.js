@@ -13,7 +13,7 @@ export default class AssociationRecognitionEditRoute extends Route {
     try {
       const recognition = await this.loadRecognition.perform(recognition_id);
       if (recognition[0] == null) {
-        throw new Error();
+        throw new Error(`Recognition data not found for id: ${recognition_id}`);
       }
       this.currentRecognition.setCurrentRecognition(recognition[0]);
     } catch (error) {

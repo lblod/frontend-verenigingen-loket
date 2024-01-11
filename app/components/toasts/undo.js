@@ -9,7 +9,6 @@ export default class ToastsUndoComponent extends Component {
   @service() currentRecognition;
   @service() router;
   @service() toaster;
-  @tracked isLoading = false;
   @tracked progress = 0;
 
   constructor() {
@@ -28,18 +27,16 @@ export default class ToastsUndoComponent extends Component {
 
     return htmlSafe(styleString);
   }
-  @task
-  *animateProgress() {
+
+  animateProgress = task({ drop: true }, async () => {
     for (let i = 0; i <= 100; i++) {
       this.progress = i;
-      yield timeout(38);
+      await timeout(38);
     }
     this.currentRecognition.setCurrentRecognition(null);
-  }
+  });
 
-  @action
-  async undoRecognition(recognition) {
-    this.isLoading = true;
+  undoRecognition = task({ drop: true }, async (recognition) => {
     try {
       await recognition.setProperties({
         status: null,
@@ -49,10 +46,8 @@ export default class ToastsUndoComponent extends Component {
       this.closeToaster();
     } catch (error) {
       console.error(error);
-    } finally {
-      this.isLoading = false;
     }
-  }
+  });
 
   @action
   closeToaster() {

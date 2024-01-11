@@ -24,9 +24,9 @@
           @skin="link"
           {{on
             "click"
-            (fn this.undoRecognition this.currentRecognition.recognition)
+            (perform this.undoRecognition this.currentRecognition.recognition)
           }}
-          @loading={{this.isLoading}}
+          @loading={{this.undoRecognition.isRunning}}
         >
           Ongedaan maken
         </AuButton>
