@@ -1,5 +1,5 @@
 <div class="au-o-box au-o-flow au-o-flow">
-  {{#if this.isLoading}}
+  {{#if this.deleteRecognition.isRunning}}
     <AuLoader @padding="large" />
   {{else}}
     <section class="au-u-flex au-u-flex--between">
@@ -33,7 +33,13 @@
           @alignment="right"
           class="au-u-margin-left-small"
         >
-          <AuButton @skin="link" @icon="bin" role="menuitem" @alert={{true}}>
+          <AuButton
+            @skin="link"
+            @icon="bin"
+            role="menuitem"
+            @alert={{true}}
+            {{on "click" this.toggleModal}}
+          >
             Verwijder erkenning
           </AuButton>
         </AuDropdown>
@@ -46,4 +52,29 @@
       />
     </section>
   {{/if}}
+  <AuModalContainer />
+  <AuModal @modalOpen={{this.isModalOpen}} @closeModal={{this.toggleModal}}>
+    <:title>Erkenning verwijderen</:title>
+    <:body>
+      <p>Weet je zeker dat de deze erkenning wilt verwijderen? Wanneer de
+        erkenning is verwijderd, kan hij niet meer worden teruggehaald.</p>
+    </:body>
+    <:footer>
+      <div class="au-u-flex au-u-flex--between">
+        <AuButton
+          @skin="secondary"
+          {{on "click" this.toggleModal}}
+        >Annuleer</AuButton>
+        <AuButton
+          @skin="primary"
+          @alert="true"
+          @loading={{this.deleteRecognition.isRunning}}
+          {{on
+            "click"
+            (perform this.deleteRecognition this.currentRecognition.recognition)
+          }}
+        >Erkenning verwijderen</AuButton>
+      </div>
+    </:footer>
+  </AuModal>
 </div>

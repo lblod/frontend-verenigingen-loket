@@ -1,0 +1,54 @@
+<div id="undo-toaster" class="au-c-toaster au-c-toaster--top">
+  <div
+    class="au-c-alert au-c-alert--success au-c-alert--small"
+    role="alert"
+    data-test-toast=""
+  >
+    <div class="au-c-alert__icon" aria-hidden="true" data-test-alert-icon="">
+      <svg
+        role="img"
+        class="au-c-icon au-c-icon--circle-info"
+        aria-hidden="true"
+      >
+        <use
+          xlink:href="/@appuniversum/ember-appuniversum/appuniversum-symbolset.svg#circle-info"
+        ></use>
+      </svg>
+    </div>
+    <div class="au-c-alert__content">
+      <p class="au-c-alert__title" data-test-alert-title="">Erkenning verwijderd</p>
+      <div class="au-c-alert__message" data-test-alert-message="">
+        <p>De erkenning is succesvol verwijderd</p>
+        <AuButton
+          class="au-u-margin-top-small"
+          @skin="link"
+          {{on
+            "click"
+            (perform this.undoRecognition this.currentRecognition.recognition)
+          }}
+          @loading={{this.undoRecognition.isRunning}}
+        >
+          Ongedaan maken
+        </AuButton>
+      </div>
+    </div>
+    <button
+      class="au-c-alert__close"
+      onclick={{this.closeToaster}}
+      data-test-alert-close=""
+      type="button"
+    >
+      <svg
+        role="img"
+        class="au-c-icon au-c-icon--cross au-c-icon--large"
+        aria-hidden="true"
+      >
+        <use
+          xlink:href="/@appuniversum/ember-appuniversum/appuniversum-symbolset.svg#cross"
+        ></use>
+      </svg>
+      <span class="au-u-hidden-visually">Sluit</span>
+    </button>
+  </div>
+  <div style={{this.progressStyle}}></div>
+</div>

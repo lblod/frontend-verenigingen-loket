@@ -19,6 +19,7 @@ export default class AssociationRecognitionRoute extends Route {
     return yield this.store.query('recognition', {
       include: ['awarded-by', 'validity-period'].join(','),
       filter: {
+        ':has-no:status': true,
         association: {
           id: id,
         },
