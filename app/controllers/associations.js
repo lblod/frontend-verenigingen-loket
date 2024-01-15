@@ -10,7 +10,7 @@ export default class IndexController extends Controller {
   @service contactPoints;
   @service queryBuilder;
 
-  size = 0;
+  size = 50;
   @tracked page = 0;
   @tracked sort = 'name';
   @tracked search = '';

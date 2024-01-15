@@ -16,7 +16,7 @@ export default class QueryBuilderService extends Service {
     return result;
   }
 
-  buildQuery(params, include, size = 20) {
+  buildQuery(params, include, size = 50) {
     let customQuery = '';
     const query = {
       sort: params.sort ? `${params.sort},name` : 'name',
