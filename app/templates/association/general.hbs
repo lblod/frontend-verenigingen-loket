@@ -25,12 +25,14 @@
     <DataCard>
       <:title>
         <div class="au-u-flex au-u-flex--between au-u-flex--vertical-end">
-          Vereniging
-          <AuPill
-            @skin="default"
-            class="au-u-margin-bottom-tiny"
-            @icon="clock-rewind"
-          >Laatst gewijzigd op 22-02-2022</AuPill>
+          Vereniging (zoals bekend in Verenigingsloket)
+          <div class="au-u-margin-bottom-tiny">
+            {{#if this.model.association}}
+              <LastUpdated
+                @lastUpdated={{this.model.association.lastUpdated}}
+              />
+            {{/if}}
+          </div>
         </div>
       </:title>
       <:card as |Card|>

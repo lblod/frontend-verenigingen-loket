@@ -6,7 +6,7 @@
 >
   <t.menu>
     <section
-      class="au-u-flex au-u-flex--between au-o-box au-o-flow au-o-flow--large"
+      class="au-u-flex au-u-flex--between au-u-padding-left au-u-padding-right au-u-padding-top"
     >
       <div>
         <AuHeading @level="1" @skin="1">Vertegenwoordigers</AuHeading>
@@ -16,12 +16,22 @@
         class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
       >
         {{#if this.association}}
-          <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
           <ReportWrongData @model={{this.association}} />
         {{/if}}
       </div>
     </section>
-
+    <section class="au-u-padding-left au-u-padding-right au-u-padding-top">
+      <h3
+        class="au-c-heading au-c-heading--5 au-u-margin-bottom-tiny au-u-flex au-u-flex--between au-u-flex--vertical-end"
+      >
+        Vertegenwoordigers (zoals bekend in Verenigingsloket)
+        <span class="au-u-margin-bottom-tiny">
+          {{#if this.association}}
+            <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
+          {{/if}}
+        </span>
+      </h3>
+    </section>
   </t.menu>
   <t.content class="au-c-data-table__table--small" as |c|>
     <c.header>
