@@ -33,6 +33,7 @@ export default class AssociationsRoute extends Route {
       'identifiers.structured-identifier',
       'organization-status',
       'activities',
+      'recognitions',
     ].join(',');
 
     return {
