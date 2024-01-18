@@ -5,16 +5,14 @@ export default class AuthCallbackRoute extends Route {
   @service session;
   @service router;
 
-  queryParams = ['code'];
   beforeModel() {
     this.session.prohibitAuthentication('index');
   }
 
-  async model() {
-    console.log(this.code);
-    if (this.code) {
+  async model({ code }) {
+    if (code) {
       try {
-        await this.session.authenticate('authenticator:acm-idm', this.code);
+        await this.session.authenticate('authenticator:acm-idm', code);
       } catch (error) {
         throw new Error(
           'Something went wrong while authenticating the user in the backend. The token might be expired.',
