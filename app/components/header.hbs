@@ -18,7 +18,8 @@
   <li class="au-c-list-horizontal__item">
     {{#if this.session.isAuthenticated}}
       <AuDropdown
-        @title="{{this.currentSession.user.firstName}} {{this.currentSession.user.familyName}}"
+        @title="{{this.currentSession.group.classification.label}}
+         {{this.currentSession.group.name}}"
         @buttonLabel="Account settings"
         @alignment="right"
         role="menu"
