@@ -16,6 +16,7 @@ Router.map(function () {
   });
   this.route('login');
   this.route('mock-login');
+  this.route('switch-login');
 
   this.route('legal', { path: '/legaal' }, function () {
     this.route('accessibilitystatement', {
