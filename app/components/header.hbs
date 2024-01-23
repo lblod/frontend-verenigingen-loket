@@ -24,6 +24,10 @@
         @alignment="right"
         role="menu"
       >
+        <AuLink role="menuitem" @route="auth.switch" @icon="switch">
+          Wissel van bestuurseenheid
+        </AuLink>
+
         <AuLink @route="auth.logout" @icon="logout" role="menuitem">
           Afmelden
         </AuLink>
