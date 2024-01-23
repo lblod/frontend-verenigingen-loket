@@ -10,7 +10,7 @@ export default class AuthLogoutRoute extends Route {
       try {
         const wasMockLoginSession = this.session.isMockLoginSession;
         await this.session.invalidate();
-        if (wasMockLoginSession) {
+        if (!wasMockLoginSession) {
           await fetch('https://authenticatie-ti.vlaanderen.be/op/v1/logout')
             .then(() => {})
             .catch((error) => {
