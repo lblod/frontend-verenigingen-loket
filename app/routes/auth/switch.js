@@ -10,9 +10,9 @@ export default class AuthSwitchRoute extends Route {
     this.session.requireAuthentication(transition, 'auth.login');
 
     try {
-      let wasMockLoginSession = this.session.isMockLoginSession;
+      const wasMockLoginSession = this.session.isMockLoginSession;
       await this.session.invalidate();
-      let logoutUrl = wasMockLoginSession
+      const logoutUrl = wasMockLoginSession
         ? this.router.urlFor('mock-login')
         : buildSwitchUrl(ENV.acmidm);
 
@@ -28,7 +28,7 @@ export default class AuthSwitchRoute extends Route {
   }
 }
 
-function buildSwitchUrl({ logoutUrl, clientId, switchRedirectUrl }) {
+export function buildSwitchUrl({ logoutUrl, clientId, switchRedirectUrl }) {
   let switchUrl = new URL(logoutUrl);
   let searchParams = switchUrl.searchParams;
 
