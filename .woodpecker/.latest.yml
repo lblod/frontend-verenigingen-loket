@@ -6,5 +6,5 @@ steps:
       tags: latest
     secrets: [ docker_username, docker_password ]
 when:
-  branch: feature/acm-idm
+  branch: development
   event: push
