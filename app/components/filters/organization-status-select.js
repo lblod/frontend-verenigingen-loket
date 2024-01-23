@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
-import { task } from 'ember-concurrency';
 import { tracked } from '@glimmer/tracking';
 
 export default class OrganizationStatusSelectComponent extends Component {
@@ -13,29 +12,12 @@ export default class OrganizationStatusSelectComponent extends Component {
   constructor() {
     super(...arguments);
     this.organizationStatusQuery = this.router.currentRoute.queryParams.status;
-    this.loadOrganizationStatus.perform();
+    this.args.onChange(this.selectedOrganizationStatus());
   }
 
   selectedOrganizationStatus() {
     return this.organizationStatusQuery
-      ? this.organizationStatusQuery
-          .split(',')
-          .map((id) => this.findOrganizationStatusById(id))
-          .filter(Boolean)
+      ? this.organizationStatusQuery.split(',').map((id) => id)
       : [];
-  }
-
-  findOrganizationStatusById(id) {
-    return this.organizationStatus.find(
-      (organizationStatus) => organizationStatus.id === id,
-    ).id;
-  }
-
-  @task
-  *loadOrganizationStatus() {
-    this.organizationStatus = yield this.store.findAll(
-      'organization-status-code',
-    );
-    this.args.onChange(this.selectedOrganizationStatus());
   }
 }

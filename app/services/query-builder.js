@@ -1,6 +1,6 @@
 import Service, { inject } from '@ember/service';
 import { keepLatestTask } from 'ember-concurrency';
-
+import dateFormat from '../helpers/date-format';
 export default class QueryBuilderService extends Service {
   @inject store;
 
@@ -45,7 +45,27 @@ export default class QueryBuilderService extends Service {
     }
 
     if (params.status !== '') {
-      query.filters['organization-status'] = { ':id:': params.status };
+      const today = dateFormat.compute([new Date(), 'YYY-MM-DD']);
+      console.log(params.status);
+      if (params.status === 'Erkend') {
+        query.filters['recognitions'] = {
+          'validity-period': {
+            ':lte:start-time': today,
+            ':gte:end-time': today,
+          },
+        };
+      } else if (params.status === 'Niet erkend') {
+        customQuery += [
+          `filter[:or:][recognitions][validity-period][:lte:end-time]=${today}`,
+          `filter[:or:][recognitions][validity-period][:gte:start-time]=${today}`,
+        ].join('&');
+      } else {
+        query.filters['recognitions'] = {
+          'validity-period': {
+            ':has:end-time': true,
+          },
+        };
+      }
     }
 
     if (params.types !== '') {

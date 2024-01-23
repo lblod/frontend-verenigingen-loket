@@ -5,11 +5,6 @@
   @onChange={{@onChange}}
   as |Group|
 >
-  {{#each this.organizationStatus as |status|}}
-    {{#if (eq status.label "Erkend")}}
-      <Group.Checkbox @value={{status.id}}>{{status.label}}</Group.Checkbox>
-    {{else if (eq status.label "Niet erkend")}}
-      <Group.Checkbox @value={{status.id}}>{{status.label}}</Group.Checkbox>
-    {{/if}}
-  {{/each}}
+  <Group.Checkbox @value="Erkend">Erkend</Group.Checkbox>
+  <Group.Checkbox @value="Niet erkend">Niet erkend</Group.Checkbox>
 </AuCheckboxGroup>
