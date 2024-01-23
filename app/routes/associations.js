@@ -24,9 +24,6 @@ export default class AssociationsRoute extends Route {
 
   beforeModel(transition) {
     this.session.requireAuthentication(transition, 'login');
-    if (this.session.isAuthenticated) {
-      this.router.transitionTo('associations');
-    }
   }
 
   async model(params) {
