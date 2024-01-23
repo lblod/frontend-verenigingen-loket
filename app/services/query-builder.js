@@ -46,7 +46,6 @@ export default class QueryBuilderService extends Service {
 
     if (params.status !== '') {
       const today = dateFormat.compute([new Date(), 'YYY-MM-DD']);
-      console.log(params.status);
       if (params.status === 'Erkend') {
         query.filters['recognitions'] = {
           'validity-period': {
