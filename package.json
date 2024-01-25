@@ -75,7 +75,8 @@
     "stylelint-config-standard": "^34.0.0",
     "stylelint-prettier": "^4.0.2",
     "tracked-built-ins": "^3.3.0",
-    "webpack": "^5.88.2"
+    "webpack": "^5.88.2",
+    "@lblod/ember-acmidm-login": "^2.0.0"
   },
   "engines": {
     "node": "16.* || >= 18"
