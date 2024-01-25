@@ -177,19 +177,7 @@
               {{/if}}
             </td>
             <td>
-              {{#if (eq association.organizationStatus.label "Erkend")}}
-                <AuPill
-                  @skin="success"
-                >{{association.organizationStatus.label}}</AuPill>
-              {{else if
-                (eq association.organizationStatus.label "Niet erkend")
-              }}
-                <AuPill
-                  @skin="warning"
-                >{{association.organizationStatus.label}}</AuPill>
-              {{else}}
-                <AuPill @skin="warning">Niet erkend</AuPill>
-              {{/if}}
+              <Recognition::Status @recognitions={{association.recognitions}} />
             </td>
           </c.body>
         {{/if}}
