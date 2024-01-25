@@ -1,6 +1,5 @@
 import EmberRouter from '@ember/routing/router';
 import config from 'frontend-verenigingen-loket/config/environment';
-
 export default class Router extends EmberRouter {
   location = config.locationType;
   rootURL = config.rootURL;
@@ -15,8 +14,11 @@ Router.map(function () {
     this.route('switch');
   });
   this.route('login');
-  this.route('mock-login');
   this.route('switch-login');
+
+  if (config.acmidm.clientId === '{{OAUTH_API_KEY}}') {
+    this.route('mock-login');
+  }
 
   this.route('legal', { path: '/legaal' }, function () {
     this.route('accessibilitystatement', {
