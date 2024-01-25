@@ -19,12 +19,18 @@ export default class MockLoginRoute extends Route {
   async model(params) {
     const filter = { provider: 'https://github.com/lblod/mock-login-service' };
     if (params.gemeente) filter.user = { groups: params.gemeente };
-    const accounts = await this.store.query('account', {
-      include: 'user,user.groups',
-      filter: filter,
-      page: { size: 10, number: params.page },
-      sort: 'user.family-name',
-    });
-    return accounts;
+    try {
+      const accounts = await this.store.query('account', {
+        include: 'user,user.groups',
+        filter: filter,
+        page: { size: 10, number: params.page },
+        sort: 'user.family-name',
+      });
+      return accounts;
+    } catch (error) {
+      throw new Error('Something went wrong while fetching accounts', {
+        cause: error,
+      });
+    }
   }
 }
