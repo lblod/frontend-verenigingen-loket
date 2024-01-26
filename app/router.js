@@ -14,6 +14,7 @@ Router.map(function () {
     this.route('switch');
   });
   this.route('login');
+  this.route('switch-login');
 
   if (config.acmidm.clientId === '{{OAUTH_API_KEY}}') {
     this.route('mock-login');

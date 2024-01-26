@@ -7,8 +7,7 @@ export default class AuthSwitchRoute extends Route {
   @service session;
 
   async beforeModel(transition) {
-    this.session.requireAuthentication(transition, 'auth.login');
-
+    this.session.requireAuthentication(transition, 'login');
     try {
       const wasMockLoginSession = this.session.isMockLoginSession;
       await this.session.invalidate();
