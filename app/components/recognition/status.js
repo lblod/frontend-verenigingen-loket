@@ -1,12 +1,22 @@
 import Component from '@glimmer/component';
 import { task } from 'ember-concurrency';
-
+import { inject as service } from '@ember/service';
 export default class StatusComponent extends Component {
+  @service store;
   get getCurrentRecognitionStatus() {
-    return this.recognitionStatus.perform(this.args.recognitions);
+    return this.recognitionStatus.perform(this.args.association);
   }
 
-  recognitionStatus = task({ drop: true }, async (recognitions) => {
+  recognitionStatus = task({ drop: true }, async (association) => {
+    const recognitions = await this.store.query('recognition', {
+      include: 'validity-period',
+      filter: {
+        ':has-no:status': true,
+        association: {
+          id: association.id,
+        },
+      },
+    });
     let active = null;
     if (!recognitions) return active;
     const today = new Date();
@@ -26,7 +36,6 @@ export default class StatusComponent extends Component {
       });
     });
     await taskPromise;
-
     return active;
   });
 }

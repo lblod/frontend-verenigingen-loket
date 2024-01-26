@@ -7,7 +7,7 @@ export default class ApplicationAdapter extends JSONAPIAdapter {
       delete query.customQuery;
       return `${super.urlForQuery(...arguments)}?${customQueryParam}`;
     }
-
+    delete query.customQuery;
     return super.urlForQuery(...arguments);
   }
 }
