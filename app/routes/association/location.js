@@ -69,9 +69,11 @@ export default class AssociationLocationRoute extends Route {
       const [mainKey, subKey] = key.split('.');
       const valueA = subKey ? a[mainKey].get(subKey) : a[mainKey];
       const valueB = subKey ? b[mainKey].get(subKey) : b[mainKey];
-      return reverse
-        ? valueB.localeCompare(valueA)
-        : valueA.localeCompare(valueB);
+      if (valueA && valueB) {
+        return reverse
+          ? valueB.localeCompare(valueA)
+          : valueA.localeCompare(valueB);
+      }
     });
   };
 }
