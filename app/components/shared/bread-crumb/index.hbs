@@ -2,9 +2,13 @@
   <Group>
     <ul class="au-c-list-horizontal au-c-list-horizontal--small">
       <li class="au-c-list-horizontal__item">
-        <AuLink @linkRoute="index" @icon="arrow-left">
-          Loket voor lokale besturen
-        </AuLink>
+        <AuLinkExternal
+          href="https://loket.lokaalbestuur.vlaanderen.be/"
+          @icon="arrow-left"
+          @iconAlignment="left"
+        >
+          Loket voor Lokale Besturen
+        </AuLinkExternal>
       </li>
       {{#each this.crumbsForRoute as |crumb index|}}
         <li class="au-c-list-horizontal__item" role="menu">
