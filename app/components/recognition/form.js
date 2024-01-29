@@ -3,6 +3,7 @@ import { inject as service } from '@ember/service';
 import { action, set } from '@ember/object';
 import { errorValidation } from '../../validations/recognition-validation';
 import { tracked } from '@glimmer/tracking';
+import dateFormat from '../../helpers/date-format';
 
 export default class FormComponent extends Component {
   items = ['College van burgemeester en schepenen', 'Andere'];
@@ -69,20 +70,17 @@ export default class FormComponent extends Component {
     set(this.validationErrors, errorField, null);
   }
 
-  async getRecognitionInPeriod(date) {
+  async getRecognitionsInPeriod() {
     return (
       await this.store.query('recognition', {
         include: 'validity-period',
         filter: {
           ':has-no:status': true,
-          'validity-period': {
-            ':lte:start-time': date,
-            ':gte:end-time': date,
-          },
           association: {
             id: this.currentAssociation.association.id,
           },
         },
+        page: { size: 200 },
       })
     ).filter(
       (recognition) =>
@@ -91,14 +89,36 @@ export default class FormComponent extends Component {
   }
 
   async validateForm() {
-    const [startDateExist, endDateExist] = await Promise.all([
-      this.getRecognitionInPeriod(
-        this.currentRecognition.recognitionModel.startTime,
-      ),
-      this.getRecognitionInPeriod(
-        this.currentRecognition.recognitionModel.endTime,
-      ),
+    const startTime = dateFormat.compute([
+      this.currentRecognition.recognitionModel.startTime,
+      'YYY-MM-DD',
     ]);
+    const endTime = dateFormat.compute([
+      this.currentRecognition.recognitionModel.endTime,
+      'YYY-MM-DD',
+    ]);
+    const startDateExist = [];
+    const endDateExist = [];
+    const recognitions = await this.getRecognitionsInPeriod();
+    await Promise.all(
+      recognitions.map(async (recognition) => {
+        const recStartTime = await recognition.validityPeriod.get('startTime');
+        const recEndTime = await recognition.validityPeriod.get('endTime');
+
+        if (startTime >= recStartTime && startTime <= recEndTime) {
+          startDateExist.push(recognition);
+        }
+
+        if (endTime >= recStartTime && endTime <= recEndTime) {
+          endDateExist.push(recognition);
+        }
+
+        if (startTime < recStartTime && endTime > recEndTime) {
+          startDateExist.push(recognition);
+          endDateExist.push(recognition);
+        }
+      }),
+    );
 
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
