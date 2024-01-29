@@ -27,20 +27,26 @@ export default class AssociationsRoute extends Route {
   }
 
   async model(params) {
-    const include = [
-      'target-audience',
-      'primary-site.address',
-      'identifiers.structured-identifier',
-      'organization-status',
-      'activities',
-      'recognitions',
-    ].join(',');
+    try {
+      const include = [
+        'target-audience',
+        'primary-site.address',
+        'identifiers.structured-identifier',
+        'organization-status',
+        'activities',
+        'recognitions',
+      ].join(',');
 
-    return {
-      associations: this.queryBuilder.buildAndExecuteQuery.perform(
-        params,
-        include,
-      ),
-    };
+      return {
+        associations: this.queryBuilder.buildAndExecuteQuery.perform(
+          params,
+          include,
+        ),
+      };
+    } catch (error) {
+      throw new Error('Something went wrong while fetching associations', {
+        cause: error,
+      });
+    }
   }
 }

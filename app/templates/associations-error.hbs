@@ -1,0 +1,19 @@
+<div class="au-o-layout au-o-region-large">
+  <AuAlert
+    @icon="circle-x"
+    @skin="error"
+    @title="Fout bij het ophalen van de verenigingen"
+  >
+    <p>
+      Er ging iets fout bij het ophalen van de verenigingen.
+      <AuLink @route="associations">Probeer het opnieuw</AuLink>.
+
+      <AuHelpText>
+        Indien dit probleem zich blijft voordoen, contacteer
+        <AuLinkExternal
+          href="https://overheid.vlaanderen.be/ict/ict-diensten/gebruikersbeheer"
+        >gebruikersbeheer Vlaanderen</AuLinkExternal>.
+      </AuHelpText>
+    </p>
+  </AuAlert>
+</div>
