@@ -113,7 +113,7 @@ export default class FormComponent extends Component {
           endDateExist.push(recognition);
         }
 
-        if (startTime < recStartTime && endTime > recEndTime) {
+        if (startTime <= recStartTime && endTime >= recEndTime) {
           startDateExist.push(recognition);
           endDateExist.push(recognition);
         }
