@@ -1,0 +1,21 @@
+{{page-title "Fout bij het aanmelden"}}
+
+<StaticPage
+  class="au-c-body-container au-c-body-container--scroll au-u-flex--between"
+>
+  <div class="au-o-layout au-o-region-large">
+    <AuAlert @icon="circle-x" @skin="error" @title="Fout bij het aanmelden">
+      <p>
+        Er ging iets fout bij het aanmelden.
+        <AuLink @route="auth.login">Probeer het opnieuw</AuLink>.
+
+        <AuHelpText>
+          Indien dit probleem zich blijft voordoen, contacteer
+          <AuLinkExternal
+            href="https://overheid.vlaanderen.be/ict/ict-diensten/gebruikersbeheer"
+          >gebruikersbeheer Vlaanderen</AuLinkExternal>.
+        </AuHelpText>
+      </p>
+    </AuAlert>
+  </div>
+</StaticPage>
