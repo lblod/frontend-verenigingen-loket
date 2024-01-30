@@ -3,6 +3,7 @@ import { inject as service } from '@ember/service';
 import { action, set } from '@ember/object';
 import { errorValidation } from '../../validations/recognition-validation';
 import { tracked } from '@glimmer/tracking';
+import dateFormat from '../../helpers/date-format';
 
 export default class FormComponent extends Component {
   items = ['College van burgemeester en schepenen', 'Andere'];
@@ -12,6 +13,7 @@ export default class FormComponent extends Component {
   @service store;
   @service router;
   @service toaster;
+  f;
   @service dateYear;
 
   @tracked validationErrors = {};
@@ -69,37 +71,63 @@ export default class FormComponent extends Component {
     set(this.validationErrors, errorField, null);
   }
 
-  async getRecognitionInPeriod(date) {
-    return (
-      await this.store.query('recognition', {
-        include: 'validity-period',
-        filter: {
-          ':has-no:status': true,
-          'validity-period': {
-            ':lte:start-time': date,
-            ':gte:end-time': date,
-          },
-          association: {
-            id: this.currentAssociation.association.id,
-          },
+  async getRecognitionsInPeriod(startTime, endTime) {
+    const startDateExist = [];
+    const endDateExist = [];
+
+    const recognitions = await this.store.query('recognition', {
+      include: 'validity-period',
+      filter: {
+        ':has-no:status': true,
+        association: {
+          id: this.currentAssociation.association.id,
         },
-      })
-    ).filter(
-      (recognition) =>
-        recognition.id !== this.currentRecognition?.recognition?.id,
+      },
+      page: { size: 200 },
+    });
+
+    const currentRecognitionId = this.currentRecognition?.recognition?.id;
+
+    await Promise.all(
+      recognitions
+        .filter((recognition) => recognition.id !== currentRecognitionId)
+        .map(async (recognition) => {
+          const recValidityPeriod = await recognition.validityPeriod;
+          const recStartTime = await recValidityPeriod.get('startTime');
+          const recEndTime = await recValidityPeriod.get('endTime');
+
+          if (startTime <= recEndTime && endTime >= recStartTime) {
+            startDateExist.push(recognition);
+          }
+
+          if (endTime >= recStartTime && endTime <= recEndTime) {
+            endDateExist.push(recognition);
+          }
+
+          if (startTime <= recStartTime && endTime >= recEndTime) {
+            startDateExist.push(recognition);
+            endDateExist.push(recognition);
+          }
+        }),
     );
+
+    return [startDateExist, endDateExist];
   }
 
   async validateForm() {
-    const [startDateExist, endDateExist] = await Promise.all([
-      this.getRecognitionInPeriod(
-        this.currentRecognition.recognitionModel.startTime,
-      ),
-      this.getRecognitionInPeriod(
-        this.currentRecognition.recognitionModel.endTime,
-      ),
+    const startTime = dateFormat.compute([
+      this.currentRecognition.recognitionModel.startTime,
+      'YYY-MM-DD',
+    ]);
+    const endTime = dateFormat.compute([
+      this.currentRecognition.recognitionModel.endTime,
+      'YYY-MM-DD',
     ]);
 
+    const [startDateExist, endDateExist] = await this.getRecognitionsInPeriod(
+      startTime,
+      endTime,
+    );
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
       awardedBy:

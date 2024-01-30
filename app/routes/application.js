@@ -17,7 +17,7 @@ export default class ApplicationRoute extends Route {
     try {
       await this.currentSession.load();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       warn(error, { id: 'current-session-load-failure' });
       this.router.transitionTo('auth.logout');
     }
