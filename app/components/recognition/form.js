@@ -13,6 +13,7 @@ export default class FormComponent extends Component {
   @service store;
   @service router;
   @service toaster;
+  f;
   @service dateYear;
 
   @tracked validationErrors = {};
@@ -70,22 +71,47 @@ export default class FormComponent extends Component {
     set(this.validationErrors, errorField, null);
   }
 
-  async getRecognitionsInPeriod() {
-    return (
-      await this.store.query('recognition', {
-        include: 'validity-period',
-        filter: {
-          ':has-no:status': true,
-          association: {
-            id: this.currentAssociation.association.id,
-          },
+  async getRecognitionsInPeriod(startTime, endTime) {
+    const startDateExist = [];
+    const endDateExist = [];
+
+    const recognitions = await this.store.query('recognition', {
+      include: 'validity-period',
+      filter: {
+        ':has-no:status': true,
+        association: {
+          id: this.currentAssociation.association.id,
         },
-        page: { size: 200 },
-      })
-    ).filter(
-      (recognition) =>
-        recognition.id !== this.currentRecognition?.recognition?.id,
+      },
+      page: { size: 200 },
+    });
+
+    const currentRecognitionId = this.currentRecognition?.recognition?.id;
+
+    await Promise.all(
+      recognitions
+        .filter((recognition) => recognition.id !== currentRecognitionId)
+        .map(async (recognition) => {
+          const recValidityPeriod = await recognition.validityPeriod;
+          const recStartTime = await recValidityPeriod.get('startTime');
+          const recEndTime = await recValidityPeriod.get('endTime');
+
+          if (startTime <= recEndTime && endTime >= recStartTime) {
+            startDateExist.push(recognition);
+          }
+
+          if (endTime >= recStartTime && endTime <= recEndTime) {
+            endDateExist.push(recognition);
+          }
+
+          if (startTime <= recStartTime && endTime >= recEndTime) {
+            startDateExist.push(recognition);
+            endDateExist.push(recognition);
+          }
+        }),
     );
+
+    return [startDateExist, endDateExist];
   }
 
   async validateForm() {
@@ -97,29 +123,11 @@ export default class FormComponent extends Component {
       this.currentRecognition.recognitionModel.endTime,
       'YYY-MM-DD',
     ]);
-    const startDateExist = [];
-    const endDateExist = [];
-    const recognitions = await this.getRecognitionsInPeriod();
-    await Promise.all(
-      recognitions.map(async (recognition) => {
-        const recStartTime = await recognition.validityPeriod.get('startTime');
-        const recEndTime = await recognition.validityPeriod.get('endTime');
 
-        if (startTime >= recStartTime && startTime <= recEndTime) {
-          startDateExist.push(recognition);
-        }
-
-        if (endTime >= recStartTime && endTime <= recEndTime) {
-          endDateExist.push(recognition);
-        }
-
-        if (startTime <= recStartTime && endTime >= recEndTime) {
-          startDateExist.push(recognition);
-          endDateExist.push(recognition);
-        }
-      }),
+    const [startDateExist, endDateExist] = await this.getRecognitionsInPeriod(
+      startTime,
+      endTime,
     );
-
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
       awardedBy:
