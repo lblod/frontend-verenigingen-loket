@@ -15,7 +15,7 @@
             <:left as |Item|>
               <Item>
                 <:label>
-                  <AuLabel @inline={{true}}>Erkend op</AuLabel></:label>
+                  <AuLabel @inline={{true}} @required={{true}}>Erkend op</AuLabel></:label>
                 <:content>
                   <AuDatePicker
                     @value={{model.dateDocument}}
@@ -67,11 +67,14 @@
                     <section
                       class="au-u-margin-top-small au-u-flex au-u-flex--vertical-center"
                     >
-                      <label
-                        class="au-c-card-item__label au-c-card-item__label--data"
-                      >namelijk</label>
+                      <div class="au-u-flex au-u-flex--column au-u-1-3">
+                        <AuLabel
+                          @inline={{true}}
+                          @required={{true}}
+                        >Namelijk</AuLabel></div>
                       <div class="au-u-flex au-u-flex--column au-u-1-1">
                         <AuInput
+                          placeholder="Vul in organisatie"
                           @value={{mut model.awardedBy}}
                           {{on "input" (fn this.clearFormError "awardedBy")}}
                           id="awardedBy"
@@ -132,16 +135,19 @@
                   </:label>
                   <:content>
                     <AuInput
+                      placeholder="Voeg een link naar het besluit toe"
                       @value={{mut model.legalResource}}
                       {{on "input" (fn this.clearFormError "legalResource")}}
                       @width={{"block"}}
                       id="erkenningsbesluit"
                       @error={{this.validationErrors.legalResource}}
                     />
+                    <AuHelpText
+                      @error={{this.validationErrors.legalResource}}
+                    >{{this.validationErrors.legalResource}}</AuHelpText>
                   </:content>
                 </Item>
               {{/if}}
-
             </:right>
           </Card.Columns>
         </:card>
