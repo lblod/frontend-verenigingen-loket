@@ -15,12 +15,11 @@ export default class ReportWrongDataComponent extends Component {
     this.loadAssociationData.perform();
   }
 
-  @task
-  *loadAssociationData() {
+  loadAssociationData = task({ drop: true }, async () => {
     if (this.args.model != null) {
       try {
-        const contactPoints = yield this.association.get('contactPoints');
-        const identifiers = yield this.association.get('identifiers');
+        const contactPoints = await this.association.get('contactPoints');
+        const identifiers = await this.association.get('identifiers');
         if (identifiers) {
           this.association.identifiers.forEach(async (identifier) => {
             const { idName } = identifier;
@@ -44,7 +43,7 @@ export default class ReportWrongDataComponent extends Component {
         console.error('Error loading contact email:', error);
       }
     }
-  }
+  });
 
   get subject() {
     return 'Je verenigingsgegevens zijn niet volledig of foutief';

@@ -1,8 +1,8 @@
 import Controller from '@ember/controller';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { restartableTask, task, timeout } from 'ember-concurrency';
-
+import { task, timeout } from 'ember-concurrency';
+const DEBOUNCE_MS = 500;
 export default class MockLoginController extends Controller {
   @service store;
 
@@ -12,37 +12,34 @@ export default class MockLoginController extends Controller {
   @tracked page = 0;
   size = 10;
 
-  @task
-  *queryStore() {
+  queryStore = task({ drop: true }, async () => {
     const filter = { provider: 'https://github.com/lblod/mock-login-service' };
     if (this.gemeente) {
       filter.user = {
         'family-name': this.gemeente,
       };
     }
-    const accounts = yield this.store.query('account', {
+    const accounts = await this.store.query('account', {
       include: 'user,user.groups',
       filter: filter,
       page: { size: this.size, number: this.page },
       sort: 'user.first-name',
     });
     return accounts;
-  }
+  });
 
-  @task
-  *callLogin(loginFunction, account) {
-    const user = yield account.user;
-    const group = (yield user.groups)[0];
-    const groupId = (yield group).id;
+  callLogin = task({ drop: true }, async (loginFunction, account) => {
+    const user = await account.user;
+    const group = (await user.groups)[0];
+    const groupId = (await group).id;
     loginFunction(account.id, groupId);
-  }
+  });
 
-  @restartableTask
-  *updateSearch(value) {
-    yield timeout(500);
+  updateSearch = task({ restartable: true }, async (value) => {
+    await timeout(DEBOUNCE_MS);
     this.page = 0;
     this.gemeente = value;
 
-    this.model = yield this.queryStore.perform();
-  }
+    this.model = await this.queryStore.perform();
+  });
 }

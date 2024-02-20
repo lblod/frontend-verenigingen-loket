@@ -1,8 +1,9 @@
 import Controller from '@ember/controller';
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { restartableTask, timeout, task } from 'ember-concurrency';
+import { timeout, task } from 'ember-concurrency';
 import { action } from '@ember/object';
+const DEBOUNCE_MS = 500;
 export default class IndexController extends Controller {
   @service store;
   @service router;
@@ -101,12 +102,11 @@ export default class IndexController extends Controller {
       : [];
   }
 
-  @restartableTask
-  *updateAssociationSearch(value) {
-    yield timeout(500);
+  updateAssociationSearch = task({ restartable: true }, async (value) => {
+    await timeout(DEBOUNCE_MS);
     this.page = 0;
     this.search = value.trimStart();
-  }
+  });
 
   @action
   resetFilters() {
@@ -128,8 +128,7 @@ export default class IndexController extends Controller {
     this.sort = 'name';
   }
 
-  @task
-  *download() {
+  download = task({ drop: true }, async () => {
     const toast = this.toaster.loading(
       `Het downloaden van het bestand is begonnen.`,
       'Download gestart',
@@ -146,7 +145,7 @@ export default class IndexController extends Controller {
           : {}),
       };
 
-      const res = yield fetch(
+      const res = await fetch(
         `https://${window.location.hostname}/download?` +
           new URLSearchParams(params),
       );
@@ -157,7 +156,7 @@ export default class IndexController extends Controller {
         .replace(/[-:]/g, '_')
         .replace(/\.\d+/, '');
       const fileName = `verenigingen_${timestamp}.xlsx`;
-      const blob = yield res.blob();
+      const blob = await res.blob();
       const aElement = document.createElement('a');
       aElement.setAttribute('download', fileName);
       const href = URL.createObjectURL(blob);
@@ -170,7 +169,7 @@ export default class IndexController extends Controller {
       this.downloadFailed(toast);
       console.error(error);
     }
-  }
+  });
 
   @action
   downloadFinished(toast) {

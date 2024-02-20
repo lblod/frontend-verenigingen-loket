@@ -20,10 +20,9 @@ export default class TargetAudienceSelectComponent extends Component {
     return this.targetAudienceQuery.split(',');
   }
 
-  @task
-  *loadTargetAudience() {
+  loadTargetAudience = task({ drop: true }, async () => {
     if (this.targetAudienceQuery) {
-      yield this.args.onChange(this.selectedTargetAudience());
+      await this.args.onChange(this.selectedTargetAudience());
     }
-  }
+  });
 }

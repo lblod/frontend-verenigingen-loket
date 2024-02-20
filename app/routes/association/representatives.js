@@ -1,6 +1,6 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
-import { keepLatestTask } from 'ember-concurrency';
+import { task } from 'ember-concurrency';
 
 export default class AssociationRepresentativesRoute extends Route {
   @service store;
@@ -16,19 +16,17 @@ export default class AssociationRepresentativesRoute extends Route {
     };
   }
 
-  @keepLatestTask({ cancelOn: 'deactivate' })
-  *loadAssociation() {
+  loadAssociation = task({ keepLatest: true }, async () => {
     const { id } = this.paramsFor('association');
-    const model = yield this.store.findRecord('association', id);
+    const model = await this.store.findRecord('association', id);
 
     return model;
-  }
+  });
 
-  @keepLatestTask({ cancelOn: 'deactivate' })
-  *loadMembers(params) {
+  loadMembers = task({ keepLatest: true }, async (params) => {
     const { id } = this.paramsFor('association');
 
-    const members = yield this.store.query('membership', {
+    const members = await this.store.query('membership', {
       include: 'person.site.contact-points',
       filter: {
         association: {
@@ -40,5 +38,5 @@ export default class AssociationRepresentativesRoute extends Route {
         : 'person.family-name',
     });
     return members;
-  }
+  });
 }

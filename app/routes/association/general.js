@@ -1,5 +1,5 @@
 import Route from '@ember/routing/route';
-import { keepLatestTask } from 'ember-concurrency';
+import { task } from 'ember-concurrency';
 import { inject as service } from '@ember/service';
 import dateFormat from '../../helpers/date-format';
 export default class AssociationGeneralRoute extends Route {
@@ -15,16 +15,15 @@ export default class AssociationGeneralRoute extends Route {
     };
   }
 
-  @keepLatestTask({ cancelOn: 'deactivate' })
-  *loadRecognition(id) {
+  loadRecognition = task({ keepLatest: true }, async (id) => {
     const today = dateFormat.compute([new Date(), 'YYY-MM-DD']);
-    const [currentRecognition, lastRecognition] = yield Promise.all([
+    const [currentRecognition, lastRecognition] = await Promise.all([
       this.getRecognition(id, today),
       this.getRecognition(id),
     ]);
     if (currentRecognition.length > 0) return currentRecognition;
     return lastRecognition;
-  }
+  });
   async getRecognition(id, date) {
     const query = {
       include: ['awarded-by', 'validity-period'].join(','),
