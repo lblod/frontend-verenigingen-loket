@@ -31,15 +31,14 @@ export default class PostalCodeMultipleSelectComponent extends Component {
     );
   }
 
-  @task
-  *loadPostalCodes() {
-    this.postalCodes = yield this.store.query('postal-code', {
+  loadPostalCodes = task({ drop: true }, async () => {
+    this.postalCodes = await this.store.query('postal-code', {
       page: { size: 100 },
       sort: ':no-case:postal-code',
     });
 
     this.args.onChange(this.selectedPostalCodes());
-  }
+  });
 
   searchMethod(term, select) {
     return select.options.filter(

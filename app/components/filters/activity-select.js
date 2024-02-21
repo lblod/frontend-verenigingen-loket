@@ -29,12 +29,11 @@ export default class ActivityMultipleSelectComponent extends Component {
     return this.activities.find((activity) => activity.id === id);
   }
 
-  @task
-  *loadActivities() {
-    this.activities = yield this.store.query('activity', {
+  loadActivities = task({ drop: true }, async () => {
+    this.activities = await this.store.query('activity', {
       page: { size: 100 },
       sort: 'label',
     });
     this.args.onChange(this.selectedActivities());
-  }
+  });
 }

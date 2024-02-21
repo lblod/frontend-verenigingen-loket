@@ -1,20 +1,26 @@
 import Service, { inject } from '@ember/service';
-import { keepLatestTask } from 'ember-concurrency';
+import { task } from 'ember-concurrency';
 import dateFormat from '../helpers/date-format';
 export default class QueryBuilderService extends Service {
   @inject store;
 
-  @keepLatestTask({ cancelOn: 'deactivate' })
-  *buildAndExecuteQuery(params, include, size) {
-    const { query, customQuery } = yield this.buildQuery(params, include, size);
+  buildAndExecuteQuery = task(
+    { restartable: true },
+    async (params, include, size) => {
+      const { query, customQuery } = await this.buildQuery(
+        params,
+        include,
+        size,
+      );
 
-    const result = yield this.store.query('association', {
-      customQuery,
-      ...query,
-    });
+      const result = await this.store.query('association', {
+        customQuery,
+        ...query,
+      });
 
-    return result;
-  }
+      return result;
+    },
+  );
 
   buildQuery(params, include, size = 50) {
     let customQuery = '';
