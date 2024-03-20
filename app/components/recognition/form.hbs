@@ -17,15 +17,18 @@
                 <:label>
                   <AuLabel @inline={{true}} @required={{true}}>Erkend op</AuLabel></:label>
                 <:content>
-                  <AuDatePicker
-                    @value={{model.dateDocument}}
-                    @error={{this.validationErrors.dateDocument}}
-                    @onChange={{fn (mut model.dateDocument)}}
-                    {{on "input" (fn this.clearFormError "dateDocument")}}
-                  />
-                  <AuHelpText
-                    @error={{this.validationErrors.dateDocument}}
-                  >{{this.validationErrors.dateDocument}}</AuHelpText>
+                  <div class="au-u-1-1">
+                    <AuDateInput
+                      class="au-u-1-1"
+                      @value={{model.dateDocument}}
+                      @error={{this.validationErrors.dateDocument}}
+                      @onChange={{fn (mut model.dateDocument)}}
+                      {{on "input" (fn this.clearFormError "dateDocument")}}
+                    />
+                    <AuHelpText
+                      @error={{this.validationErrors.dateDocument}}
+                    >{{this.validationErrors.dateDocument}}</AuHelpText>
+                  </div>
                 </:content>
               </Item>
               <Item>
@@ -35,7 +38,8 @@
                     @required={{true}}
                   >Ingangsdatum</AuLabel></:label>
                 <:content>
-                  <AuDatePicker
+                  <AuDateInput
+                    class="au-u-1-1"
                     @value={{this.getStartDate}}
                     @onChange={{fn (mut model.startTime)}}
                     {{on "input" (fn this.clearFormError "startTime")}}
@@ -112,7 +116,8 @@
                     @required={{true}}
                   >Einddatum</AuLabel></:label>
                 <:content>
-                  <AuDatePicker
+                  <AuDateInput
+                    class="au-u-1-1"
                     @error={{this.validationErrors.endTime}}
                     @value={{this.getEndDate}}
                     @onChange={{fn (mut model.endTime)}}
