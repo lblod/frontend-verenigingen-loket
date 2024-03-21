@@ -138,7 +138,7 @@
           </TableMessage>
         {{else}}
           <c.body as |association|>
-            <td>
+            <td class="au-u-word-nowrap">
               <LinkTo
                 class="au-c-link"
                 @model={{association.id}}
@@ -146,6 +146,12 @@
               >
                 {{association.name}}
               </LinkTo>
+              {{#if (is-new-association association)}}
+                <AuPill
+                  @skin="success"
+                  class="au-u-margin-left-tight"
+                >Nieuw</AuPill>
+              {{/if}}
             </td>
             <td>
               {{association.primarySite.address.postcode}}
