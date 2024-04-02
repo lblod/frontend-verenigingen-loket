@@ -18,9 +18,9 @@
                   <AuLabel @inline={{true}} @required={{true}}>Erkend op</AuLabel></:label>
                 <:content>
                   <div class="au-u-1-1">
-                    <AuDateInput
+                    <Datepicker
                       class="au-u-1-1"
-                      @value={{model.dateDocument}}
+                      @value={{convert-to-date model.dateDocument}}
                       @error={{this.validationErrors.dateDocument}}
                       @onChange={{fn (mut model.dateDocument)}}
                       {{on "input" (fn this.clearFormError "dateDocument")}}
@@ -38,7 +38,7 @@
                     @required={{true}}
                   >Ingangsdatum</AuLabel></:label>
                 <:content>
-                  <AuDateInput
+                  <Datepicker
                     class="au-u-1-1"
                     @value={{this.getStartDate}}
                     @onChange={{fn (mut model.startTime)}}
@@ -116,7 +116,7 @@
                     @required={{true}}
                   >Einddatum</AuLabel></:label>
                 <:content>
-                  <AuDateInput
+                  <Datepicker
                     class="au-u-1-1"
                     @error={{this.validationErrors.endTime}}
                     @value={{this.getEndDate}}
