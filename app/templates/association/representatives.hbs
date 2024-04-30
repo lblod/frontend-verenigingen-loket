@@ -82,7 +82,7 @@
         <td>
           {{member.person.familyName}}
         </td>
-        {{#let member.person.site.contactPoints as |contactPoints|}}
+        {{#let member.person.contactPoints as |contactPoints|}}
           {{#let (this.contactPoints.getDetails contactPoints) as |contact|}}
             <td>
               <AuLinkExternal href="mailto: {{contact.email}}">

@@ -9,34 +9,28 @@ export default class AssociationRepresentativesRoute extends Route {
     sort: { refreshModel: true },
   };
 
-  async model(params) {
+  // async model() {
+  //   const { id } = this.paramsFor('association');
+  //   return await this.store.findRecord('association', id);
+  // }
+
+  async model() {
+    const { id } = this.paramsFor('association');
+    const association = await this.store.findRecord('association', id);
     return {
-      association: this.loadAssociation.perform(),
-      members: this.loadMembers.perform(params),
+      association,
+      members: this.loadMembers.perform(association),
     };
   }
 
-  loadAssociation = task({ keepLatest: true }, async () => {
-    const { id } = this.paramsFor('association');
-    const model = await this.store.findRecord('association', id);
-
-    return model;
-  });
-
-  loadMembers = task({ keepLatest: true }, async (params) => {
-    const { id } = this.paramsFor('association');
-
-    const members = await this.store.query('membership', {
-      include: 'person.site.contact-points',
-      filter: {
-        association: {
-          id: id,
-        },
-      },
-      sort: params.sort
-        ? `${params.sort},person.family-name`
-        : 'person.family-name',
+  loadMembers = task({ keepLatest: true }, async (association) => {
+    const members = await association.get('members');
+    const memberPromises = members.map(async (member) => {
+      const memberWithPerson = await member.reload({
+        include: 'person.contact-points',
+      });
+      return memberWithPerson;
     });
-    return members;
+    return await Promise.all(memberPromises);
   });
 }
