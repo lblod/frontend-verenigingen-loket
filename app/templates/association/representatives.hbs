@@ -99,7 +99,11 @@
             <td>
               {{#each contact.socialMedia as |socialMedia index|}}
                 <AuLinkExternal href={{socialMedia.url}}>
-                  {{socialMedia.name}}
+                  {{#if socialMedia.name}}
+                    {{socialMedia.name}}
+                  {{else}}
+                    {{socialMedia.url}}
+                  {{/if}}
                 </AuLinkExternal>{{#unless
                   (last-index index contact.socialMedia)
                 }},{{/unless}}
