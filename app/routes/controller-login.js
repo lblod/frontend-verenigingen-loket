@@ -18,7 +18,8 @@ export default class ControllerLoginRoute extends Route {
     if (this.session.isAuthenticated) {
       console.log('controller-login authenticated');
       await this.currentSession.load();
-      console.log(this.currentSession.roles);
+      console.log('roles', this.currentSession.roles);
+      console.log('roleClaim', ENV.roleClaim);
       if (!this.currentSession.roles?.includes(ENV.roleClaim)) {
         this.router.replaceWith('index');
       }
@@ -29,6 +30,7 @@ export default class ControllerLoginRoute extends Route {
 
   async model(params) {
     const filter = { provider: 'https://github.com/lblod/mock-login-service' };
+    console.log('filter', filter);
     if (params.gemeente) filter.user = { 'family-name': params.gemeente };
     return await this.store.query('account', {
       include: 'user.groups',
