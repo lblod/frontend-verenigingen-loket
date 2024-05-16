@@ -9,6 +9,8 @@ export default class IndexRoute extends Route {
     this.session.requireAuthentication(transition, 'login');
     if (this.session.isAuthenticated) {
       await this.currentSession.load();
+      console.log(ENV.controllerLogin);
+      console.log(this.currentSession.roles);
       if (
         ENV.controllerLogin === 'true' &&
         this.currentSession.roles?.includes(ENV.roleClaim)

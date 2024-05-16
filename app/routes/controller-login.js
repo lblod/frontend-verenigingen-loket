@@ -14,8 +14,11 @@ export default class ControllerLoginRoute extends Route {
   };
 
   async beforeModel() {
+    console.log('controller-login start');
     if (this.session.isAuthenticated) {
+      console.log('controller-login authenticated');
       await this.currentSession.load();
+      console.log(this.currentSession.roles);
       if (!this.currentSession.roles?.includes(ENV.roleClaim)) {
         this.router.replaceWith('index');
       }
