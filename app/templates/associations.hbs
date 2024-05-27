@@ -161,13 +161,18 @@
                 {{activity.label}}{{#unless
                   (last-index index association.activities)
                 }},{{/unless}}
+              {{else}}
+                {{association.activities.label}}
               {{/each}}
             </td>
             <td>
+
               {{#each association.identifiers as |identifier|}}
                 {{#if (eq identifier.idName "vCode")}}
                   {{get identifier.structuredIdentifier "localId"}}
                 {{/if}}
+              {{else}}
+                {{association.identifiers.structuredIdentifier.localId}}
               {{/each}}
             </td>
             <td>
