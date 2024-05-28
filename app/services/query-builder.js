@@ -92,7 +92,7 @@ const associationsQuery = ({ index, page, params }) => {
     } else if (params.status === 'Niet erkend') {
       addFilter(
         ':query:recognitions.validityPeriod',
-        `(NOT ((recognitions.validityPeriod.endTime:[${today} TO *]) AND (recognitions.validityPeriod.startTime:[* TO ${today} ]))) AND NOT recognitions.status`,
+        `NOT ((recognitions.validityPeriod.endTime:[${today} TO *]) AND (recognitions.validityPeriod.startTime:[* TO ${today} ]))`,
       );
     }
     return filters;
@@ -152,7 +152,7 @@ const associationsQuery = ({ index, page, params }) => {
 
   request.page = page;
   request.size = 50;
-  // request.sort = params.sort;
+  request.sort = params.sort;
 
   request.filters = filters;
   return request;

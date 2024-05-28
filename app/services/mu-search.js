@@ -18,7 +18,9 @@ export default class MuSearchService extends Service {
         params.push(
           ...sortParams.map(
             (sortParam) =>
-              `sort[${this.stripSort(sortParam)}]=${this.sortOrder(sortParam)}`,
+              `sort[${this.toCamelCase(
+                this.stripSort(sortParam),
+              )}.field]=${this.sortOrder(sortParam)}`,
           ),
         );
       }
@@ -57,7 +59,11 @@ export default class MuSearchService extends Service {
   stripSort(sort) {
     return sort.replace(/^[-+]+/, '');
   }
-
+  toCamelCase(str) {
+    return str.replace(/-([a-z])/g, function (g) {
+      return g[1].toUpperCase();
+    });
+  }
   getPaginationMetadata(pageNumber, pageSize, total) {
     const size = Math.min(pageSize, total);
     const lastPageNumber =
