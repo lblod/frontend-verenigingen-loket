@@ -89,11 +89,20 @@ const associationsQuery = ({ index, page, params }) => {
       addFilter(':query:activities.uuid', `(${activitiesQuery})`);
     } else if (postalCodesQuery) {
       addFilter(':query:primarySite.address.postcode', `(${postalCodesQuery})`);
+    }
+
+    if (params.status === 'Erkend') {
+      addFilter(
+        ':query:recognitions.validityPeriod',
+        `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))`,
+      );
+      addFilter(':has:recognitions.validityPeriod.endTime', true);
     } else if (params.status === 'Niet erkend') {
       addFilter(
         ':query:recognitions.validityPeriod',
-        `NOT ((recognitions.validityPeriod.endTime:[${today} TO *]) AND (recognitions.validityPeriod.startTime:[* TO ${today} ]))`,
+        `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})))`,
       );
+      addFilter(':has:recognitions.validityPeriod.endTime', true);
     }
     return filters;
   };
@@ -136,13 +145,12 @@ const associationsQuery = ({ index, page, params }) => {
   }
 
   if (params.status !== '') {
-    const today = dateFormat.compute([new Date(), 'YYY-MM-DD']);
-    if (params.status === 'Erkend') {
-      filters[':lte:recognitions.validityPeriod.startTime'] = today;
-      filters[':gte:recognitions.validityPeriod.endTime'] = today;
-    } else {
-      filters[':has-no:recognitions.status'] = true;
+    if (
+      params.status === 'Erkend,Niet erkend' ||
+      params.status === 'Niet erkend,Erkend'
+    ) {
       filters[':has:recognitions.validityPeriod.endTime'] = true;
+      filters[':has-no:recognitions.status'] = true;
     }
   }
   if (params.end !== '' && params.start !== '') {
