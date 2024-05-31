@@ -83,7 +83,7 @@ const associationsQuery = ({ index, page, params }) => {
     if (activitiesQuery && postalCodesQuery) {
       addFilter(
         ':query:primarySite.address.postcode',
-        `(${activitiesQuery} AND (${postalCodesQuery}))`,
+        `((${activitiesQuery}) AND (${postalCodesQuery}))`,
       );
     } else if (activitiesQuery) {
       addFilter(':query:activities.uuid', `(${activitiesQuery})`);
