@@ -140,7 +140,7 @@
                   </:label>
                   <:content>
                     <AuInput
-                      placeholder="Voeg een link naar het besluit toe"
+                      placeholder="Voeg alleen een directe link naar het besluit toe"
                       @value={{mut model.legalResource}}
                       {{on "input" (fn this.clearFormError "legalResource")}}
                       @width={{"block"}}
@@ -150,6 +150,14 @@
                     <AuHelpText
                       @error={{this.validationErrors.legalResource}}
                     >{{this.validationErrors.legalResource}}</AuHelpText>
+                    {{#if model.legalResource.length}}
+                      <AuLinkExternal
+                        href={{model.legalResource}}
+                        @icon="external-link"
+                      >
+                        Controleer link
+                      </AuLinkExternal>
+                    {{/if}}
                   </:content>
                 </Item>
               {{/if}}
