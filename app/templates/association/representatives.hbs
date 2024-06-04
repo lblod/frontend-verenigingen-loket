@@ -92,7 +92,7 @@
             <td>
               {{#each contact.telephone as |phoneNumber|}}
                 <AuLinkExternal href="tel:{{phoneNumber}}">
-                  {{phoneNumber}}
+                  {{tel-format phoneNumber}}
                 </AuLinkExternal>
               {{/each}}
             </td>
