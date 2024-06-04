@@ -23,7 +23,7 @@ export default class QueryBuilderService extends Service {
           params,
           include,
           size,
-          sort: params.sort ? `${params.sort},name` : 'name',
+          sort: params.sort ? `${params.sort},name` : '-created-on, name',
           page: { size, number: params.page },
         });
         return associations;

@@ -13,7 +13,7 @@ export default class IndexController extends Controller {
 
   size = 50;
   @tracked page = 0;
-  @tracked sort = 'name';
+  @tracked sort = '-created-on';
   @tracked search = '';
   @tracked activities = '';
   @tracked selectedActivities = [];
