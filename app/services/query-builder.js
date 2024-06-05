@@ -20,10 +20,13 @@ export default class QueryBuilderService extends Service {
         !params.search
       ) {
         const associations = await this.store.query('association', {
-          params,
           include,
           size,
-          sort: params.sort ? `${params.sort},name` : '-created-on, name',
+          sort: params.sort
+            ? params.sort === 'name'
+              ? `${params.sort}`
+              : `${params.sort},:no-case:name`
+            : '-created-on,:no-case:name',
           page: { size, number: params.page },
         });
         return associations;

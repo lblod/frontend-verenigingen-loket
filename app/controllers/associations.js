@@ -125,7 +125,7 @@ export default class IndexController extends Controller {
     this.end = '';
     this.selectedDates = [];
     this.page = null;
-    this.sort = 'name';
+    this.sort = '-created-on';
   }
 
   download = task({ drop: true }, async () => {
