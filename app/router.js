@@ -17,15 +17,13 @@ Router.map(function () {
   });
   this.route('login');
   if (ENV.controllerLogin !== 'true') {
-    this.route('mock-login');
+    if (ENV.acmidm.clientId === '{{OAUTH_API_KEY}}') {
+      this.route('mock-login');
+    }
     this.route('switch-login');
   } else {
     this.route('controller-login');
   }
-
-  // if (ENV.acmidm.clientId === '{{OAUTH_API_KEY}}') {
-  //   this.route('mock-login');
-  // }
 
   this.route('legal', { path: '/legaal' }, function () {
     this.route('accessibilitystatement', {
