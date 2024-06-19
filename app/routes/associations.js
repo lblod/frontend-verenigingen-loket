@@ -41,6 +41,7 @@ export default class AssociationsRoute extends Route {
         associations: this.queryBuilder.buildAndExecuteQuery.perform(
           params,
           include,
+          50,
         ),
       };
     } catch (error) {
