@@ -30,7 +30,7 @@ export default class StatusComponent extends Component {
           active = 'Erkend';
           resolve(active);
         } else if (active === null && index == recognitions.length - 1) {
-          active = 'Niet erkend';
+          active = 'Verlopen';
           resolve(active);
         }
       });

@@ -21,6 +21,9 @@ export default class MockLoginRoute extends Route {
       ) {
         this.session.prohibitAuthentication('index');
       }
+      if (this.session.isMockLoginSession) {
+        this.session.prohibitAuthentication('index');
+      }
     }
   }
 

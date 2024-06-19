@@ -2,8 +2,8 @@
   {{#if this.getCurrentRecognitionStatus.isFinished}}
     {{#if (eq this.getCurrentRecognitionStatus.value "Erkend")}}
       <AuPill @skin="success">Erkend</AuPill>
-    {{else if (eq this.getCurrentRecognitionStatus.value "Niet erkend")}}
-      <AuPill @skin="warning">Niet erkend</AuPill>
+    {{else if (eq this.getCurrentRecognitionStatus.value "Verlopen")}}
+      <AuPill @skin="warning">Verlopen</AuPill>
     {{/if}}
   {{/if}}
 {{/if}}

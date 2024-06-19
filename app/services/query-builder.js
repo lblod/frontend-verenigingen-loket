@@ -100,7 +100,7 @@ const associationsQuery = ({ index, page, params }) => {
         `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))`,
       );
       addFilter(':has:recognitions.validityPeriod.endTime', true);
-    } else if (params.status === 'Niet erkend') {
+    } else if (params.status === 'Verlopen') {
       addFilter(
         ':query:recognitions.validityPeriod',
         `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})))`,
@@ -149,8 +149,8 @@ const associationsQuery = ({ index, page, params }) => {
 
   if (params.status !== '') {
     if (
-      params.status === 'Erkend,Niet erkend' ||
-      params.status === 'Niet erkend,Erkend'
+      params.status === 'Erkend,Verlopen' ||
+      params.status === 'Verlopen,Erkend'
     ) {
       filters[':has:recognitions.validityPeriod.endTime'] = true;
       filters[':has-no:recognitions.status'] = true;
