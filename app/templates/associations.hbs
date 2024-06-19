@@ -117,7 +117,13 @@
             @label="Leeftijd"
             @class="data-table__header-title"
           />
-          <th class="data-table__header-title">Erkenning</th>
+          <AuDataTableThSortable
+            @field="recognitions.validityPeriod.endTime"
+            @currentSorting={{this.sort}}
+            @label="Erkenning"
+            @class="data-table__header-title"
+          />
+          {{! <th class="data-table__header-title">Erkenning</th> }}
         </c.header>
         {{#if this.hasErrored}}
           <TableMessage::Error />
