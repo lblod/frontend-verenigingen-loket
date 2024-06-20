@@ -3,7 +3,10 @@ import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { timeout, task } from 'ember-concurrency';
 import { action } from '@ember/object';
+import ENV from 'frontend-verenigingen-loket/config/environment';
+
 const DEBOUNCE_MS = 500;
+
 export default class IndexController extends Controller {
   @service store;
   @service router;
@@ -28,6 +31,7 @@ export default class IndexController extends Controller {
   @tracked selectedDates = {};
   @tracked end = '';
   @tracked start = '';
+  @tracked ENVIRONMENT_NAME = ENV.environmentName;
 
   queryParams = [
     'sort',

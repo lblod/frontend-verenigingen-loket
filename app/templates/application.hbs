@@ -1,12 +1,12 @@
-{{page-title "Verenigingen"}}
+{{page-title (concat (if this.showEnvironment (concat this.environmentName)))}}
 
 <AuApp>
   {{#if this.showEnvironment}}
     <EnvironmentBanner
-      @applicationName="Verenigingen"
+      @applicationName={{this.appTitle}}
       @environmentName={{this.environmentName}}
       @skin={{this.environmentInfo.skin}}
-      @message='Dit is de <strong>{{this.environmentInfo.title}}</strong> van de Verenigingenapp met fictieve en testgegevens. De productieomgeving met de echte data vind je op <a href="https://verenigingen.lokaalbestuur.vlaanderen.be/" title="Verenigingen" rel="tag">https://verenigingen.lokaalbestuur.vlaanderen.be/</a>.'
+      @message='Dit is de <strong>{{this.environmentInfo.title}}</strong> van de Verenigingenapp met fictieve en testgegevens. De productieomgeving met de echte data vind je op <a href="https://verenigingen.lokaalbestuur.vlaanderen.be/" title={{this.appTitle}} rel="tag">https://verenigingen.lokaalbestuur.vlaanderen.be/</a>.'
     />
   {{/if}}
   <Header />

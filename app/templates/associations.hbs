@@ -1,3 +1,4 @@
+{{page-title "Verenigingen"}}
 <AuMainContainer as |m|>
   <m.sidebar>
     <div class="au-c-sidebar">
@@ -34,10 +35,14 @@
               @onChange={{this.setTypes}}
               @selected={{this.selectedTypes}}
             />
-            <Filters::TargetAudienceSelect
-              @onChange={{this.setTargetAudiences}}
-              @selected={{this.selectedTargetAudiences}}
-            />
+
+            {{#if (eq this.ENVIRONMENT_NAME "DEV")}}
+              {{! ONLY SHOW ON DEV FOR NOWS }}
+              <Filters::TargetAudienceSelect
+                @onChange={{this.setTargetAudiences}}
+                @selected={{this.selectedTargetAudiences}}
+              />
+            {{/if}}
             <Filters::DateSelect
               @onChange={{this.setDates}}
               @selected={{this.selectedDates}}
