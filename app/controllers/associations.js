@@ -47,7 +47,7 @@ export default class IndexController extends Controller {
     this.page = 0;
     this.selectedActivities = selectedActivities;
     this.activities = selectedActivities
-      .map((activity) => activity.id)
+      .map((activity) => activity.notation)
       .join(',');
     return this.activities;
   }
@@ -57,7 +57,7 @@ export default class IndexController extends Controller {
     this.page = 0;
     this.selectedTypes = selectedTypes;
     this.types = selectedTypes.map((type) => type.id).join(',');
-    return this.activities;
+    return this.types;
   }
 
   @action

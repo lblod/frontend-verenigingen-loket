@@ -23,9 +23,11 @@ export default class QueryBuilderService extends Service {
           include,
           size,
           sort: params.sort
-            ? params.sort === 'name'
-              ? `${params.sort}`
-              : `${params.sort},:no-case:name`
+            ? params.sort === 'name' || params.sort === '-name'
+              ? params.sort.startsWith('-')
+                ? `-:no-case:${params.sort.replace('-', '')}`
+                : `:no-case:${params.sort}`
+              : `${params.sort}`
             : '-created-on,:no-case:name',
           page: { size, number: params.page },
         });
@@ -74,7 +76,7 @@ const associationsQuery = ({ index, page, params }) => {
     };
 
     const activitiesQuery = generateFilterQuery(
-      'activities.uuid',
+      'activities.notation',
       params.activities,
     );
     const postalCodesQuery = generateFilterQuery(

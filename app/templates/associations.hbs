@@ -164,11 +164,11 @@
             </td>
             <td>
               {{#each association.activities as |activity index|}}
-                {{activity.label}}{{#unless
+                {{activity.prefLabel}}{{#unless
                   (last-index index association.activities)
                 }},{{/unless}}
               {{else}}
-                {{association.activities.label}}
+                {{association.activities.prefLabel}}
               {{/each}}
             </td>
             <td>

@@ -1,5 +1,11 @@
-import Model, { attr } from '@ember-data/model';
+import Model, { attr, belongsTo } from '@ember-data/model';
 
 export default class ActivityModel extends Model {
-  @attr label;
+  @attr prefLabel;
+  @attr notation;
+  @belongsTo('concept', {
+    inverse: null,
+    async: true,
+  })
+  topConcept;
 }

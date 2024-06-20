@@ -20,19 +20,24 @@ export default class ActivityMultipleSelectComponent extends Component {
     return this.activitiesQuery
       ? this.activitiesQuery
           .split(',')
-          .map((id) => this.findActivityById(id))
+          .map((notation) => this.findActivityById(notation))
           .filter(Boolean)
       : [];
   }
 
-  findActivityById(id) {
-    return this.activities.find((activity) => activity.id === id);
+  findActivityById(notation) {
+    return this.activities.find((activity) => activity.notation === notation);
   }
 
   loadActivities = task({ drop: true }, async () => {
-    this.activities = await this.store.query('activity', {
-      page: { size: 100 },
-      sort: 'label',
+    const conceptScheme = await this.store.findRecord(
+      'concept-scheme',
+      // id of concept scheme representing the types.
+      '6c10d98a-9089-4fe8-ba81-3ed136db0265',
+    );
+    this.activities = await conceptScheme.topConcept;
+    this.activities = await [...this.activities].sort(function (a, b) {
+      return a.prefLabel.localeCompare(b.prefLabel);
     });
     this.args.onChange(this.selectedActivities());
   });

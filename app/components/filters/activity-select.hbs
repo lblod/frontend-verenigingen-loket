@@ -3,7 +3,7 @@
   <PowerSelectMultiple
     @noMatchesMessage="Geen resultaten"
     @searchEnabled={{true}}
-    @searchField="label"
+    @searchField="prefLabel"
     @placeholder="Selecteer een activiteit"
     @searchMessage="Typ om te zoeken"
     @options={{this.activities}}
@@ -12,6 +12,6 @@
     @triggerId={{@id}}
     as |activity|
   >
-    {{activity.label}}
+    {{activity.prefLabel}}
   </PowerSelectMultiple>
 </div>
