@@ -12,19 +12,15 @@ export default class ApplicationController extends Controller {
   appTitle = 'Verenigingen';
 
   get isLocalhost() {
-    if (
+    return !!(
       window.location.hostname === 'localhost' ||
       window.location.hostname === '[::1]'
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    );
   }
 
   get environmentName() {
     const thisEnvironmentName = this.isLocalhost
-      ? 'local'
+      ? 'LOCAL'
       : getOwner(this).resolveRegistration('config:environment')
           .environmentName;
 
@@ -44,7 +40,7 @@ export default class ApplicationController extends Controller {
           title: 'ontwikkelomgeving',
           skin: 'success',
         };
-      case 'local':
+      case 'LOCAL':
         return {
           title: 'lokale omgeving',
           skin: 'error',

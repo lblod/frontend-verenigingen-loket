@@ -29,7 +29,7 @@ export default class MuSearchService extends Service {
       const response = await fetch(endpoint);
       const json = await response.json();
 
-      if (!json || !json.count || !json.data) {
+      if (!json) {
         throw new Error(`Invalid response from ${endpoint}`);
       }
 

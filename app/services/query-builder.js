@@ -6,54 +6,25 @@ export default class QueryBuilderService extends Service {
   @service store;
   @service muSearch;
 
-  buildAndExecuteQuery = task(
-    { restartable: true },
-    async (params, include, size) => {
-      if (
-        !params.activities &&
-        !params.types &&
-        !params.targetAudiences &&
-        !params.status &&
-        !params.postalCodes &&
-        !params.end &&
-        !params.start &&
-        !params.search
-      ) {
-        const associations = await this.store.query('association', {
-          include,
-          size,
-          sort: params.sort
-            ? params.sort === 'name' || params.sort === '-name'
-              ? params.sort.startsWith('-')
-                ? `-:no-case:${params.sort.replace('-', '')}`
-                : `:no-case:${params.sort}`
-              : `${params.sort}`
-            : '-created-on,:no-case:name',
-          page: { size, number: params.page },
-        });
-        return associations;
-      }
-      const associations = await this.filterBuilder(params);
-      return associations;
-    },
-  );
-
-  async filterBuilder(params) {
+  buildAndExecuteQuery = task({ restartable: true }, async (params, size) => {
     const result = await this.muSearch.search(
       associationsQuery({
         index: 'associations',
-        page: 0,
+        page: params.page || 0,
         params,
+        size,
       }),
     );
     const associations = result.items.map((item) => {
       return { ...item.attributes, id: item.id };
     });
+    associations.meta = { count: result.count };
+    associations.meta.pagination = result.pagination;
     return associations;
-  }
+  });
 }
 
-const associationsQuery = ({ index, page, params }) => {
+const associationsQuery = ({ index, page, params, size }) => {
   const request = {};
   const search = params.search;
   request.index = index;
@@ -164,8 +135,8 @@ const associationsQuery = ({ index, page, params }) => {
   }
 
   request.page = page;
-  request.size = 50;
-  request.sort = params.sort;
+  request.size = size;
+  request.sort = params.sort || '-createdOn';
 
   request.filters = filters;
   return request;

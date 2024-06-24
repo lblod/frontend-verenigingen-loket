@@ -14,7 +14,7 @@ export default class IndexController extends Controller {
   @service contactPoints;
   @service queryBuilder;
 
-  size = 50;
+  size = ENV.pageSize ?? 50;
   @tracked page = 0;
   @tracked sort = '-created-on';
   @tracked search = '';
@@ -101,6 +101,7 @@ export default class IndexController extends Controller {
   }
 
   get associations() {
+    console.log(this.model.associations);
     return this.model.associations.isFinished
       ? this.model.associations.value
       : [];

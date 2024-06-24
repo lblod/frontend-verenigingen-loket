@@ -18,6 +18,7 @@ module.exports = function (environment) {
       // Here you can pass flags/options to your application instance
       // when it is created
     },
+    pageSize: 50,
     controllerLogin: '{{CONTROLLER_LOGIN}}',
     appName: 'Verenigingen',
     contactEmail: 'verenigingen.abb@vlaanderen.be',
