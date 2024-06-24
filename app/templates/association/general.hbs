@@ -67,7 +67,7 @@
                     this.model.association.activities
                     as |activity index|
                   }}
-                    {{activity.label}}{{#unless
+                    {{activity.prefLabel}}{{#unless
                       (last-index index this.model.association.activities)
                     }},{{/unless}}
                   {{/each}}
