@@ -17,7 +17,6 @@ export default class DatepickerComponent extends Component {
 
   @action
   onChange(isoDate, dt) {
-    console.log('test');
     let { date, validation } = this.validate(dt);
     if (validation.valid || validation.error === EMPTY_DATE) {
       this.args.onChange?.(date);

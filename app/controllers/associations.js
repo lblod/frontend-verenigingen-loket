@@ -101,7 +101,6 @@ export default class IndexController extends Controller {
   }
 
   get associations() {
-    console.log(this.model.associations);
     return this.model.associations.isFinished
       ? this.model.associations.value
       : [];
