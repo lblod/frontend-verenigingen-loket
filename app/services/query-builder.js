@@ -85,9 +85,14 @@ const associationsQuery = ({ index, page, params, size }) => {
   const filters = generateQueryString(params);
 
   if (search) {
-    filters[
-      ':fuzzy:name,primarySite.address.postcode,identifiers.structuredIdentifier.localId,activities.label'
-    ] = search;
+    const pattern = /^V\d{7}$/;
+    if (pattern.test(search)) {
+      filters['identifiers.structuredIdentifier.localId'] = search;
+    } else {
+      filters[
+        ':fuzzy:name,primarySite.address.postcode,identifiers.structuredIdentifier.localId,activities.label'
+      ] = search;
+    }
   }
 
   if (params.targetAudiences && params.targetAudiences !== '') {
