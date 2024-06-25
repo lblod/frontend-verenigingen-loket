@@ -56,7 +56,8 @@ export default class ApplicationController extends Controller {
     return (
       this.environmentName !== '' &&
       this.environmentInfo.title !== '' &&
-      this.environmentName !== '{{ENVIRONMENT_NAME}}'
+      this.environmentName !== '{{ENVIRONMENT_NAME}}' &&
+      this.environmentName !== 'PROD'
     );
   }
 }

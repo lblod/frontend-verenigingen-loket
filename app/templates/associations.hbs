@@ -37,7 +37,7 @@
             />
 
             {{#if (eq this.ENVIRONMENT_NAME "DEV")}}
-              {{! ONLY SHOW ON DEV FOR NOWS }}
+              {{! ONLY SHOW ON DEV FOR NOW }}
               <Filters::TargetAudienceSelect
                 @onChange={{this.setTargetAudiences}}
                 @selected={{this.selectedTargetAudiences}}
@@ -78,13 +78,16 @@
               <AuHeading @level="1" @skin="3">
                 <span>Verenigingen</span>
               </AuHeading>
-              <AuButton
-                @skin="secondary"
-                {{on "click" (perform this.download)}}
-                @disabled={{eq (readonly this.associations.length) 0}}
-              >
-                Download
-              </AuButton>
+              {{#if (eq this.ENVIRONMENT_NAME "DEV")}}
+                {{! ONLY SHOW ON DEV FOR NOW }}
+                <AuButton
+                  @skin="secondary"
+                  {{on "click" (perform this.download)}}
+                  @disabled={{eq (readonly this.associations.length) 0}}
+                >
+                  Download
+                </AuButton>
+              {{/if}}
             </div>
             <AuHr />
             <AuHeading @level="1" @skin="5">
