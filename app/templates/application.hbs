@@ -1,5 +1,6 @@
-{{page-title (if this.showEnvironment (concat this.environmentName))}}
-
+{{#if this.showEnvironment}}
+  {{page-title (concat this.environmentName)}}
+{{/if}}
 <AuApp>
   {{#if this.showEnvironment}}
     <EnvironmentBanner
