@@ -12,8 +12,6 @@ export default class AssociationRepresentativesController extends Controller {
   }
 
   get association() {
-    return this.model.association.isFinished
-      ? this.model.association.value
-      : null;
+    return this.model.association;
   }
 }
