@@ -149,7 +149,6 @@ export default class IndexController extends Controller {
     );
     if (associations.items) {
       const associationIds = associations.items.map(({ id }) => id);
-      console.log(associationIds.length);
       try {
         const port = window.location.port;
         const hostname = window.location.hostname;
