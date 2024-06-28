@@ -151,7 +151,7 @@ export default class IndexController extends Controller {
       try {
         const port = window.location.port;
         const hostname = window.location.hostname;
-        const url = `http://${hostname}${port ? ':' + port : ''}/download`;
+        const url = `https://${hostname}${port ? ':' + port : ''}/download`;
         const response = await fetch(url, {
           method: 'PUT',
           headers: {
