@@ -24,7 +24,7 @@ export default class QueryBuilderService extends Service {
   });
 }
 
-const associationsQuery = ({ index, page, params, size }) => {
+export const associationsQuery = ({ index, page, params, size }) => {
   const request = {};
   const search = params.search;
   request.index = index;
@@ -94,51 +94,62 @@ const associationsQuery = ({ index, page, params, size }) => {
       ] = search;
     }
   }
+  if (params) {
+    if (params.targetAudiences && params.targetAudiences !== '') {
+      const targetAudiences = params.targetAudiences.split(',');
+      let minAge = 0;
+      let maxAge = 500;
+      if (targetAudiences.length === 1) {
+        if (targetAudiences.includes('-18')) {
+          maxAge = 18;
+        }
+        if (targetAudiences.includes('18+')) {
+          minAge = 18;
+          maxAge = 65;
+        }
+        if (targetAudiences.includes('65+')) {
+          minAge = 65;
+        }
+      } else if (targetAudiences.length === 2) {
+        if (
+          targetAudiences.includes('-18') &&
+          targetAudiences.includes('18+')
+        ) {
+          maxAge = 65;
+        }
+        if (
+          targetAudiences.includes('18+') &&
+          targetAudiences.includes('65+')
+        ) {
+          minAge = 18;
+        }
+      }
+      filters[':gte:targetAudience.minimumLeeftijd'] = minAge;
+      filters[':lt:targetAudience.maximumLeeftijd'] = maxAge;
+    }
+    if (params.types && params.types !== '') {
+      filters['classification.uuid'] = params.types.split(',');
+    }
 
-  if (params.targetAudiences && params.targetAudiences !== '') {
-    const targetAudiences = params.targetAudiences.split(',');
-    let minAge = 0;
-    let maxAge = 500;
-    if (targetAudiences.length === 1) {
-      if (targetAudiences.includes('-18')) {
-        maxAge = 18;
-      }
-      if (targetAudiences.includes('18+')) {
-        minAge = 18;
-        maxAge = 65;
-      }
-      if (targetAudiences.includes('65+')) {
-        minAge = 65;
-      }
-    } else if (targetAudiences.length === 2) {
-      if (targetAudiences.includes('-18') && targetAudiences.includes('18+')) {
-        maxAge = 65;
-      }
-      if (targetAudiences.includes('18+') && targetAudiences.includes('65+')) {
-        minAge = 18;
+    if (params.status && params.status !== '') {
+      if (
+        params.status === 'Erkend,Verlopen' ||
+        params.status === 'Verlopen,Erkend'
+      ) {
+        filters[':has:recognitions.validityPeriod.endTime'] = true;
+        filters[':has-no:recognitions.status'] = true;
       }
     }
-    filters[':gte:targetAudience.minimumLeeftijd'] = minAge;
-    filters[':lt:targetAudience.maximumLeeftijd'] = maxAge;
-  }
-  if (params.types !== '') {
-    filters['classification.uuid'] = params.types.split(',');
-  }
-
-  if (params.status !== '') {
     if (
-      params.status === 'Erkend,Verlopen' ||
-      params.status === 'Verlopen,Erkend'
+      params.end &&
+      params.start &&
+      params.end !== '' &&
+      params.start !== ''
     ) {
-      filters[':has:recognitions.validityPeriod.endTime'] = true;
-      filters[':has-no:recognitions.status'] = true;
+      filters[':gte:lastUpdated'] = params.start;
+      filters[':lte:lastUpdated'] = params.end;
     }
   }
-  if (params.end !== '' && params.start !== '') {
-    filters[':gte:lastUpdated'] = params.start;
-    filters[':lte:lastUpdated'] = params.end;
-  }
-
   request.page = page;
   request.size = size;
   request.sort = params.sort || '-createdOn';

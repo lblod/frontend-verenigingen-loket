@@ -1,9 +1,15 @@
 import Service from '@ember/service';
 export default class MuSearchService extends Service {
   async search(request) {
-    const { index, page, size, sort, filters, includes } = request;
+    const { index, page, size, sort, filters } = request;
     try {
-      const params = [`page[size]=${size}`, `page[number]=${page}`];
+      const params = [];
+      if (size) {
+        params.push(`page[size]=${size}`);
+      }
+      if (page) {
+        params.push(`page[size]=${size}`);
+      }
 
       if (filters) {
         Object.entries(filters).forEach(([field, q]) => {

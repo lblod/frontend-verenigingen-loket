@@ -78,16 +78,13 @@
               <AuHeading @level="1" @skin="3">
                 <span>Verenigingen</span>
               </AuHeading>
-              {{#if (eq this.ENVIRONMENT_NAME "DEV")}}
-                {{! ONLY SHOW ON DEV FOR NOW }}
-                <AuButton
-                  @skin="secondary"
-                  {{on "click" (perform this.download)}}
-                  @disabled={{eq (readonly this.associations.length) 0}}
-                >
-                  Download
-                </AuButton>
-              {{/if}}
+              <AuButton
+                @skin="secondary"
+                {{on "click" (perform this.download)}}
+                @disabled={{eq (readonly this.associations.length) 0}}
+              >
+                Download
+              </AuButton>
             </div>
             <AuHr />
             <AuHeading @level="1" @skin="5">

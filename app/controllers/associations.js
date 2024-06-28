@@ -4,7 +4,7 @@ import { tracked } from '@glimmer/tracking';
 import { timeout, task } from 'ember-concurrency';
 import { action } from '@ember/object';
 import ENV from 'frontend-verenigingen-loket/config/environment';
-
+import { associationsQuery } from '../services/query-builder';
 const DEBOUNCE_MS = 500;
 
 export default class IndexController extends Controller {
@@ -13,6 +13,7 @@ export default class IndexController extends Controller {
   @service toaster;
   @service contactPoints;
   @service queryBuilder;
+  @service muSearch;
 
   size = ENV.pageSize ?? 50;
   @tracked page = 0;
@@ -137,41 +138,47 @@ export default class IndexController extends Controller {
       `Het downloaden van het bestand is begonnen.`,
       'Download gestart',
     );
-    try {
-      const params = {
-        ...(this.search ? { search: this.search } : {}),
-        ...(this.activities ? { activities: this.activities } : {}),
-        ...(this.status ? { status: this.status } : {}),
-        ...(this.postalCodes ? { postalCodes: this.postalCodes } : {}),
-        ...(this.types ? { types: this.types } : {}),
-        ...(this.targetAudiences
-          ? { targetAudiences: this.targetAudiences }
-          : {}),
-      };
+    const params = this.getQueryParamsAsObject(window.location.href);
+    const associations = await this.muSearch.search(
+      associationsQuery({
+        index: 'associations',
+        page: 0,
+        params,
+      }),
+    );
+    if (associations.items) {
+      const associationIds = associations.items.map(({ id }) => id);
+      try {
+        const port = window.location.port;
+        const hostname = window.location.hostname;
+        const url = `http://${hostname}${port ? ':' + port : ''}/download`;
+        const response = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'association-ids': JSON.stringify(associationIds),
+          },
+        });
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
 
-      const res = await fetch(
-        `https://${window.location.hostname}/download?` +
-          new URLSearchParams(params),
+        const blob = await response.blob();
+        await this.downloadBlob(blob);
+        this.downloadFinished(toast);
+      } catch (error) {
+        this.downloadFailed(toast);
+        console.error(error);
+      }
+    } else {
+      this.toaster.close(toast);
+      this.toaster.warning(
+        'Geen resultaten gevonden. Probeer het opnieuw.',
+        'Download geanuleerd',
+        {
+          timeOut: 3000,
+        },
       );
-
-      const currentDate = new Date();
-      const timestamp = currentDate
-        .toISOString()
-        .replace(/[-:]/g, '_')
-        .replace(/\.\d+/, '');
-      const fileName = `verenigingen_${timestamp}.xlsx`;
-      const blob = await res.blob();
-      const aElement = document.createElement('a');
-      aElement.setAttribute('download', fileName);
-      const href = URL.createObjectURL(blob);
-      aElement.href = href;
-      aElement.setAttribute('target', '_blank');
-      aElement.click();
-      URL.revokeObjectURL(href);
-      this.downloadFinished(toast);
-    } catch (error) {
-      this.downloadFailed(toast);
-      console.error(error);
     }
   });
 
@@ -197,4 +204,41 @@ export default class IndexController extends Controller {
       },
     );
   }
+
+  getQueryParamsAsObject(url) {
+    const urlObj = new URL(url);
+    const params = urlObj.searchParams;
+    const queryParams = {};
+
+    for (const [key, value] of params.entries()) {
+      if (queryParams[key]) {
+        if (Array.isArray(queryParams[key])) {
+          queryParams[key].push(value);
+        } else {
+          queryParams[key] = [queryParams[key], value];
+        }
+      } else {
+        queryParams[key] = value;
+      }
+    }
+
+    return queryParams;
+  }
+
+  downloadBlob = async (blob) => {
+    const currentDate = new Date();
+    const timestamp = currentDate
+      .toISOString()
+      .replace(/[-:]/g, '_')
+      .replace(/\.\d+/, '');
+    const fileName = `verenigingen_${timestamp}.xlsx`;
+
+    const aElement = document.createElement('a');
+    aElement.setAttribute('download', fileName);
+    const href = URL.createObjectURL(blob);
+    aElement.href = href;
+    aElement.setAttribute('target', '_blank');
+    aElement.click();
+    URL.revokeObjectURL(href);
+  };
 }
