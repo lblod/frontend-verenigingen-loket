@@ -1,6 +1,6 @@
 {
   "name": "frontend-verenigingen-loket",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Small description for frontend-verenigingen-loket goes here",
   "repository": "",
@@ -36,6 +36,7 @@
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
     "@lblod/ember-mock-login": "^0.7.0",
+    "@lblod/ember-environment-banner": "^0.2.0",
     "broccoli-asset-rev": "^3.0.0",
     "concurrently": "^8.2.1",
     "ember-auto-import": "^2.6.3",

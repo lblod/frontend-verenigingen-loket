@@ -1,9 +1,10 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
-
+import ENV from 'frontend-verenigingen-loket/config/environment';
 export default class MockLoginRoute extends Route {
   @service() session;
   @service() store;
+  @service() currentSession;
 
   queryParams = {
     page: {
@@ -12,8 +13,18 @@ export default class MockLoginRoute extends Route {
   };
 
   async beforeModel() {
-    await this.session.setup();
-    this.session.prohibitAuthentication('index');
+    if (this.session.isAuthenticated) {
+      await this.currentSession.load();
+      if (
+        ENV.controllerLogin === 'true' &&
+        !this.currentSession.roles?.includes(ENV.roleClaim)
+      ) {
+        this.session.prohibitAuthentication('index');
+      }
+      if (this.session.isMockLoginSession) {
+        this.session.prohibitAuthentication('index');
+      }
+    }
   }
 
   async model(params) {

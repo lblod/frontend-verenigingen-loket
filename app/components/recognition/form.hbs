@@ -17,15 +17,18 @@
                 <:label>
                   <AuLabel @inline={{true}} @required={{true}}>Erkend op</AuLabel></:label>
                 <:content>
-                  <AuDatePicker
-                    @value={{model.dateDocument}}
-                    @error={{this.validationErrors.dateDocument}}
-                    @onChange={{fn (mut model.dateDocument)}}
-                    {{on "input" (fn this.clearFormError "dateDocument")}}
-                  />
-                  <AuHelpText
-                    @error={{this.validationErrors.dateDocument}}
-                  >{{this.validationErrors.dateDocument}}</AuHelpText>
+                  <div class="au-u-1-1">
+                    <Datepicker
+                      class="au-u-1-1"
+                      @value={{convert-to-date model.dateDocument}}
+                      @error={{this.validationErrors.dateDocument}}
+                      @onChange={{fn (mut model.dateDocument)}}
+                      {{on "input" (fn this.clearFormError "dateDocument")}}
+                    />
+                    <AuHelpText
+                      @error={{this.validationErrors.dateDocument}}
+                    >{{this.validationErrors.dateDocument}}</AuHelpText>
+                  </div>
                 </:content>
               </Item>
               <Item>
@@ -35,7 +38,8 @@
                     @required={{true}}
                   >Ingangsdatum</AuLabel></:label>
                 <:content>
-                  <AuDatePicker
+                  <Datepicker
+                    class="au-u-1-1"
                     @value={{this.getStartDate}}
                     @onChange={{fn (mut model.startTime)}}
                     {{on "input" (fn this.clearFormError "startTime")}}
@@ -112,7 +116,8 @@
                     @required={{true}}
                   >Einddatum</AuLabel></:label>
                 <:content>
-                  <AuDatePicker
+                  <Datepicker
+                    class="au-u-1-1"
                     @error={{this.validationErrors.endTime}}
                     @value={{this.getEndDate}}
                     @onChange={{fn (mut model.endTime)}}
@@ -135,7 +140,7 @@
                   </:label>
                   <:content>
                     <AuInput
-                      placeholder="Voeg een link naar het besluit toe"
+                      placeholder="Voeg alleen een directe link naar het besluit toe"
                       @value={{mut model.legalResource}}
                       {{on "input" (fn this.clearFormError "legalResource")}}
                       @width={{"block"}}
@@ -145,6 +150,14 @@
                     <AuHelpText
                       @error={{this.validationErrors.legalResource}}
                     >{{this.validationErrors.legalResource}}</AuHelpText>
+                    {{#if model.legalResource.length}}
+                      <AuLinkExternal
+                        href={{model.legalResource}}
+                        @icon="external-link"
+                      >
+                        Controleer link
+                      </AuLinkExternal>
+                    {{/if}}
                   </:content>
                 </Item>
               {{/if}}

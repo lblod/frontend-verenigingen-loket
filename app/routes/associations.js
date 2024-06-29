@@ -1,6 +1,8 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
+import ENV from 'frontend-verenigingen-loket/config/environment';
 
+export const PAGE_SIZE = ENV.pageSize ?? 50;
 export default class AssociationsRoute extends Route {
   @service currentSession;
   @service session;
@@ -28,20 +30,13 @@ export default class AssociationsRoute extends Route {
 
   async model(params) {
     try {
-      const include = [
-        'target-audience',
-        'primary-site.address',
-        'identifiers.structured-identifier',
-        'organization-status',
-        'activities',
-        'recognitions',
-      ].join(',');
-
+      const associations = this.queryBuilder.buildAndExecuteQuery.perform(
+        params,
+        PAGE_SIZE,
+      );
       return {
-        associations: this.queryBuilder.buildAndExecuteQuery.perform(
-          params,
-          include,
-        ),
+        associations,
+        PAGE_SIZE,
       };
     } catch (error) {
       throw new Error('Something went wrong while fetching associations', {

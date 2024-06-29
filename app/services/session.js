@@ -9,7 +9,11 @@ export default class LoketSessionService extends SessionService {
       ? this.data.authenticated.authenticator.includes('mock-login')
       : false;
   }
-
+  get isControllerLoginSession() {
+    return this.isAuthenticated
+      ? this.data.authenticated.authenticator.includes('controller-login')
+      : false;
+  }
   async handleAuthentication(routeAfterAuthentication) {
     // We wait for the currentSession to load before navigating. This fixes the empty index page since the data might not be loaded yet.
     await this.currentSession.load();

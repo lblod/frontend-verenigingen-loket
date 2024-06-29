@@ -67,7 +67,7 @@
                     this.model.association.activities
                     as |activity index|
                   }}
-                    {{activity.label}}{{#unless
+                    {{activity.prefLabel}}{{#unless
                       (last-index index this.model.association.activities)
                     }},{{/unless}}
                   {{/each}}
@@ -112,15 +112,11 @@
             <Item>
               <:label>Startdatum</:label>
               <:content>
-                {{#each this.model.association.changeEvents as |changeEvent|}}
-                  {{#let (get changeEvent.result "label") as |result|}}
-                    {{#if (eq result "Oprichting")}}
-                      {{date-format changeEvent.date}}
-                    {{/if}}
-                  {{/let}}
+                {{#if this.model.association.createdOn}}
+                  {{date-format this.model.association.createdOn}}
                 {{else}}
                   Niet opgegeven
-                {{/each}}
+                {{/if}}
               </:content>
             </Item>
             <Item>

@@ -37,15 +37,14 @@ export default class ActivityMultipleSelectComponent extends Component {
     return this.types.find((type) => type.id === id);
   }
 
-  @task
-  *loadTypes() {
-    const conceptScheme = yield this.store.findRecord(
+  loadTypes = task({ drop: true }, async () => {
+    const conceptScheme = await this.store.findRecord(
       'concept-scheme',
       // id of concept scheme representing the types.
       'f3c67343-57f8-587e-89a8-afe88ccsc8',
     );
 
-    this.types = yield conceptScheme.topConcept;
+    this.types = await conceptScheme.topConcept;
     this.args.onChange(this.selectedTypes());
-  }
+  });
 }

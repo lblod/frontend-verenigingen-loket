@@ -1,3 +1,4 @@
+{{page-title "Vertegenwoordigers"}}
 <AuDataTable
   @content={{this.members}}
   @noDataMessage="Geen vertegenwoordigers"
@@ -82,7 +83,7 @@
         <td>
           {{member.person.familyName}}
         </td>
-        {{#let member.person.site.contactPoints as |contactPoints|}}
+        {{#let member.person.contactPoints as |contactPoints|}}
           {{#let (this.contactPoints.getDetails contactPoints) as |contact|}}
             <td>
               <AuLinkExternal href="mailto: {{contact.email}}">
@@ -92,14 +93,18 @@
             <td>
               {{#each contact.telephone as |phoneNumber|}}
                 <AuLinkExternal href="tel:{{phoneNumber}}">
-                  {{phoneNumber}}
+                  {{tel-format phoneNumber}}
                 </AuLinkExternal>
               {{/each}}
             </td>
             <td>
               {{#each contact.socialMedia as |socialMedia index|}}
                 <AuLinkExternal href={{socialMedia.url}}>
-                  {{socialMedia.name}}
+                  {{#if socialMedia.name}}
+                    {{socialMedia.name}}
+                  {{else}}
+                    {{socialMedia.url}}
+                  {{/if}}
                 </AuLinkExternal>{{#unless
                   (last-index index contact.socialMedia)
                 }},{{/unless}}

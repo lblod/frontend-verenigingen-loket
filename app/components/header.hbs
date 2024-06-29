@@ -8,7 +8,7 @@
 >
   <li class="au-c-list-horizontal__item">
     <AuLinkExternal
-      href="https://abb-vlaanderen.gitbook.io/handleiding-loket/veelgestelde-vragen"
+      href="https://abb-vlaanderen.gitbook.io/handleiding-verenigingen "
       @skin="secondary"
     >
       <AuIcon @icon="question-circle" @alignment="left" />
@@ -24,10 +24,11 @@
         @alignment="right"
         role="menu"
       >
-        <AuLink role="menuitem" @route="auth.switch" @icon="switch">
-          Wissel van bestuurseenheid
-        </AuLink>
-
+        {{#unless this.session.isControllerLoginSession}}
+          <AuLink role="menuitem" @route="auth.switch" @icon="switch">
+            Wissel van bestuurseenheid
+          </AuLink>
+        {{/unless}}
         <AuLink @route="auth.logout" @icon="logout" role="menuitem">
           Afmelden
         </AuLink>

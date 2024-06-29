@@ -1,3 +1,4 @@
+{{page-title "Verenigingen"}}
 <AuMainContainer as |m|>
   <m.sidebar>
     <div class="au-c-sidebar">
@@ -34,10 +35,14 @@
               @onChange={{this.setTypes}}
               @selected={{this.selectedTypes}}
             />
-            <Filters::TargetAudienceSelect
-              @onChange={{this.setTargetAudiences}}
-              @selected={{this.selectedTargetAudiences}}
-            />
+
+            {{#if (eq this.ENVIRONMENT_NAME "DEV")}}
+              {{! ONLY SHOW ON DEV FOR NOW }}
+              <Filters::TargetAudienceSelect
+                @onChange={{this.setTargetAudiences}}
+                @selected={{this.selectedTargetAudiences}}
+              />
+            {{/if}}
             <Filters::DateSelect
               @onChange={{this.setDates}}
               @selected={{this.selectedDates}}
@@ -117,7 +122,13 @@
             @label="Leeftijd"
             @class="data-table__header-title"
           />
-          <th class="data-table__header-title">Erkenning</th>
+          <AuDataTableThSortable
+            @field="recognitions.validityPeriod.endTime"
+            @currentSorting={{this.sort}}
+            @label="Erkenning"
+            @class="data-table__header-title"
+          />
+          {{! <th class="data-table__header-title">Erkenning</th> }}
         </c.header>
         {{#if this.hasErrored}}
           <TableMessage::Error />
@@ -146,22 +157,33 @@
               >
                 {{association.name}}
               </LinkTo>
+              {{#if (is-new-association association)}}
+                <AuPill
+                  @skin="success"
+                  class="au-u-margin-left-tight"
+                >Nieuw</AuPill>
+              {{/if}}
             </td>
             <td>
               {{association.primarySite.address.postcode}}
             </td>
             <td>
               {{#each association.activities as |activity index|}}
-                {{activity.label}}{{#unless
+                {{activity.prefLabel}}{{#unless
                   (last-index index association.activities)
                 }},{{/unless}}
+              {{else}}
+                {{association.activities.prefLabel}}
               {{/each}}
             </td>
             <td>
+
               {{#each association.identifiers as |identifier|}}
                 {{#if (eq identifier.idName "vCode")}}
                   {{get identifier.structuredIdentifier "localId"}}
                 {{/if}}
+              {{else}}
+                {{association.identifiers.structuredIdentifier.localId}}
               {{/each}}
             </td>
             <td>

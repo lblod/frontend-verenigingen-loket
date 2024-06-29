@@ -1,6 +1,6 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
-import { keepLatestTask } from 'ember-concurrency';
+import { task } from 'ember-concurrency';
 
 export default class AssociationRecognitionEditRoute extends Route {
   @service store;
@@ -29,14 +29,13 @@ export default class AssociationRecognitionEditRoute extends Route {
     }
   }
 
-  @keepLatestTask({ cancelOn: 'deactivate' })
-  *loadRecognition(recognition_id) {
-    return yield this.store.query('recognition', {
+  loadRecognition = task({ keepLatest: true }, async (recognitionId) => {
+    return await this.store.query('recognition', {
       filter: {
-        id: recognition_id,
+        id: recognitionId,
         ':has-no:status': true,
       },
       include: ['awarded-by', 'validity-period'].join(','),
     });
-  }
+  });
 }

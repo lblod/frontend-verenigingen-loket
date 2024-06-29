@@ -1,3 +1,4 @@
+{{page-title "Contactgegevens"}}
 {{#if
   (or
     this.isLoading
@@ -58,7 +59,7 @@
                     {{#if contact.telephone.length}}
                       {{#each contact.telephone as |telephone index|}}
                         <AuLinkExternal href="tel:{{telephone}}">
-                          {{telephone}}
+                          {{tel-format telephone}}
                         </AuLinkExternal>{{#unless
                           (last-index index contact.telephone)
                         }},{{/unless}}

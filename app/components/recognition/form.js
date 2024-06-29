@@ -202,6 +202,8 @@ export default class FormComponent extends Component {
     } catch (error) {
       this.notify(
         'Er is een fout opgetreden bij het opslaan van de erkenning.',
+        null,
+        'error',
       );
       console.error('Error saving recognition:', error);
     }
@@ -233,6 +235,8 @@ export default class FormComponent extends Component {
     } catch (error) {
       this.notify(
         'Er is een fout opgetreden bij het bijwerken van de erkenning.',
+        null,
+        'error',
       );
       console.error('Error updating recognition:', error);
     }

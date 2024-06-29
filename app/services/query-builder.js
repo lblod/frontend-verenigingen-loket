@@ -1,105 +1,104 @@
-import Service, { inject } from '@ember/service';
-import { keepLatestTask } from 'ember-concurrency';
+import Service from '@ember/service';
+import { inject as service } from '@ember/service';
+import { task } from 'ember-concurrency';
 import dateFormat from '../helpers/date-format';
 export default class QueryBuilderService extends Service {
-  @inject store;
+  @service store;
+  @service muSearch;
 
-  @keepLatestTask({ cancelOn: 'deactivate' })
-  *buildAndExecuteQuery(params, include, size) {
-    const { query, customQuery } = yield this.buildQuery(params, include, size);
-
-    const result = yield this.store.query('association', {
-      customQuery,
-      ...query,
+  buildAndExecuteQuery = task({ restartable: true }, async (params, size) => {
+    const result = await this.muSearch.search(
+      associationsQuery({
+        index: 'associations',
+        page: params.page || 0,
+        params,
+        size,
+      }),
+    );
+    const associations = result.items.map((item) => {
+      return { ...item.attributes, id: item.id };
     });
+    associations.meta = { count: result.count };
+    associations.meta.pagination = result.pagination;
+    return associations;
+  });
+}
 
-    return result;
-  }
+export const associationsQuery = ({ index, page, params, size }) => {
+  const request = {};
+  const search = params.search;
+  request.index = index;
 
-  buildQuery(params, include, size = 50) {
-    let customQuery = '';
-    const query = {
-      sort: params.sort ? `${params.sort},name` : 'name',
-      page: { size, number: params.page },
-      include,
-      filters: {},
+  const generateQueryString = (params) => {
+    const filters = {};
+
+    const generateFilterQuery = (key, values) => {
+      if (!values) return '';
+      return values
+        .split(',')
+        .map((value) => `${key}:${value}`)
+        .join(' OR ');
     };
 
-    if (params.postalCodes !== '') {
-      const postalCodes = params.postalCodes.split(',');
-      let postalCodeQuery = postalCodes.map(
-        (code) => `filter[:or:][primary-site][address][postcode]=${code}`,
-      );
-      customQuery += postalCodeQuery.join('&');
-    }
-
-    if (params.activities !== '') {
-      query.filters.activities = { ':id:': params.activities };
-    }
-
-    if (params.end !== '' && params.start !== '') {
-      query.filter = {
-        ':gte:last-updated': params.start,
-        ':lte:last-updated': params.end,
-      };
-    }
-
-    if (params.status !== '') {
-      const today = dateFormat.compute([new Date(), 'YYY-MM-DD']);
-      if (params.status === 'Erkend') {
-        query.filters['recognitions'] = {
-          'validity-period': {
-            ':lte:start-time': today,
-            ':gte:end-time': today,
-          },
-        };
-      } else if (params.status === 'Niet erkend') {
-        customQuery += [
-          `filter[:or:][recognitions][validity-period][:lte:end-time]=${today}`,
-          `filter[:or:][recognitions][validity-period][:gte:start-time]=${today}`,
-        ].join('&');
-      } else {
-        query.filters['recognitions'] = {
-          'validity-period': {
-            ':has:end-time': true,
-          },
-        };
+    const addFilter = (queryKey, filterQuery) => {
+      if (filterQuery) {
+        filters[queryKey] = filterQuery;
       }
+    };
+
+    const activitiesQuery = generateFilterQuery(
+      'activities.notation',
+      params.activities,
+    );
+    const postalCodesQuery = generateFilterQuery(
+      'primarySite.address.postcode',
+      params.postalCodes,
+    );
+    const today = dateFormat.compute([new Date(), 'YYY-MM-DD']);
+
+    if (activitiesQuery && postalCodesQuery) {
+      addFilter(
+        ':query:primarySite.address.postcode',
+        `((${activitiesQuery}) AND (${postalCodesQuery}))`,
+      );
+    } else if (activitiesQuery) {
+      addFilter(':query:activities.uuid', `(${activitiesQuery})`);
+    } else if (postalCodesQuery) {
+      addFilter(':query:primarySite.address.postcode', `(${postalCodesQuery})`);
     }
 
-    if (params.types !== '') {
-      query.filters.classification = { ':id:': params.types };
+    if (params.status === 'Erkend') {
+      addFilter(
+        ':query:recognitions.validityPeriod',
+        `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))`,
+      );
+      addFilter(':has:recognitions.validityPeriod.endTime', true);
+    } else if (params.status === 'Verlopen') {
+      addFilter(
+        ':query:recognitions.validityPeriod',
+        `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})))`,
+      );
+      addFilter(':has:recognitions.validityPeriod.endTime', true);
     }
+    return filters;
+  };
+  const filters = generateQueryString(params);
 
-    const name = params.search.split(' ');
-    const [firstName, ...lastName] = name;
-
-    if (params.search && params.search !== '') {
-      query.filter = {
-        ':or:': {
-          name: params.search,
-          identifiers: {
-            'structured-identifier': {
-              'local-id': params.search,
-            },
-          },
-          activities: {
-            label: params.search,
-          },
-          members: {
-            person: {
-              ':exact:given-name': firstName,
-              'family-name': name.length > 1 ? lastName.join(' ') : firstName,
-            },
-          },
-        },
-      };
+  if (search) {
+    const pattern = /^V\d{7}$/;
+    if (pattern.test(search)) {
+      filters['identifiers.structuredIdentifier.localId'] = search;
+    } else {
+      filters[
+        ':fuzzy:name,primarySite.address.postcode,identifiers.structuredIdentifier.localId,activities.label'
+      ] = search;
     }
-
+  }
+  if (params) {
     if (params.targetAudiences && params.targetAudiences !== '') {
       const targetAudiences = params.targetAudiences.split(',');
       let minAge = 0;
-      let maxAge = 100;
+      let maxAge = 500;
       if (targetAudiences.length === 1) {
         if (targetAudiences.includes('-18')) {
           maxAge = 18;
@@ -125,12 +124,36 @@ export default class QueryBuilderService extends Service {
           minAge = 18;
         }
       }
-      query.filters['target-audience'] = {
-        ':gte:minimum-leeftijd': minAge,
-        ':lt:maximum-leeftijd': maxAge,
-      };
+      filters[':gte:targetAudience.minimumLeeftijd'] = minAge;
+      filters[':lt:targetAudience.maximumLeeftijd'] = maxAge;
+    }
+    if (params.types && params.types !== '') {
+      filters['classification.uuid'] = params.types.split(',');
     }
 
-    return { query, customQuery };
+    if (params.status && params.status !== '') {
+      if (
+        params.status === 'Erkend,Verlopen' ||
+        params.status === 'Verlopen,Erkend'
+      ) {
+        filters[':has:recognitions.validityPeriod.endTime'] = true;
+        filters[':has-no:recognitions.status'] = true;
+      }
+    }
+    if (
+      params.end &&
+      params.start &&
+      params.end !== '' &&
+      params.start !== ''
+    ) {
+      filters[':gte:lastUpdated'] = params.start;
+      filters[':lte:lastUpdated'] = params.end;
+    }
   }
-}
+  request.page = page;
+  request.size = size;
+  request.sort = params.sort || '-createdOn';
+
+  request.filters = filters;
+  return request;
+};

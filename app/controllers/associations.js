@@ -1,18 +1,23 @@
 import Controller from '@ember/controller';
 import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-import { restartableTask, timeout, task } from 'ember-concurrency';
+import { timeout, task } from 'ember-concurrency';
 import { action } from '@ember/object';
+import ENV from 'frontend-verenigingen-loket/config/environment';
+import { associationsQuery } from '../services/query-builder';
+const DEBOUNCE_MS = 500;
+
 export default class IndexController extends Controller {
   @service store;
   @service router;
   @service toaster;
   @service contactPoints;
   @service queryBuilder;
+  @service muSearch;
 
-  size = 50;
+  size = ENV.pageSize ?? 50;
   @tracked page = 0;
-  @tracked sort = 'name';
+  @tracked sort = '-created-on';
   @tracked search = '';
   @tracked activities = '';
   @tracked selectedActivities = [];
@@ -27,6 +32,7 @@ export default class IndexController extends Controller {
   @tracked selectedDates = {};
   @tracked end = '';
   @tracked start = '';
+  @tracked ENVIRONMENT_NAME = ENV.environmentName;
 
   queryParams = [
     'sort',
@@ -46,7 +52,7 @@ export default class IndexController extends Controller {
     this.page = 0;
     this.selectedActivities = selectedActivities;
     this.activities = selectedActivities
-      .map((activity) => activity.id)
+      .map((activity) => activity.notation)
       .join(',');
     return this.activities;
   }
@@ -56,7 +62,7 @@ export default class IndexController extends Controller {
     this.page = 0;
     this.selectedTypes = selectedTypes;
     this.types = selectedTypes.map((type) => type.id).join(',');
-    return this.activities;
+    return this.types;
   }
 
   @action
@@ -101,12 +107,11 @@ export default class IndexController extends Controller {
       : [];
   }
 
-  @restartableTask
-  *updateAssociationSearch(value) {
-    yield timeout(500);
+  updateAssociationSearch = task({ restartable: true }, async (value) => {
+    await timeout(DEBOUNCE_MS);
     this.page = 0;
     this.search = value.trimStart();
-  }
+  });
 
   @action
   resetFilters() {
@@ -125,52 +130,63 @@ export default class IndexController extends Controller {
     this.end = '';
     this.selectedDates = [];
     this.page = null;
-    this.sort = 'name';
+    this.sort = '-created-on';
   }
 
-  @task
-  *download() {
+  download = task({ drop: true }, async () => {
     const toast = this.toaster.loading(
       `Het downloaden van het bestand is begonnen.`,
       'Download gestart',
     );
-    try {
-      const params = {
-        ...(this.search ? { search: this.search } : {}),
-        ...(this.activities ? { activities: this.activities } : {}),
-        ...(this.status ? { status: this.status } : {}),
-        ...(this.postalCodes ? { postalCodes: this.postalCodes } : {}),
-        ...(this.types ? { types: this.types } : {}),
-        ...(this.targetAudiences
-          ? { targetAudiences: this.targetAudiences }
-          : {}),
-      };
 
-      const res = yield fetch(
-        `https://${window.location.hostname}/download?` +
-          new URLSearchParams(params),
+    if (this.associations) {
+      try {
+        const associationIds = this.associations.map(({ id }) => id);
+        const port = window.location.port;
+        const hostname = window.location.hostname;
+        const storeDataUrl = `http${!port ? 's' : ''}://${hostname}${
+          port ? ':' + port : ''
+        }/storeData`;
+
+        const storeResponse = await fetch(storeDataUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ associationIds }),
+        });
+
+        const { referenceId } = await storeResponse.json();
+
+        const url = `http${!port ? 's' : ''}://${hostname}${
+          port ? ':' + port : ''
+        }/download?ref=${referenceId}`;
+
+        const response = await fetch(url, {
+          method: 'GET',
+        });
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        const blob = await response.blob();
+        await this.downloadBlob(blob);
+        this.downloadFinished(toast);
+      } catch (error) {
+        this.downloadFailed(toast);
+        console.error(error);
+      }
+    } else {
+      this.toaster.close(toast);
+      this.toaster.warning(
+        'Geen resultaten gevonden. Probeer het opnieuw.',
+        'Download geanuleerd',
+        {
+          timeOut: 3000,
+        },
       );
-
-      const currentDate = new Date();
-      const timestamp = currentDate
-        .toISOString()
-        .replace(/[-:]/g, '_')
-        .replace(/\.\d+/, '');
-      const fileName = `verenigingen_${timestamp}.xlsx`;
-      const blob = yield res.blob();
-      const aElement = document.createElement('a');
-      aElement.setAttribute('download', fileName);
-      const href = URL.createObjectURL(blob);
-      aElement.href = href;
-      aElement.setAttribute('target', '_blank');
-      aElement.click();
-      URL.revokeObjectURL(href);
-      this.downloadFinished(toast);
-    } catch (error) {
-      this.downloadFailed(toast);
-      console.error(error);
     }
-  }
+  });
 
   @action
   downloadFinished(toast) {
@@ -194,4 +210,41 @@ export default class IndexController extends Controller {
       },
     );
   }
+
+  getQueryParamsAsObject(url) {
+    const urlObj = new URL(url);
+    const params = urlObj.searchParams;
+    const queryParams = {};
+
+    for (const [key, value] of params.entries()) {
+      if (queryParams[key]) {
+        if (Array.isArray(queryParams[key])) {
+          queryParams[key].push(value);
+        } else {
+          queryParams[key] = [queryParams[key], value];
+        }
+      } else {
+        queryParams[key] = value;
+      }
+    }
+
+    return queryParams;
+  }
+
+  downloadBlob = async (blob) => {
+    const currentDate = new Date();
+    const timestamp = currentDate
+      .toISOString()
+      .replace(/[-:]/g, '_')
+      .replace(/\.\d+/, '');
+    const fileName = `verenigingen_${timestamp}.xlsx`;
+
+    const aElement = document.createElement('a');
+    aElement.setAttribute('download', fileName);
+    const href = URL.createObjectURL(blob);
+    aElement.href = href;
+    aElement.setAttribute('target', '_blank');
+    aElement.click();
+    URL.revokeObjectURL(href);
+  };
 }
