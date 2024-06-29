@@ -138,18 +138,10 @@ export default class IndexController extends Controller {
       `Het downloaden van het bestand is begonnen.`,
       'Download gestart',
     );
-    const params = this.getQueryParamsAsObject(window.location.href);
-    const associations = await this.muSearch.search(
-      associationsQuery({
-        index: 'associations',
-        page: 0,
-        params,
-        size: 1000,
-      }),
-    );
-    if (associations.items) {
+
+    if (this.associations) {
       try {
-        const associationIds = associations.items.map(({ id }) => id);
+        const associationIds = this.associations.map(({ id }) => id);
         const port = window.location.port;
         const hostname = window.location.hostname;
         const storeDataUrl = `http${!port ? 's' : ''}://${hostname}${
