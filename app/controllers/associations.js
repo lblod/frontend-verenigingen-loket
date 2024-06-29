@@ -148,19 +148,30 @@ export default class IndexController extends Controller {
       }),
     );
     if (associations.items) {
-      const associationIds = associations.items.map(({ id }) => id);
       try {
+        const associationIds = associations.items.map(({ id }) => id);
         const port = window.location.port;
         const hostname = window.location.hostname;
-        const url = `http${!port ? 's' : ''}://${hostname}${
+        const storeDataUrl = `http${!port ? 's' : ''}://${hostname}${
           port ? ':' + port : ''
-        }/download`;
-        const response = await fetch(url, {
-          method: 'PUT',
+        }/storeData`;
+
+        const storeResponse = await fetch(storeDataUrl, {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'association-ids': JSON.stringify(associationIds),
           },
+          body: JSON.stringify({ associationIds }),
+        });
+
+        const { referenceId } = await storeResponse.json();
+
+        const url = `http${!port ? 's' : ''}://${hostname}${
+          port ? ':' + port : ''
+        }/download?ref=${referenceId}`;
+
+        const response = await fetch(url, {
+          method: 'GET',
         });
         if (!response.ok) {
           throw new Error(response.statusText);
