@@ -8,7 +8,7 @@ export default class MuSearchService extends Service {
         params.push(`page[size]=${size}`);
       }
       if (page) {
-        params.push(`page[size]=${size}`);
+        params.push(`page[number]=${page}`);
       }
 
       if (filters) {
