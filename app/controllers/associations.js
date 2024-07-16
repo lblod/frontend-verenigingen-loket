@@ -4,7 +4,6 @@ import { tracked } from '@glimmer/tracking';
 import { timeout, task } from 'ember-concurrency';
 import { action } from '@ember/object';
 import ENV from 'frontend-verenigingen-loket/config/environment';
-import { associationsQuery } from '../services/query-builder';
 const DEBOUNCE_MS = 500;
 
 export default class IndexController extends Controller {
