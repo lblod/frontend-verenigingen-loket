@@ -31,6 +31,24 @@
                   </div>
                 </:content>
               </Item>
+            </:left>
+            <:right as |Item|>
+              <Item>
+                <:label>
+                  <AuLabel />
+                </:label>
+                <:content>
+                  <AuInput class="visibility-hidden" />
+                  <AuHelpText
+                    class="visibility-hidden"
+                    @error={{this.validationErrors.dateDocument}}
+                  >{{this.validationErrors.dateDocument}}</AuHelpText>
+                </:content>
+              </Item>
+            </:right>
+          </Card.Columns>
+          <Card.Columns>
+            <:left as |Item|>
               <Item>
                 <:label>
                   <AuLabel
@@ -50,6 +68,31 @@
                   >{{this.validationErrors.startTime}}</AuHelpText>
                 </:content>
               </Item>
+            </:left>
+            <:right as |Item|>
+              <Item>
+                <:label>
+                  <AuLabel
+                    @inline={{true}}
+                    @required={{true}}
+                  >Einddatum</AuLabel></:label>
+                <:content>
+                  <Datepicker
+                    class="au-u-1-1"
+                    @error={{this.validationErrors.endTime}}
+                    @value={{this.getEndDate}}
+                    @onChange={{fn (mut model.endTime)}}
+                    {{on "input" (fn this.clearFormError "endTime")}}
+                  />
+                  <AuHelpText
+                    @error={{this.validationErrors.endTime}}
+                  >{{this.validationErrors.endTime}}</AuHelpText>
+                </:content>
+              </Item>
+            </:right>
+          </Card.Columns>
+          <Card.Columns>
+            <:left as |Item|>
               <Item>
                 <:label>
                   <AuLabel @inline={{true}} @required={{true}}>Erkend door</AuLabel></:label>
@@ -96,38 +139,6 @@
               </Item>
             </:left>
             <:right as |Item|>
-              <Item>
-                <:label>
-                  <AuLabel />
-                </:label>
-                <:content>
-                  <AuInput class="visibility-hidden" />
-                  <AuHelpText
-                    class="visibility-hidden"
-                    @error={{this.validationErrors.dateDocument}}
-                  >{{this.validationErrors.dateDocument}}</AuHelpText>
-                </:content>
-              </Item>
-
-              <Item>
-                <:label>
-                  <AuLabel
-                    @inline={{true}}
-                    @required={{true}}
-                  >Einddatum</AuLabel></:label>
-                <:content>
-                  <Datepicker
-                    class="au-u-1-1"
-                    @error={{this.validationErrors.endTime}}
-                    @value={{this.getEndDate}}
-                    @onChange={{fn (mut model.endTime)}}
-                    {{on "input" (fn this.clearFormError "endTime")}}
-                  />
-                  <AuHelpText
-                    @error={{this.validationErrors.endTime}}
-                  >{{this.validationErrors.endTime}}</AuHelpText>
-                </:content>
-              </Item>
               {{#if
                 (eq
                   (get this "currentRecognition.selectedItem")
