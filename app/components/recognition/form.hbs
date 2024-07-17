@@ -15,7 +15,11 @@
             <:left as |Item|>
               <Item>
                 <:label>
-                  <AuLabel @inline={{true}} @required={{true}}>Erkend op</AuLabel></:label>
+                  <AuLabel
+                    @inline={{true}}
+                    @required={{true}}
+                    for="recognized-on"
+                  >Erkend op</AuLabel></:label>
                 <:content>
                   <div class="au-u-1-1">
                     <Datepicker
@@ -23,6 +27,7 @@
                       @value={{convert-to-date model.dateDocument}}
                       @error={{this.validationErrors.dateDocument}}
                       @onChange={{fn (mut model.dateDocument)}}
+                      id="recognized-on"
                       {{on "input" (fn this.clearFormError "dateDocument")}}
                     />
                     <AuHelpText
@@ -31,11 +36,30 @@
                   </div>
                 </:content>
               </Item>
+            </:left>
+            <:right as |Item|>
+              <Item>
+                <:label>
+                  <AuLabel />
+                </:label>
+                <:content>
+                  <AuInput class="visibility-hidden" />
+                  <AuHelpText
+                    class="visibility-hidden"
+                    @error={{this.validationErrors.dateDocument}}
+                  >{{this.validationErrors.dateDocument}}</AuHelpText>
+                </:content>
+              </Item>
+            </:right>
+          </Card.Columns>
+          <Card.Columns>
+            <:left as |Item|>
               <Item>
                 <:label>
                   <AuLabel
                     @inline={{true}}
                     @required={{true}}
+                    for="start-time"
                   >Ingangsdatum</AuLabel></:label>
                 <:content>
                   <Datepicker
@@ -44,20 +68,49 @@
                     @onChange={{fn (mut model.startTime)}}
                     {{on "input" (fn this.clearFormError "startTime")}}
                     @error={{this.validationErrors.startTime}}
+                    id="start-time"
                   />
                   <AuHelpText
                     @error={{this.validationErrors.startTime}}
                   >{{this.validationErrors.startTime}}</AuHelpText>
                 </:content>
               </Item>
+            </:left>
+            <:right as |Item|>
               <Item>
                 <:label>
-                  <AuLabel @inline={{true}} @required={{true}}>Erkend door</AuLabel></:label>
+                  <AuLabel
+                    @inline={{true}}
+                    @required={{true}}
+                    for="end-time"
+                  >Einddatum</AuLabel></:label>
+                <:content>
+                  <Datepicker
+                    class="au-u-1-1"
+                    @error={{this.validationErrors.endTime}}
+                    @value={{this.getEndDate}}
+                    @onChange={{fn (mut model.endTime)}}
+                    id="end-time"
+                    {{on "input" (fn this.clearFormError "endTime")}}
+                  />
+                  <AuHelpText
+                    @error={{this.validationErrors.endTime}}
+                  >{{this.validationErrors.endTime}}</AuHelpText>
+                </:content>
+              </Item>
+            </:right>
+          </Card.Columns>
+          <Card.Columns>
+            <:left as |Item|>
+              <Item>
+                <:label>
+                  <AuLabel @inline={{true}} @required={{true}} for="awarded-by">Erkend door</AuLabel></:label>
                 <:content>
                   <PowerSelect
                     @options={{this.items}}
                     @selected={{this.currentRecognition.selectedItem}}
                     @onChange={{fn (mut this.currentRecognition.selectedItem)}}
+                    @triggerId="awarded-by"
                     as |name|
                   >
                     {{name}}
@@ -75,13 +128,14 @@
                         <AuLabel
                           @inline={{true}}
                           @required={{true}}
+                          for="awarded-by-organization-name"
                         >Namelijk</AuLabel></div>
                       <div class="au-u-flex au-u-flex--column au-u-1-1">
                         <AuInput
                           placeholder="Vul in organisatie"
                           @value={{mut model.awardedBy}}
                           {{on "input" (fn this.clearFormError "awardedBy")}}
-                          id="awardedBy"
+                          id="awarded-by-organization-name"
                           @error={{this.validationErrors.awardedBy}}
                           @width={{"block"}}
                         />
@@ -96,38 +150,6 @@
               </Item>
             </:left>
             <:right as |Item|>
-              <Item>
-                <:label>
-                  <AuLabel />
-                </:label>
-                <:content>
-                  <AuInput class="visibility-hidden" />
-                  <AuHelpText
-                    class="visibility-hidden"
-                    @error={{this.validationErrors.dateDocument}}
-                  >{{this.validationErrors.dateDocument}}</AuHelpText>
-                </:content>
-              </Item>
-
-              <Item>
-                <:label>
-                  <AuLabel
-                    @inline={{true}}
-                    @required={{true}}
-                  >Einddatum</AuLabel></:label>
-                <:content>
-                  <Datepicker
-                    class="au-u-1-1"
-                    @error={{this.validationErrors.endTime}}
-                    @value={{this.getEndDate}}
-                    @onChange={{fn (mut model.endTime)}}
-                    {{on "input" (fn this.clearFormError "endTime")}}
-                  />
-                  <AuHelpText
-                    @error={{this.validationErrors.endTime}}
-                  >{{this.validationErrors.endTime}}</AuHelpText>
-                </:content>
-              </Item>
               {{#if
                 (eq
                   (get this "currentRecognition.selectedItem")
@@ -136,7 +158,7 @@
               }}
                 <Item>
                   <:label>
-                    <AuLabel @inline={{true}}>Erkenningsbesluit</AuLabel>
+                    <AuLabel @inline={{true}} for="legal-resource">Erkenningsbesluit</AuLabel>
                   </:label>
                   <:content>
                     <AuInput
@@ -144,7 +166,7 @@
                       @value={{mut model.legalResource}}
                       {{on "input" (fn this.clearFormError "legalResource")}}
                       @width={{"block"}}
-                      id="erkenningsbesluit"
+                      id="legal-resource"
                       @error={{this.validationErrors.legalResource}}
                     />
                     <AuHelpText
