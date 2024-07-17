@@ -1,0 +1,11 @@
+{{#if this.shouldShowBanner}}
+  <AuAlert
+    @skin="warning"
+    @icon="alert-triangle"
+    @closable={{true}}
+    @size="small"
+    class="au-u-margin-bottom-none"
+  >
+    <p>{{this.message}}</p>
+  </AuAlert>
+{{/if}}
