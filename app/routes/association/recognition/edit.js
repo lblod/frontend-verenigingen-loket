@@ -15,7 +15,14 @@ export default class AssociationRecognitionEditRoute extends Route {
       if (recognition[0] == null) {
         throw new Error(`Recognition data not found for id: ${recognition_id}`);
       }
-      this.currentRecognition.setCurrentRecognition(recognition[0]);
+      await this.currentRecognition.setCurrentRecognition(recognition[0]);
+
+      if (this.currentRecognition.hasExpired) {
+        this.router.transitionTo(
+          'association.recognition.show',
+          recognition_id,
+        );
+      }
     } catch (error) {
       this.router.transitionTo('association.recognition.index');
       this.toaster.error(

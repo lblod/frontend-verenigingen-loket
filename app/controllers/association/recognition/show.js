@@ -12,6 +12,10 @@ export default class AssociationRecognitionShowController extends Controller {
   @service currentRecognition;
   @tracked isModalOpen = false;
 
+  get canEditRecognition() {
+    return !this.currentRecognition.hasExpired;
+  }
+
   @action
   toggleModal() {
     this.isModalOpen = !this.isModalOpen;

@@ -18,32 +18,34 @@
           @skin="3"
         >{{this.currentAssociation.association.name}}</AuHeading>
       </div>
-      <div class="au-u-flex au-u-flex--center au-u-flex--vertical-center">
-        <AuLink
-          @skin="button-secondary"
-          @icon="pencil"
-          @model={{this.currentRecognition.recognition.id}}
-          @route="association.recognition.edit"
-        >
-          Bewerk
-        </AuLink>
-        <AuDropdown
-          @title="Acties"
-          role="menu"
-          @alignment="right"
-          class="au-u-margin-left-small"
-        >
-          <AuButton
-            @skin="link"
-            @icon="bin"
-            role="menuitem"
-            @alert={{true}}
-            {{on "click" this.toggleModal}}
+      {{#if this.canEditRecognition}}
+        <div class="au-u-flex au-u-flex--center au-u-flex--vertical-center">
+          <AuLink
+            @skin="button-secondary"
+            @icon="pencil"
+            @model={{this.currentRecognition.recognition.id}}
+            @route="association.recognition.edit"
           >
-            Verwijder erkenning
-          </AuButton>
-        </AuDropdown>
-      </div>
+            Bewerk
+          </AuLink>
+          <AuDropdown
+            @title="Acties"
+            role="menu"
+            @alignment="right"
+            class="au-u-margin-left-small"
+          >
+            <AuButton
+              @skin="link"
+              @icon="bin"
+              role="menuitem"
+              @alert={{true}}
+              {{on "click" this.toggleModal}}
+            >
+              Verwijder erkenning
+            </AuButton>
+          </AuDropdown>
+        </div>
+      {{/if}}
     </section>
     <section>
       <Recognition::OverviewCard
