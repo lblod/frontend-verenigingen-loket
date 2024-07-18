@@ -4,10 +4,12 @@ import { tracked } from '@glimmer/tracking';
 import { timeout, task } from 'ember-concurrency';
 import { action } from '@ember/object';
 import ENV from 'frontend-verenigingen-loket/config/environment';
+import { associationsQuery } from '../services/query-builder';
 const DEBOUNCE_MS = 500;
 
 export default class IndexController extends Controller {
   @service store;
+  @service session;
   @service router;
   @service toaster;
   @service contactPoints;
@@ -137,10 +139,20 @@ export default class IndexController extends Controller {
       `Het downloaden van het bestand is begonnen.`,
       'Download gestart',
     );
-
-    if (this.associations) {
+    const params = this.getQueryParamsAsObject(window.location.href);
+    const associations = await this.muSearch.search(
+      associationsQuery({
+        index: 'associations',
+        page: 0,
+        params,
+        size: 1000,
+      }),
+    );
+    const adminUnitId =
+      this.session.data.authenticated.relationships.group.data.id;
+    if (associations.items && adminUnitId) {
       try {
-        const associationIds = this.associations.map(({ id }) => id);
+        const associationIds = associations.items.map(({ id }) => id);
         const port = window.location.port;
         const hostname = window.location.hostname;
         const storeDataUrl = `http${!port ? 's' : ''}://${hostname}${
@@ -152,7 +164,7 @@ export default class IndexController extends Controller {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ associationIds }),
+          body: JSON.stringify({ associationIds, adminUnitId }),
         });
 
         const { referenceId } = await storeResponse.json();
@@ -179,7 +191,7 @@ export default class IndexController extends Controller {
       this.toaster.close(toast);
       this.toaster.warning(
         'Geen resultaten gevonden. Probeer het opnieuw.',
-        'Download geanuleerd',
+        'Download geannuleerd',
         {
           timeOut: 3000,
         },
