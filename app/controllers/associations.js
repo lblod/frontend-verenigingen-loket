@@ -9,7 +9,7 @@ const DEBOUNCE_MS = 500;
 
 export default class IndexController extends Controller {
   @service store;
-  @service session;
+  @service currentSession;
   @service router;
   @service toaster;
   @service contactPoints;
@@ -145,11 +145,10 @@ export default class IndexController extends Controller {
         index: 'associations',
         page: 0,
         params,
-        size: 1000,
+        size: this.associations.meta.count,
       }),
     );
-    const adminUnitId =
-      this.session.data.authenticated.relationships.group.data.id;
+    const adminUnitId = this.currentSession.group.id;
     if (associations.items && adminUnitId) {
       try {
         const associationIds = associations.items.map(({ id }) => id);
