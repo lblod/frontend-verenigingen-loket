@@ -1,0 +1,59 @@
+<AuFieldset @alignment={{this.alignment}} ...attributes as |f|>
+  <f.legend @skin={{if this.isChoosingPresets "6" "5"}}>
+    Laatste wijziging
+  </f.legend>
+  <f.content class="au-u-1-1">
+    {{#if this.isChoosingPresets}}
+      <AuFormRow>
+        <AuLabel for="date-range-period" class="au-u-hidden-visually">
+          Laatste wijziging
+        </AuLabel>
+        <PowerSelect
+          @selected={{this.selectedPreset}}
+          @options={{this.presets}}
+          @onChange={{this.handleSelectionChange}}
+          @allowClear={{true}}
+          @placeholder="Selecteer een periode"
+          @triggerId="date-period"
+          class="au-u-1-1"
+          as |preset|
+        >{{preset.label}}</PowerSelect>
+
+        <Filters::DateRange::ToggleButton
+          @icon="calendar"
+          @onClick={{this.chooseCustomRange}}
+          class="au-u-margin-top-tiny"
+        >
+          Eigen periode kiezen
+        </Filters::DateRange::ToggleButton>
+      </AuFormRow>
+    {{else}}
+      <AuFormRow>
+        <AuLabel for="date-range-from">Startdatum</AuLabel>
+        <Filters::DateRange::DateInput
+          @value={{this.start}}
+          @onChange={{this.handleStartDateChange}}
+          id="date-range-from"
+        />
+      </AuFormRow>
+      <AuFormRow>
+        <AuLabel for="date-range-to">Einddatum</AuLabel>
+        <Filters::DateRange::DateInput
+          @value={{this.end}}
+          @onChange={{this.handleEndDateChange}}
+          @errorMessage={{this.endDateError}}
+          id="date-range-to"
+        />
+      </AuFormRow>
+
+      <div>
+        <Filters::DateRange::ToggleButton
+          @icon="nav-up-down"
+          @onClick={{this.choosePresets}}
+        >
+          Bestaande periodes
+        </Filters::DateRange::ToggleButton>
+      </div>
+    {{/if}}
+  </f.content>
+</AuFieldset>

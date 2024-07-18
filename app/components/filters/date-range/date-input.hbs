@@ -1,0 +1,16 @@
+<AuInput
+  @width="block"
+  @error={{if @errorMessage true}}
+  type="date"
+  value={{@value}}
+  {{! We're using the blur event since browsers trigger the change and input events for every change to the year which is not what we want}}
+  {{on "blur" this.handleChange}}
+  {{! We're still using the input event (with a delay) as a fallback, in case the user doesn't blur the field}}
+  {{on "input" this.delayedChange.perform}}
+  ...attributes
+/>
+{{#if @errorMessage}}
+  {{#each @errorMessage as |message|}}
+    <AuHelpText @error={{true}}>{{message}}</AuHelpText>
+  {{/each}}
+{{/if}}
