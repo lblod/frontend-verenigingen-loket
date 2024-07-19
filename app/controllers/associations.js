@@ -131,7 +131,7 @@ export default class IndexController extends Controller {
 
   download = task({ drop: true }, async () => {
     const toast = this.toaster.loading(
-      `Het downloaden van het bestand is begonnen.`,
+      'Het downloaden van het bestand is begonnen.',
       'Download gestart',
     );
     const params = this.getQueryParamsAsObject(window.location.href);
@@ -149,7 +149,8 @@ export default class IndexController extends Controller {
         const associationIds = associations.items.map(({ id }) => id);
         const port = window.location.port;
         const hostname = window.location.hostname;
-        const storeDataUrl = `http${!port ? 's' : ''}://${hostname}${
+        const protocol = window.location.protocol;
+        const storeDataUrl = `${protocol}//${hostname}${
           port ? ':' + port : ''
         }/storeData`;
 
@@ -161,35 +162,39 @@ export default class IndexController extends Controller {
           body: JSON.stringify({ associationIds, adminUnitId }),
         });
 
-        const { referenceId } = await storeResponse.json();
-
-        const controller = new AbortController();
-        const { signal } = controller;
-        const options = { method: 'GET' };
-        const fetchOptions = { ...options, signal };
-        const timeout = 120000; // 2 minutes before timing out
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
-        const url = `http${!port ? 's' : ''}://${hostname}${
-          port ? ':' + port : ''
-        }/download?ref=${referenceId}`;
-
-        try {
-          const response = await fetch(url, fetchOptions);
-          clearTimeout(timeoutId);
-          if (!response.ok) {
-            throw new Error(response.statusText);
-          }
-          const blob = await response.blob();
-          await this.downloadBlob(blob);
-          this.downloadFinished(toast);
-        } catch (error) {
-          if (error.name === 'AbortError') {
-            throw new Error('Request timed out');
-          }
-          throw error;
+        if (!storeResponse.ok) {
+          throw new Error('Failed to initiate job');
         }
+
+        const { referenceId } = await storeResponse.json();
+        const statusUrl = `${protocol}//${hostname}${
+          port ? ':' + port : ''
+        }/status?jobId=${referenceId}`;
+
+        const status = await this.pollForStatus(statusUrl);
+        if (status.error) {
+          throw new Error(status.error);
+        }
+
+        const downloadUrl = `${protocol}//${hostname}${
+          port ? ':' + port : ''
+        }/download?ref=${status.referenceId}`;
+
+        const response = await fetch(downloadUrl, { method: 'GET' });
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        const blob = await response.blob();
+        await this.downloadBlob(blob);
+        this.downloadFinished(toast);
       } catch (error) {
-        this.downloadFailed(toast);
+        let message =
+          'Er is een fout opgetreden bij het downloaden van het bestand. Probeer het opnieuw.';
+        if (error.message === 'Request timed out') {
+          message = 'De download is mislukt vanwege een time-out.';
+        }
+        this.downloadFailed(toast, message);
         console.error(error);
       }
     } else {
@@ -197,12 +202,44 @@ export default class IndexController extends Controller {
       this.toaster.warning(
         'Geen resultaten gevonden. Probeer het opnieuw.',
         'Download geannuleerd',
-        {
-          timeOut: 3000,
-        },
+        { timeOut: 3000 },
       );
     }
   });
+  @action
+  async pollForStatus(statusUrl, maxAttempts = 120) {
+    console.log('startPolling');
+
+    const initialIntervals = [1000, 3000];
+    const subsequentInterval = 3000;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const response = await fetch(statusUrl, { method: 'GET' });
+      if (!response.ok) {
+        console.error(`Status polling error: ${response.statusText}`);
+        return { error: response.statusText };
+      }
+      const status = await response.json();
+      if (status.complete) {
+        return status;
+      }
+
+      // Determine the interval for this attempt
+      const interval =
+        attempt < initialIntervals.length
+          ? initialIntervals[attempt]
+          : subsequentInterval;
+
+      // Wait for the specified interval before the next attempt
+      await this.timeout(interval);
+    }
+
+    throw new Error('Status polling timed out');
+  }
+
+  timeout(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   @action
   downloadFinished(toast) {
@@ -216,15 +253,11 @@ export default class IndexController extends Controller {
     );
   }
   @action
-  downloadFailed(toast) {
+  downloadFailed(toast, message) {
     this.toaster.close(toast);
-    this.toaster.error(
-      'Er is een fout opgetreden bij het downloaden van het bestand. Probeer het opnieuw.',
-      'Download Mislukt',
-      {
-        timeOut: 3000,
-      },
-    );
+    this.toaster.error(message, 'Download Mislukt', {
+      timeOut: 3000,
+    });
   }
 
   getQueryParamsAsObject(url) {
