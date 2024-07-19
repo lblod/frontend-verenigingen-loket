@@ -163,20 +163,31 @@ export default class IndexController extends Controller {
 
         const { referenceId } = await storeResponse.json();
 
+        const controller = new AbortController();
+        const { signal } = controller;
+        const options = { method: 'GET' };
+        const fetchOptions = { ...options, signal };
+        const timeout = 120000; // 2 minutes before timing out
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
         const url = `http${!port ? 's' : ''}://${hostname}${
           port ? ':' + port : ''
         }/download?ref=${referenceId}`;
 
-        const response = await fetch(url, {
-          method: 'GET',
-        });
-        if (!response.ok) {
-          throw new Error(response.statusText);
+        try {
+          const response = await fetch(url, fetchOptions);
+          clearTimeout(timeoutId);
+          if (!response.ok) {
+            throw new Error(response.statusText);
+          }
+          const blob = await response.blob();
+          await this.downloadBlob(blob);
+          this.downloadFinished(toast);
+        } catch (error) {
+          if (error.name === 'AbortError') {
+            throw new Error('Request timed out');
+          }
+          throw error;
         }
-
-        const blob = await response.blob();
-        await this.downloadBlob(blob);
-        this.downloadFinished(toast);
       } catch (error) {
         this.downloadFailed(toast);
         console.error(error);
