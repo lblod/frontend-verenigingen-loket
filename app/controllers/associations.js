@@ -208,8 +208,6 @@ export default class IndexController extends Controller {
   });
   @action
   async pollForStatus(statusUrl, maxAttempts = 120) {
-    console.log('startPolling');
-
     const initialIntervals = [1000, 3000];
     const subsequentInterval = 3000;
 
