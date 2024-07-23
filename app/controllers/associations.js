@@ -207,13 +207,13 @@ export default class IndexController extends Controller {
     }
   });
   @action
-  async pollForStatus(statusUrl, maxAttempts = 120) {
-    const initialIntervals = [1000, 3000];
-    const subsequentInterval = 5000;
+  async pollForStatus(statusUrl, maxAttempts = 25) {
+    const initialIntervals = [1000, 1500];
+    const subsequentInterval = 3000;
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
-        const response = await fetch(statusUrl, { method: 'GET' });
+        const response = await fetch(statusUrl + 's', { method: 'GET' });
 
         if (!response.ok) {
           console.error(`Status polling error: ${response.statusText}`);
@@ -231,7 +231,6 @@ export default class IndexController extends Controller {
             ? initialIntervals[attempt]
             : subsequentInterval;
 
-        console.log(`Polling attempt ${attempt + 1}: Waiting ${interval} ms`);
         await this.timeout(interval);
       } catch (error) {
         console.error(`Error during polling: ${error.message}`);
