@@ -208,12 +208,12 @@ export default class IndexController extends Controller {
   });
   @action
   async pollForStatus(statusUrl, maxAttempts = 25) {
-    const initialIntervals = [1000, 1500];
-    const subsequentInterval = 3000;
+    const initialIntervals = [500, 500, 500];
+    const subsequentInterval = 1000;
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
-        const response = await fetch(statusUrl + 's', { method: 'GET' });
+        const response = await fetch(statusUrl, { method: 'GET' });
 
         if (!response.ok) {
           console.error(`Status polling error: ${response.statusText}`);
