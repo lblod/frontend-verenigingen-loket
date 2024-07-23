@@ -191,9 +191,6 @@ export default class IndexController extends Controller {
       } catch (error) {
         let message =
           'Er is een fout opgetreden bij het downloaden van het bestand. Probeer het opnieuw.';
-        if (error.message === 'Request timed out') {
-          message = 'De download is mislukt vanwege een time-out.';
-        }
         this.downloadFailed(toast, message);
         console.error(error);
       }
