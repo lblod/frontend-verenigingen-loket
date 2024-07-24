@@ -76,7 +76,7 @@ export const associationsQuery = ({ index, page, params, size }) => {
     } else if (params.status === 'Verlopen') {
       addFilter(
         ':query:recognitions.validityPeriod',
-        `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})))`,
+        `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))) AND (recognitions.validityPeriod.endTime:<${today})`,
       );
       addFilter(':has:recognitions.validityPeriod.endTime', true);
     }
