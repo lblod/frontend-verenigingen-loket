@@ -131,7 +131,7 @@ export default class IndexController extends Controller {
 
   download = task({ drop: true }, async () => {
     const toast = this.toaster.loading(
-      `Het downloaden van het bestand is begonnen.`,
+      'Het downloaden van het bestand is begonnen.',
       'Download gestart',
     );
     const params = this.getQueryParamsAsObject(window.location.href);
@@ -149,7 +149,8 @@ export default class IndexController extends Controller {
         const associationIds = associations.items.map(({ id }) => id);
         const port = window.location.port;
         const hostname = window.location.hostname;
-        const storeDataUrl = `http${!port ? 's' : ''}://${hostname}${
+        const protocol = window.location.protocol;
+        const storeDataUrl = `${protocol}//${hostname}${
           port ? ':' + port : ''
         }/storeData`;
 
@@ -161,15 +162,25 @@ export default class IndexController extends Controller {
           body: JSON.stringify({ associationIds, adminUnitId }),
         });
 
+        if (!storeResponse.ok) {
+          throw new Error('Failed to initiate job');
+        }
+
         const { referenceId } = await storeResponse.json();
-
-        const url = `http${!port ? 's' : ''}://${hostname}${
+        const statusUrl = `${protocol}//${hostname}${
           port ? ':' + port : ''
-        }/download?ref=${referenceId}`;
+        }/status?jobId=${referenceId}`;
 
-        const response = await fetch(url, {
-          method: 'GET',
-        });
+        const status = await this.pollForStatus(statusUrl);
+        if (status.error) {
+          throw new Error(status.error);
+        }
+
+        const downloadUrl = `${protocol}//${hostname}${
+          port ? ':' + port : ''
+        }/download?ref=${status.referenceId}`;
+
+        const response = await fetch(downloadUrl, { method: 'GET' });
         if (!response.ok) {
           throw new Error(response.statusText);
         }
@@ -178,7 +189,9 @@ export default class IndexController extends Controller {
         await this.downloadBlob(blob);
         this.downloadFinished(toast);
       } catch (error) {
-        this.downloadFailed(toast);
+        let message =
+          'Er is een fout opgetreden bij het downloaden van het bestand. Probeer het opnieuw.';
+        this.downloadFailed(toast, message);
         console.error(error);
       }
     } else {
@@ -186,12 +199,48 @@ export default class IndexController extends Controller {
       this.toaster.warning(
         'Geen resultaten gevonden. Probeer het opnieuw.',
         'Download geannuleerd',
-        {
-          timeOut: 3000,
-        },
+        { timeOut: 3000 },
       );
     }
   });
+  @action
+  async pollForStatus(statusUrl, maxAttempts = 25) {
+    const initialIntervals = [500, 500, 500];
+    const subsequentInterval = 1000;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        const response = await fetch(statusUrl, { method: 'GET' });
+
+        if (!response.ok) {
+          console.error(`Status polling error: ${response.statusText}`);
+          return { error: response.statusText };
+        }
+
+        const status = await response.json();
+
+        if (status.complete) {
+          return status;
+        }
+
+        const interval =
+          attempt < initialIntervals.length
+            ? initialIntervals[attempt]
+            : subsequentInterval;
+
+        await this.timeout(interval);
+      } catch (error) {
+        console.error(`Error during polling: ${error.message}`);
+        return { error: error.message };
+      }
+    }
+    console.error('Status polling timed out');
+    throw new Error('Status polling timed out');
+  }
+
+  timeout(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   @action
   downloadFinished(toast) {
@@ -205,15 +254,11 @@ export default class IndexController extends Controller {
     );
   }
   @action
-  downloadFailed(toast) {
+  downloadFailed(toast, message) {
     this.toaster.close(toast);
-    this.toaster.error(
-      'Er is een fout opgetreden bij het downloaden van het bestand. Probeer het opnieuw.',
-      'Download Mislukt',
-      {
-        timeOut: 3000,
-      },
-    );
+    this.toaster.error(message, 'Download Mislukt', {
+      timeOut: 3000,
+    });
   }
 
   getQueryParamsAsObject(url) {
