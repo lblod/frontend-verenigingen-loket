@@ -104,7 +104,11 @@
             <:left as |Item|>
               <Item>
                 <:label>
-                  <AuLabel @inline={{true}} @required={{true}} for="awarded-by">Erkend door</AuLabel></:label>
+                  <AuLabel
+                    @inline={{true}}
+                    @required={{true}}
+                    for="awarded-by"
+                  >Erkend door</AuLabel></:label>
                 <:content>
                   <PowerSelect
                     @options={{this.items}}
@@ -158,28 +162,88 @@
               }}
                 <Item>
                   <:label>
-                    <AuLabel @inline={{true}} for="legal-resource">Erkenningsbesluit</AuLabel>
+                    <AuLabel
+                      @inline={{true}}
+                      for="legal-resource"
+                    >Erkenningsbesluit</AuLabel>
                   </:label>
                   <:content>
-                    <AuInput
-                      placeholder="Voeg alleen een directe link naar het besluit toe"
-                      @value={{mut model.legalResource}}
-                      {{on "input" (fn this.clearFormError "legalResource")}}
-                      @width={{"block"}}
-                      id="legal-resource"
-                      @error={{this.validationErrors.legalResource}}
-                    />
+                    {{#if this.currentRecognition.file}}
+                      <AuInput
+                        placeholder="Voeg alleen een pdf toe"
+                        @value={{this.currentRecognition.file.name}}
+                        @width={{"block"}}
+                        readonly
+                        id="legal-resource"
+                        @error={{this.validationErrors.legalResource}}
+                      />
+                    {{else}}
+                      <AuInput
+                        placeholder="Voeg alleen een directe link naar het besluit toe"
+                        @value={{mut model.legalResource}}
+                        {{on "input" (fn this.clearFormError "legalResource")}}
+                        @width={{"block"}}
+                        id="legal-resource"
+                        @error={{this.validationErrors.legalResource}}
+                      />
+                    {{/if}}
                     <AuHelpText
                       @error={{this.validationErrors.legalResource}}
                     >{{this.validationErrors.legalResource}}</AuHelpText>
-                    {{#if model.legalResource.length}}
-                      <AuLinkExternal
-                        href={{model.legalResource}}
-                        @icon="external-link"
-                      >
-                        Controleer link
-                      </AuLinkExternal>
-                    {{/if}}
+                    {{#unless this.currentRecognition.file}}
+                      {{#if model.legalResource.length}}
+                        <AuLinkExternal
+                          href={{model.legalResource}}
+                          @icon="external-link"
+                        >
+                          Controleer link
+                        </AuLinkExternal>
+                      {{/if}}
+                    {{/unless}}
+                    <div class="au-u-flex au-u-flex--end">
+                      {{#if this.currentRecognition.file}}
+                        <div class="au-u-flex au-u-flex--end">
+                          <AuButton
+                            class="au-u-flex au-u-flex--start"
+                            @skin="link"
+                            @icon="download"
+                            {{on
+                              "click"
+                              (fn
+                                this.openFileInNewTab
+                                this.currentRecognition.file
+                              )
+                            }}
+                          >Bekijk bestand</AuButton>
+                          <AuButton
+                            class="au-u-flex au-u-flex--end"
+                            @skin="link"
+                            @icon="trash"
+                            {{on "click" (perform this.removeFile)}}
+                          >
+                            Verwijder bestand
+                          </AuButton>
+                        </div>
+                      {{else}}
+                        {{#unless model.legalResource.length}}
+                          <p>
+                            Geen link?
+                            <input
+                              type="file"
+                              id="legalResource"
+                              name="legalResource"
+                              hidden
+                              accept=".pdf"
+                              {{on "change" this.handleFileChange}}
+                            />
+                            <label
+                              for="legalResource"
+                              class="au-c-link underline"
+                            >Voeg bestand toe</label>
+                          </p>
+                        {{/unless}}
+                      {{/if}}
+                    </div>
                   </:content>
                 </Item>
               {{/if}}

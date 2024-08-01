@@ -4,6 +4,7 @@ import { action, set } from '@ember/object';
 import { errorValidation } from '../../validations/recognition-validation';
 import { tracked } from '@glimmer/tracking';
 import dateFormat from '../../helpers/date-format';
+import { task } from 'ember-concurrency';
 
 export default class FormComponent extends Component {
   items = ['College van burgemeester en schepenen', 'Andere'];
@@ -13,9 +14,7 @@ export default class FormComponent extends Component {
   @service store;
   @service router;
   @service toaster;
-  f;
   @service dateYear;
-
   @tracked validationErrors = {};
 
   notify(message, title, type = 'success') {
@@ -162,6 +161,9 @@ export default class FormComponent extends Component {
     try {
       const errors = await this.validateForm();
       if (errors) return;
+      if (this.currentRecognition.file) {
+        await this.uploadFile(this.currentRecognition.file);
+      }
       if (this.currentRecognition.recognition) {
         await this.editRecognition();
       } else {
@@ -310,5 +312,88 @@ export default class FormComponent extends Component {
       await awardedBy.save();
     }
     return awardedBy;
+  }
+  @action
+  async handleFileChange(event) {
+    this.currentRecognition.file = event.target.files[0];
+    if (this.currentRecognition.file) {
+      set(this.validationErrors, 'legalResource', null);
+      this.currentRecognition.recognitionModel.legalResource =
+        this.currentRecognition.file.name;
+    }
+  }
+
+  removeFile = task({ drop: true }, async () => {
+    try {
+      if (!this.currentRecognition.file.id) {
+        this.currentRecognition.file = null;
+        return (this.currentRecognition.recognitionModel.legalResource = null);
+      }
+      let response = await fetch(`/files/${this.currentRecognition.file.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        this.notify(
+          `Het bestand met de naam ${this.currentRecognition.file.name} is succesvol verwijderd.`,
+          `Bestand succesvol verwijderd.`,
+        );
+        this.currentRecognition.file = null;
+        this.currentRecognition.recognitionModel.legalResource = null;
+        return set(this.validationErrors, 'legalResource', null);
+      }
+      throw new Error('File removal failed');
+    } catch (error) {
+      this.notify(
+        'Er is een fout opgetreden bij het verwijderen van het bestand.',
+        null,
+        'error',
+      );
+      console.error('An error occurred while removing the file', error);
+    }
+  });
+
+  @action
+  async openFileInNewTab(file) {
+    try {
+      if (file) {
+        const url = window.URL.createObjectURL(file);
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('An error occurred while opening the file', error);
+    }
+  }
+
+  @action
+  async uploadFile(file) {
+    if (file) {
+      let formData = new FormData();
+      formData.append('file', this.currentRecognition.file);
+      try {
+        let response = await fetch('/files', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          let {
+            data: { id },
+          } = await response.json();
+          this.currentRecognition.file.id = id;
+          this.currentRecognition.recognitionModel.legalResource = `${id}.pdf`;
+        } else {
+          console.error('File upload failed', response.statusText);
+        }
+      } catch (error) {
+        console.error('An error occurred while uploading the file', error);
+      }
+    }
   }
 }

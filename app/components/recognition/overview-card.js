@@ -1,24 +1,9 @@
-import Controller from '@ember/controller';
+import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
-import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
-
-export default class AssociationRecognitionController extends Controller {
-  @service currentAssociation;
+export default class OverviewCardComponent extends Component {
   @service file;
   @service toaster;
-  @tracked sort = '-validity-period.end-time';
-
-  get isLoading() {
-    return this.model.recognitions.isRunning;
-  }
-
-  get recognitions() {
-    return this.model.recognitions.isFinished
-      ? this.model.recognitions.value
-      : null;
-  }
-
   @action
   async getFile(fileName) {
     try {

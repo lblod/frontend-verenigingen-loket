@@ -103,9 +103,17 @@
         </td>
         <td>
           {{#if recognition.legalResource}}
-            <AuLinkExternal href={{recognition.legalResource}}>
-              Beslissing (externe link)
-            </AuLinkExternal>
+            {{#if (is-pdf recognition.legalResource)}}
+              <AuLink
+                class="au-u-flex au-u-flex--start"
+                @skin="link"
+                {{on "click" (fn this.getFile recognition.legalResource)}}
+              >Bekijk bestand</AuLink>
+            {{else}}
+              <AuLinkExternal href={{recognition.legalResource}}>
+                Beslissing (externe link)
+              </AuLinkExternal>
+            {{/if}}
           {{/if}}
         </td>
       </c.body>
