@@ -161,7 +161,7 @@ export default class FormComponent extends Component {
     try {
       const errors = await this.validateForm();
       if (errors) return;
-      if (this.currentRecognition.file) {
+      if (this.currentRecognition?.file?.isNew) {
         await this.uploadFile(this.currentRecognition.file);
       }
       if (this.currentRecognition.recognition) {
@@ -316,10 +316,12 @@ export default class FormComponent extends Component {
   @action
   async handleFileChange(event) {
     this.currentRecognition.file = event.target.files[0];
+    this.currentRecognition.file.download = this.currentRecognition.file;
     if (this.currentRecognition.file) {
       set(this.validationErrors, 'legalResource', null);
       this.currentRecognition.recognitionModel.legalResource =
         this.currentRecognition.file.name;
+      this.currentRecognition.file.isNew = true;
     }
   }
 
@@ -330,21 +332,24 @@ export default class FormComponent extends Component {
         this.clearFormError('legalResource');
         return (this.currentRecognition.recognitionModel.legalResource = null);
       }
-      let response = await fetch(`/files/${this.currentRecognition.file.id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        this.notify(
-          `Het bestand met de naam ${this.currentRecognition.file.name} is succesvol verwijderd.`,
-          `Bestand succesvol verwijderd.`,
-        );
-        this.currentRecognition.file = null;
-        this.currentRecognition.recognitionModel.legalResource = null;
-        this.clearFormError('legalResource');
-        return set(this.validationErrors, 'legalResource', null);
+      await this.currentRecognition.file.deleteRecord();
+      const response = await this.currentRecognition.file.save();
+      if (!response) {
+        throw new Error('File removal failed');
       }
-      throw new Error('File removal failed');
+      this.notify(
+        `Het bestand met de naam ${this.currentRecognition.file.name} is succesvol verwijderd.`,
+        `Bestand succesvol verwijderd.`,
+      );
+      this.clearFormError('legalResource');
+      this.currentRecognition.file = null;
+      this.currentRecognition.recognitionModel.legalResource = null;
+      await this.currentRecognition.recognition.setProperties({
+        ...this.currentRecognition.recognition,
+        legalResource: null,
+      });
+      await this.currentRecognition.recognition.save();
+      return set(this.validationErrors, 'legalResource', null);
     } catch (error) {
       this.notify(
         'Er is een fout opgetreden bij het verwijderen van het bestand.',
@@ -358,8 +363,8 @@ export default class FormComponent extends Component {
   @action
   async openFileInNewTab(file) {
     try {
-      if (file) {
-        const url = window.URL.createObjectURL(file);
+      if (file.download) {
+        const url = window.URL.createObjectURL(file.download);
         const a = document.createElement('a');
         a.href = url;
         a.target = '_blank';

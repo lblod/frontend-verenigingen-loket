@@ -2,11 +2,10 @@ import Model, { attr } from '@ember-data/model';
 
 export default class FileModel extends Model {
   @attr uri;
-  @attr filename;
+  @attr name;
   @attr format;
   @attr size;
   @attr({ defaultValue: 'n/a' }) extension;
-  @attr('datetime') created;
 
   get humanReadableSize() {
     //ripped from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
@@ -22,6 +21,6 @@ export default class FileModel extends Model {
   }
 
   get downloadLink() {
-    return `/files/${this.id}/download?name=${this.filename}`;
+    return `/files/${this.id}/download?name=${this.name}`;
   }
 }

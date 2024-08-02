@@ -45,16 +45,15 @@ export default class CurrentRecognitionService extends Service {
   async getFile(fileName) {
     try {
       const [fileId] = fileName.split('.pdf');
-      let response = await fetch(`/files/${fileId}/download`, {
+      let download = await fetch(`/files/${fileId}/download`, {
         method: 'GET',
       });
-
-      if (response.ok) {
-        this.file = await response.blob();
-        this.file.id = fileId;
-        this.file.name = `${fileId}.pdf`;
+      const file = await this.store.findRecord('file', fileId);
+      if (download.ok && file) {
+        this.file = file;
+        this.file.download = await download.blob();
       } else {
-        console.error('File not found', response.statusText);
+        console.error('File not found', download.statusText);
       }
     } catch (error) {
       console.error('An error occurred while getting the file', error);
