@@ -54,11 +54,11 @@
             <:content>
               {{#if @recognition.legalResource}}
                 {{#if (is-pdf @recognition.legalResource)}}
-                  <AuLink
-                    class="au-u-flex au-u-flex--start"
+                  <AuButton
+                    class="au-u-flex au-u-flex--start au-u-padding-none"
                     @skin="link"
                     {{on "click" (fn this.getFile @recognition.legalResource)}}
-                  >Bekijk bestand</AuLink>
+                  >Bekijk bestand</AuButton>
                 {{else}}
                   <AuLinkExternal href={{@recognition.legalResource}}>
                     Beslissing (externe link)

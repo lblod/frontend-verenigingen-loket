@@ -327,6 +327,7 @@ export default class FormComponent extends Component {
     try {
       if (!this.currentRecognition.file.id) {
         this.currentRecognition.file = null;
+        this.clearFormError('legalResource');
         return (this.currentRecognition.recognitionModel.legalResource = null);
       }
       let response = await fetch(`/files/${this.currentRecognition.file.id}`, {
@@ -340,6 +341,7 @@ export default class FormComponent extends Component {
         );
         this.currentRecognition.file = null;
         this.currentRecognition.recognitionModel.legalResource = null;
+        this.clearFormError('legalResource');
         return set(this.validationErrors, 'legalResource', null);
       }
       throw new Error('File removal failed');
