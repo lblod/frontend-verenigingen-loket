@@ -81,12 +81,22 @@
                 <Item>
                   <:label>Erkenningsbesluit</:label>
                   <:content>
-                    <AuLinkExternal
-                      href={{@recognition.legalResource}}
-                      @icon="external-link"
-                    >
-                      Beslissing (externe link)
-                    </AuLinkExternal>
+                    {{#if @recognition.legalResource}}
+                      {{#if (is-pdf @recognition.legalResource)}}
+                        <AuLink
+                          class="au-u-flex au-u-flex--start"
+                          @skin="link"
+                          {{on
+                            "click"
+                            (fn this.getFile @recognition.legalResource)
+                          }}
+                        >Bekijk bestand</AuLink>
+                      {{else}}
+                        <AuLinkExternal href={{@recognition.legalResource}}>
+                          Beslissing (externe link)
+                        </AuLinkExternal>
+                      {{/if}}
+                    {{/if}}
                   </:content>
                 </Item>
               {{/if}}
