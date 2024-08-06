@@ -32,6 +32,7 @@ module.exports = function (environment) {
       authRedirectUrl: '{{OAUTH_API_REDIRECT_URL}}',
       switchRedirectUrl: '{{OAUTH_SWITCH_URL}}',
     },
+    announcementMessage: '{{ANNOUNCEMENT_MESSAGE}}',
   };
 
   if (environment === 'development') {

@@ -15,6 +15,19 @@ export default class CurrentRecognitionService extends Service {
     awardedBy: null,
     legalResource: null,
   };
+
+  get hasExpired() {
+    const { endTime } = this.recognitionModel;
+
+    if (endTime) {
+      const now = new Date();
+
+      return new Date(endTime) < now;
+    }
+
+    return true;
+  }
+
   setIsLoading(isLoading) {
     this.isLoading = isLoading;
   }

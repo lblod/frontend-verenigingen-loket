@@ -29,7 +29,11 @@ export default class StatusComponent extends Component {
         } else if (today >= new Date(startTime) && today <= new Date(endTime)) {
           active = 'Erkend';
           resolve(active);
-        } else if (active === null && index == recognitions.length - 1) {
+        } else if (
+          active === null &&
+          index == recognitions.length - 1 &&
+          new Date(endTime) < today
+        ) {
           active = 'Verlopen';
           resolve(active);
         }

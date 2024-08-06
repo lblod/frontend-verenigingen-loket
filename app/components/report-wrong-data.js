@@ -52,8 +52,12 @@ export default class ReportWrongDataComponent extends Component {
     const url = encodeURIComponent('https://www.verenigingsloket.be/');
     return `Vereniging: ${
       this.association ? this.association.name : ''
-    } %0D%0A vCode: ${
+    } %0D%0AvCode: ${
       this.vCode
-    } %0D%0A Aan te passen op het ${url} (Verenigingsloket), pagina 'Mijn gegevens'.`;
+    } %0D%0AAan te passen op het ${url} (Verenigingsloket), pagina 'Mijn gegevens'.
+      %0D%0A----------------------
+      %0D%0ABegin hier te typen:
+      %0D%0A
+    `;
   }
 }

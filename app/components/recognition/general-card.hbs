@@ -92,7 +92,7 @@
               {{/if}}
             </:right>
           </Card.Columns>
-        {{else}}
+        {{else if (is-period-expired @recognition.validityPeriod)}}
           <Card.Columns>
             <:left as |Item|>
               <Item>
@@ -111,6 +111,16 @@
               </Item>
             </:right>
           </Card.Columns>
+        {{else}}
+          <div class="au-u-flex au-u-flex--center">
+            <p><span
+                class="au-c-help-text--tertiary au-u-padding-right-tiny"
+              >Deze vereniging heeft geen actieve erkenning.</span>
+              <AuLink @skin="link" @route="association.recognition.create">
+                Voeg de erkenning toe.
+              </AuLink>
+            </p>
+          </div>
         {{/if}}
       {{else}}
         <div class="au-u-flex au-u-flex--center">

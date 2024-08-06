@@ -14,6 +14,7 @@
   {{#if this.session.isAuthenticated}}
     <Shared::BreadCrumb />
   {{/if}}
+  <AnnouncementBanner />
   <AuMainContainer class="au-u-flex" as |m|>
     <m.content @scroll={{true}}>
       <AuBodyContainer @scroll={{true}}>

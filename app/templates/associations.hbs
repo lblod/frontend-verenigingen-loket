@@ -43,10 +43,18 @@
                 @selected={{this.selectedTargetAudiences}}
               />
             {{/if}}
-            <Filters::DateSelect
-              @onChange={{this.setDates}}
-              @selected={{this.selectedDates}}
-            />
+
+            {{! This forces a new component instance when the start and end QPs change
+                It works in a similar way as "Key blocks" in Svelte: https://svelte.dev/docs/logic-blocks#key
+            }}
+            {{#key (concat this.start this.end)}}
+              <Filters::DateRange
+                @start={{this.start}}
+                @end={{this.end}}
+                @onChange={{this.setDates}}
+                class="au-u-margin-top"
+              />
+            {{/key}}
           </div>
           <div class="au-o-grid__item">
             <AuButton @skin="link" type="reset" onclick={{this.resetFilters}}>
