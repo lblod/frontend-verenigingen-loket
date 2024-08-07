@@ -133,11 +133,12 @@
                       <div class="au-u-flex au-u-flex--column au-u-1-1">
                         <AuInput
                           placeholder="Vul in organisatie"
-                          @value={{mut model.awardedBy}}
+                          value={{model.awardedBy}}
                           {{on "input" (fn this.clearFormError "awardedBy")}}
+                          {{on "input" (event-value (fn (mut model.awardedBy)))}}
                           id="awarded-by-organization-name"
                           @error={{this.validationErrors.awardedBy}}
-                          @width={{"block"}}
+                          @width="block"
                         />
                         <AuHelpText
                           @error={{this.validationErrors.awardedBy}}
@@ -163,9 +164,10 @@
                   <:content>
                     <AuInput
                       placeholder="Voeg alleen een directe link naar het besluit toe"
-                      @value={{mut model.legalResource}}
                       {{on "input" (fn this.clearFormError "legalResource")}}
-                      @width={{"block"}}
+                      {{on "input" (event-value (fn (mut model.legalResource)))}}
+                      value={{model.legalResource}}
+                      @width="block"
                       id="legal-resource"
                       @error={{this.validationErrors.legalResource}}
                     />

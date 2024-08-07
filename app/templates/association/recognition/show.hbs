@@ -1,6 +1,6 @@
 <div class="au-o-box au-o-flow au-o-flow">
   {{#if this.deleteRecognition.isRunning}}
-    <AuLoader @padding="large" />
+    <AuLoader class="au-u-margin-top-huge">Erkenning aan het verwijderen</AuLoader>
   {{else}}
     <section class="au-u-flex au-u-flex--between">
       <div>
@@ -71,6 +71,7 @@
           @skin="primary"
           @alert="true"
           @loading={{this.deleteRecognition.isRunning}}
+          @loadingMessage="Aan het verwijderen"
           {{on
             "click"
             (perform this.deleteRecognition this.currentRecognition.recognition)

@@ -34,7 +34,7 @@
   </:title>
   <:card as |Card|>
     {{#if @isLoading}}
-      <AuLoader />
+      <AuLoader @hideMessage={{true}} @centered={{false}} class="au-u-margin-small">Gegevens aan het laden</AuLoader>
     {{else}}
       {{#if @recognition}}
         {{#if
