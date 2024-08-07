@@ -27,6 +27,7 @@
             (perform this.undoRecognition this.currentRecognition.recognition)
           }}
           @loading={{this.undoRecognition.isRunning}}
+          @loadingMessage="Aan het herstellen"
         >
           Ongedaan maken
         </AuButton>

@@ -71,6 +71,7 @@
           @skin="primary"
           @alert="true"
           @loading={{this.deleteRecognition.isRunning}}
+          @loadingMessage="Aan het verwijderen"
           {{on
             "click"
             (perform this.deleteRecognition this.currentRecognition.recognition)
