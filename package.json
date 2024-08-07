@@ -41,7 +41,7 @@
     "@ember/test-helpers": "^3.3.0",
     "@embroider/compat": "^3.4.7",
     "@embroider/core": "^3.4.7",
-    "@embroider/webpack": "^3.2.3",
+    "@embroider/webpack": "^4.0.4",
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
     "@lblod/ember-acmidm-login": "^2.0.0",
