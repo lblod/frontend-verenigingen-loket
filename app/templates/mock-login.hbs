@@ -6,7 +6,7 @@
   <div class="au-o-layout au-o-region-large">
     <MockLogin as |login|>
       {{#if login.isLoading}}
-        <AuLoader />
+        <AuLoader class="au-u-margin-huge">Bestuurseenheden aan het laden</AuLoader>
       {{else}}
         {{#if login.errorMessage}}
           {{login.errorMessage}}

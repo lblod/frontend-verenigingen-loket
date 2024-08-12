@@ -17,7 +17,7 @@
               )
             }}
               <AuPill @skin="success">Erkend</AuPill>
-            {{else}}
+            {{else if (is-period-expired @recognition.validityPeriod)}}
               <AuPill @skin="warning">Verlopen</AuPill>
             {{/if}}
           </:content>

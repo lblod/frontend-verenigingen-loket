@@ -70,15 +70,24 @@ export const associationsQuery = ({ index, page, params, size }) => {
     if (params.status === 'Erkend') {
       addFilter(
         ':query:recognitions.validityPeriod',
-        `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))`,
+        `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})) OR (NOT (recognitions.validityPeriod.startTime:>${today}) AND (recognitions.validityPeriod.endTime:>${today}))`,
       );
       addFilter(':has:recognitions.validityPeriod.endTime', true);
     } else if (params.status === 'Verlopen') {
       addFilter(
         ':query:recognitions.validityPeriod',
-        `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})))`,
+        `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))) AND NOT (recognitions.validityPeriod.startTime:>${today})`,
       );
       addFilter(':has:recognitions.validityPeriod.endTime', true);
+    } else if (
+      params.status === 'Erkend,Verlopen' ||
+      params.status === 'Verlopen,Erkend'
+    ) {
+      // Filter out "upcoming" recognitions when both filters are selected
+      addFilter(
+        ':query:recognitions.validityPeriod',
+        `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})) OR ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:<=${today}))`,
+      );
     }
     return filters;
   };
