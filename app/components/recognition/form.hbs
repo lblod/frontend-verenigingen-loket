@@ -176,7 +176,7 @@
                       <AuInput
                         placeholder="Voeg alleen een pdf toe"
                         value={{this.currentRecognition.file.name}}
-                        @width={{"block"}}
+                        @width="block"
                         readonly
                         id="legal-resource"
                         @error={{this.validationErrors.legalResource}}
@@ -189,7 +189,7 @@
                           (event-value (fn (mut model.legalResource)))
                         }}
                         {{on "input" (fn this.clearFormError "legalResource")}}
-                        @width={{"block"}}
+                        @width="block"
                         id="legal-resource"
                         @error={{this.validationErrors.legalResource}}
                       />
