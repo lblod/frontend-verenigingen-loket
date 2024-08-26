@@ -188,12 +188,11 @@ export default class FormComponent extends Component {
 
   @action
   async newRecognition(fileData) {
-    const { recognitionModel, selectedItem } = this.currentRecognition;
+    const { recognitionModel } = this.currentRecognition;
 
     const recognition = await this.store.createRecord('recognition', {
       dateDocument: recognitionModel.dateDocument,
-      legalResource:
-        selectedItem === this.items[0] ? recognitionModel.legalResource : null,
+      legalResource: recognitionModel.legalResource,
       association: this.currentAssociation.association,
       validityPeriod: await this.updateOrGetPeriod(recognitionModel),
       awardedBy: await this.getAwardedBy(),
@@ -222,12 +221,11 @@ export default class FormComponent extends Component {
 
   @action
   async editRecognition(fileData) {
-    const { recognitionModel, selectedItem } = this.currentRecognition;
+    const { recognitionModel } = this.currentRecognition;
     const validityPeriod = await this.updateOrGetPeriod(recognitionModel);
     const recognition = {
       dateDocument: recognitionModel.dateDocument,
-      legalResource:
-        selectedItem === this.items[0] ? recognitionModel.legalResource : null,
+      legalResource: recognitionModel.legalResource,
       awardedBy: await this.getAwardedBy(),
       validityPeriod,
       file: (await fileData) || null,
