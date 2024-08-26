@@ -102,12 +102,12 @@
           {{date-format recognition.dateDocument}}
         </td>
         <td>
-          {{#if recognition.legalResource}}
-            {{#if (is-pdf recognition.legalResource)}}
+          {{#if (or recognition.legalResource recognition.file)}}
+            {{#if recognition.file}}
               <AuLink
                 class="au-u-flex au-u-flex--start"
                 @skin="link"
-                {{on "click" (fn this.getFile recognition.legalResource)}}
+                {{on "click" (fn this.getFile recognition.file)}}
               >Bekijk bestand</AuLink>
             {{else}}
               <AuLinkExternal href={{recognition.legalResource}}>

@@ -172,15 +172,18 @@
                     >Erkenningsbesluit</AuLabel>
                   </:label>
                   <:content>
-                    {{#if this.currentRecognition.file}}
+                    {{#if this.legalResourceFile}}
                       <AuInput
                         placeholder="Voeg alleen een pdf toe"
-                        value={{this.currentRecognition.file.name}}
+                        value={{this.legalResourceFile.name}}
                         @width="block"
                         readonly
-                        id="legal-resource"
-                        @error={{this.validationErrors.legalResource}}
+                        id="file"
+                        @error={{this.validationErrors.file}}
                       />
+                      <AuHelpText
+                        @error={{this.validationErrors.file}}
+                      >{{this.validationErrors.file}}</AuHelpText>
                     {{else}}
                       <AuInput
                         placeholder="Voeg alleen een directe link naar het besluit toe"
@@ -188,16 +191,18 @@
                           "input"
                           (event-value (fn (mut model.legalResource)))
                         }}
+                        value={{model.legalResource}}
                         {{on "input" (fn this.clearFormError "legalResource")}}
                         @width="block"
                         id="legal-resource"
                         @error={{this.validationErrors.legalResource}}
                       />
+                      <AuHelpText
+                        @error={{this.validationErrors.legalResource}}
+                      >{{this.validationErrors.legalResource}}</AuHelpText>
                     {{/if}}
-                    <AuHelpText
-                      @error={{this.validationErrors.legalResource}}
-                    >{{this.validationErrors.legalResource}}</AuHelpText>
-                    {{#unless this.currentRecognition.file}}
+
+                    {{#unless this.legalResourceFile}}
                       {{#if model.legalResource.length}}
                         <AuLinkExternal
                           href={{model.legalResource}}
@@ -208,7 +213,7 @@
                       {{/if}}
                     {{/unless}}
                     <div class="au-u-flex au-u-flex--end">
-                      {{#if this.currentRecognition.file}}
+                      {{#if this.legalResourceFile}}
                         <div class="au-u-flex au-u-flex--end">
                           <AuButton
                             class="au-u-flex au-u-flex--start"
@@ -216,10 +221,7 @@
                             @icon="download"
                             {{on
                               "click"
-                              (fn
-                                this.openFileInNewTab
-                                this.currentRecognition.file
-                              )
+                              (fn this.openFileInNewTab this.legalResourceFile)
                             }}
                           >Bekijk bestand</AuButton>
                           <AuButton

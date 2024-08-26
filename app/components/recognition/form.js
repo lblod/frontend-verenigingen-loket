@@ -15,7 +15,11 @@ export default class FormComponent extends Component {
   @service router;
   @service toaster;
   @service dateYear;
+  @service file;
   @tracked validationErrors = {};
+  @tracked legalResourceFile = this.currentRecognition.recognition
+    ? this.currentRecognition.recognition.file
+    : null;
 
   notify(message, title, type = 'success') {
     this.toaster.notify(message, title, {
@@ -133,6 +137,7 @@ export default class FormComponent extends Component {
         this.items[0] === this.currentRecognition.selectedItem
           ? this.currentRecognition.selectedItem
           : this.currentRecognition.recognitionModel.awardedBy,
+      file: await this.legalResourceFile,
     });
     this.validationErrors = err.error
       ? this.mapValidationDetailsToErrors(err.error.details)
@@ -161,13 +166,16 @@ export default class FormComponent extends Component {
     try {
       const errors = await this.validateForm();
       if (errors) return;
-      if (this.currentRecognition?.file?.isNew) {
-        await this.uploadFile(this.currentRecognition.file);
+
+      let fileData = this.currentRecognition.recognition?.file;
+      if (!this.legalResourceFile?.id && this.legalResourceFile?.isNew) {
+        fileData = await this.uploadFile(this.legalResourceFile);
+        if (!fileData) return;
       }
       if (this.currentRecognition.recognition) {
-        await this.editRecognition();
+        await this.editRecognition(fileData);
       } else {
-        await this.newRecognition();
+        await this.newRecognition(fileData);
       }
       this.currentRecognition.setIsLoading(false);
       this.router.transitionTo('association.recognition.index');
@@ -179,7 +187,7 @@ export default class FormComponent extends Component {
   }
 
   @action
-  async newRecognition() {
+  async newRecognition(fileData) {
     const { recognitionModel, selectedItem } = this.currentRecognition;
 
     const recognition = await this.store.createRecord('recognition', {
@@ -189,6 +197,7 @@ export default class FormComponent extends Component {
       association: this.currentAssociation.association,
       validityPeriod: await this.updateOrGetPeriod(recognitionModel),
       awardedBy: await this.getAwardedBy(),
+      file: fileData || null,
     });
 
     try {
@@ -212,7 +221,7 @@ export default class FormComponent extends Component {
   }
 
   @action
-  async editRecognition() {
+  async editRecognition(fileData) {
     const { recognitionModel, selectedItem } = this.currentRecognition;
     const validityPeriod = await this.updateOrGetPeriod(recognitionModel);
     const recognition = {
@@ -221,8 +230,8 @@ export default class FormComponent extends Component {
         selectedItem === this.items[0] ? recognitionModel.legalResource : null,
       awardedBy: await this.getAwardedBy(),
       validityPeriod,
+      file: (await fileData) || null,
     };
-
     try {
       await this.currentRecognition.recognition.setProperties({
         ...recognition,
@@ -315,38 +324,46 @@ export default class FormComponent extends Component {
   }
   @action
   async handleFileChange(event) {
-    this.currentRecognition.file = event.target.files[0];
-    this.currentRecognition.file.download = this.currentRecognition.file;
-    if (this.currentRecognition.file) {
+    this.legalResourceFile = event.target.files[0];
+    if (this.legalResourceFile) {
+      this.currentRecognition.recognitionModel.file = this.legalResourceFile;
+      this.currentRecognition.recognitionModel.file.download =
+        this.legalResourceFile;
       set(this.validationErrors, 'legalResource', null);
-      this.currentRecognition.recognitionModel.legalResource =
-        this.currentRecognition.file.name;
-      this.currentRecognition.file.isNew = true;
+      this.currentRecognition.recognitionModel.file.isNew = true;
     }
   }
 
   removeFile = task({ drop: true }, async () => {
     try {
-      if (!this.currentRecognition.file.id) {
-        this.currentRecognition.file = null;
+      let file = await this.legalResourceFile;
+      if (!file.id) {
+        this.legalResourceFile = null;
         this.clearFormError('legalResource');
-        return (this.currentRecognition.recognitionModel.legalResource = null);
+        this.clearFormError('file');
+        await this.currentRecognition.recognition.setProperties({
+          ...this.currentRecognition.recognition,
+          legalResource: null,
+          file: null,
+        });
+        return set(this.validationErrors, 'legalResource', null);
       }
-      await this.currentRecognition.file.deleteRecord();
-      const response = await this.currentRecognition.file.save();
+      await file.deleteRecord();
+      const response = await file.save();
       if (!response) {
         throw new Error('File removal failed');
       }
       this.notify(
-        `Het bestand met de naam ${this.currentRecognition.file.name} is succesvol verwijderd.`,
+        `Het bestand met de naam ${file.name} is succesvol verwijderd.`,
         `Bestand succesvol verwijderd.`,
       );
       this.clearFormError('legalResource');
-      this.currentRecognition.file = null;
-      this.currentRecognition.recognitionModel.legalResource = null;
+      this.clearFormError('file');
+      this.legalResourceFile = null;
       await this.currentRecognition.recognition.setProperties({
         ...this.currentRecognition.recognition,
         legalResource: null,
+        file: null,
       });
       await this.currentRecognition.recognition.save();
       return set(this.validationErrors, 'legalResource', null);
@@ -363,7 +380,9 @@ export default class FormComponent extends Component {
   @action
   async openFileInNewTab(file) {
     try {
-      if (file.download) {
+      if (file.id) {
+        await this.file.getFile(file);
+      } else {
         const url = window.URL.createObjectURL(file.download);
         const a = document.createElement('a');
         a.href = url;
@@ -382,7 +401,7 @@ export default class FormComponent extends Component {
   async uploadFile(file) {
     if (file) {
       let formData = new FormData();
-      formData.append('file', this.currentRecognition.file);
+      formData.append('file', file);
       try {
         let response = await fetch('/files', {
           method: 'POST',
@@ -390,17 +409,27 @@ export default class FormComponent extends Component {
         });
 
         if (response.ok) {
-          let {
-            data: { id },
-          } = await response.json();
-          this.currentRecognition.file.id = id;
-          this.currentRecognition.recognitionModel.legalResource = `${id}.pdf`;
+          let { data } = await response.json();
+          return await this.store.findRecord('file', data.id);
         } else {
           console.error('File upload failed', response.statusText);
+          if (response.status === 413) {
+            this.notify(
+              'Het bestand is te groot. Probeer het opnieuw',
+              null,
+              'error',
+            );
+          } else {
+            this.notify('Fout bij het uploaden van het bestand', null, 'error');
+          }
+          return null;
         }
       } catch (error) {
         console.error('An error occurred while uploading the file', error);
+        this.notify('Fout bij het uploaden van het bestand', null, 'error');
+        return null;
       }
     }
+    return null;
   }
 }

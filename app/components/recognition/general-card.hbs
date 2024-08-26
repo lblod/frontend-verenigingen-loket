@@ -34,7 +34,11 @@
   </:title>
   <:card as |Card|>
     {{#if @isLoading}}
-      <AuLoader @hideMessage={{true}} @centered={{false}} class="au-u-margin-small">Gegevens aan het laden</AuLoader>
+      <AuLoader
+        @hideMessage={{true}}
+        @centered={{false}}
+        class="au-u-margin-small"
+      >Gegevens aan het laden</AuLoader>
     {{else}}
       {{#if @recognition}}
         {{#if
@@ -77,25 +81,20 @@
                   {{date-format @recognition.validityPeriod.endTime}}
                 </:content>
               </Item>
-              {{#if @recognition.legalResource}}
+              {{#if (or @recognition.legalResource @recognition.file)}}
                 <Item>
                   <:label>Erkenningsbesluit</:label>
                   <:content>
-                    {{#if @recognition.legalResource}}
-                      {{#if (is-pdf @recognition.legalResource)}}
-                        <AuButton
-                          class="au-u-flex au-u-flex--start au-u-padding-none"
-                          @skin="link"
-                          {{on
-                            "click"
-                            (fn this.getFile @recognition.legalResource)
-                          }}
-                        >Bekijk bestand</AuButton>
-                      {{else}}
-                        <AuLinkExternal href={{@recognition.legalResource}}>
-                          Beslissing (externe link)
-                        </AuLinkExternal>
-                      {{/if}}
+                    {{#if @recognition.file}}
+                      <AuButton
+                        class="au-u-flex au-u-flex--start au-u-padding-none"
+                        @skin="link"
+                        {{on "click" (fn this.getFile @recognition.file)}}
+                      >Bekijk bestand</AuButton>
+                    {{else}}
+                      <AuLinkExternal href={{@recognition.legalResource}}>
+                        Beslissing (externe link)
+                      </AuLinkExternal>
                     {{/if}}
                   </:content>
                 </Item>

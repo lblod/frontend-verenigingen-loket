@@ -3,11 +3,10 @@ import { inject as service } from '@ember/service';
 
 export default class FileService extends Service {
   @service() toaster;
-  async getFile(fileName) {
-    if (fileName && fileName.includes('.pdf')) {
-      const [fileId] = fileName.split('.pdf');
+  async getFile(file) {
+    if (file) {
       try {
-        const response = await fetch(`/files/${fileId}/download`, {
+        const response = await fetch(`/files/${file.id}/download`, {
           method: 'GET',
         });
         if (!response.ok) {
@@ -15,8 +14,8 @@ export default class FileService extends Service {
             `An error occurred while opening the file: ${response.statusText}`,
           );
         }
-        const file = await response.blob();
-        const url = window.URL.createObjectURL(file);
+        const fileBlob = await response.blob();
+        const url = window.URL.createObjectURL(fileBlob);
         const a = document.createElement('a');
         a.href = url;
         a.target = '_blank';

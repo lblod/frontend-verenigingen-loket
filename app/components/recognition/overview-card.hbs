@@ -48,18 +48,18 @@
             {{date-format @recognition.validityPeriod.endTime}}
           </:content>
         </Item>
-        {{#if @recognition.legalResource}}
+        {{#if (or @recognition.legalResource @recognition.file)}}
           <Item>
             <:label>Erkenningsbesluit</:label>
             <:content>
-              {{#if @recognition.legalResource}}
-                {{#if (is-pdf @recognition.legalResource)}}
-                  <AuButton
-                    class="au-u-flex au-u-flex--start au-u-padding-none"
-                    @skin="link"
-                    {{on "click" (fn this.getFile @recognition.legalResource)}}
-                  >Bekijk bestand</AuButton>
-                {{else}}
+              {{#if @recognition.file}}
+                <AuButton
+                  class="au-u-flex au-u-flex--start au-u-padding-none"
+                  @skin="link"
+                  {{on "click" (fn this.getFile @recognition.file)}}
+                >Bekijk bestand</AuButton>
+              {{else}}
+                {{#if @recognition.legalResource}}
                   <AuLinkExternal href={{@recognition.legalResource}}>
                     Beslissing (externe link)
                   </AuLinkExternal>
