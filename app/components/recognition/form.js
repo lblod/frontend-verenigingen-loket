@@ -223,6 +223,20 @@ export default class FormComponent extends Component {
   async editRecognition(fileData) {
     const { recognitionModel } = this.currentRecognition;
     const validityPeriod = await this.updateOrGetPeriod(recognitionModel);
+    const file = await this.currentRecognition.recognition.file;
+    if (file && this.fileData === null) {
+      await file.deleteRecord();
+      const response = await file.save();
+      await this.currentRecognition.recognition.setProperties({
+        ...this.currentRecognition.recognition,
+        legalResource: null,
+        file: null,
+      });
+      await this.currentRecognition.recognition.save();
+      if (!response) {
+        throw new Error('File removal failed');
+      }
+    }
     const recognition = {
       dateDocument: recognitionModel.dateDocument,
       legalResource: recognitionModel.legalResource,
@@ -346,24 +360,11 @@ export default class FormComponent extends Component {
         });
         return set(this.validationErrors, 'legalResource', null);
       }
-      await file.deleteRecord();
-      const response = await file.save();
-      if (!response) {
-        throw new Error('File removal failed');
-      }
-      this.notify(
-        `Het bestand met de naam ${file.name} is succesvol verwijderd.`,
-        `Bestand succesvol verwijderd.`,
-      );
+      this.fileData = null;
       this.clearFormError('legalResource');
       this.clearFormError('file');
       this.legalResourceFile = null;
-      await this.currentRecognition.recognition.setProperties({
-        ...this.currentRecognition.recognition,
-        legalResource: null,
-        file: null,
-      });
-      await this.currentRecognition.recognition.save();
+
       return set(this.validationErrors, 'legalResource', null);
     } catch (error) {
       this.notify(
