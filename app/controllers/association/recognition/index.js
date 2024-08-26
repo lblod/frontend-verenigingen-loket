@@ -22,7 +22,6 @@ export default class AssociationRecognitionController extends Controller {
   @action
   async getFile(file) {
     try {
-      console.log(file);
       file = await this.file.getFile(file);
       if (!file) throw new Error('File not found');
       this.toaster.notify('Bestand succesvol geopend', 'Bestand geopend', {
