@@ -4,6 +4,7 @@ import { action, set } from '@ember/object';
 import { errorValidation } from '../../validations/recognition-validation';
 import { tracked } from '@glimmer/tracking';
 import dateFormat from '../../helpers/date-format';
+import { task } from 'ember-concurrency';
 
 export default class FormComponent extends Component {
   items = ['College van burgemeester en schepenen', 'Andere'];
@@ -13,10 +14,12 @@ export default class FormComponent extends Component {
   @service store;
   @service router;
   @service toaster;
-  f;
   @service dateYear;
-
+  @service file;
   @tracked validationErrors = {};
+  @tracked legalResourceFile = this.currentRecognition.recognition
+    ? this.currentRecognition.recognition.file
+    : null;
 
   notify(message, title, type = 'success') {
     this.toaster.notify(message, title, {
@@ -134,6 +137,7 @@ export default class FormComponent extends Component {
         this.items[0] === this.currentRecognition.selectedItem
           ? this.currentRecognition.selectedItem
           : this.currentRecognition.recognitionModel.awardedBy,
+      file: await this.legalResourceFile,
     });
     this.validationErrors = err.error
       ? this.mapValidationDetailsToErrors(err.error.details)
@@ -162,10 +166,16 @@ export default class FormComponent extends Component {
     try {
       const errors = await this.validateForm();
       if (errors) return;
+
+      let fileData = this.currentRecognition.recognition?.file;
+      if (!this.legalResourceFile?.id && this.legalResourceFile?.isNew) {
+        fileData = await this.uploadFile(this.legalResourceFile);
+        if (!fileData) return;
+      }
       if (this.currentRecognition.recognition) {
-        await this.editRecognition();
+        await this.editRecognition(fileData);
       } else {
-        await this.newRecognition();
+        await this.newRecognition(fileData);
       }
       this.currentRecognition.setIsLoading(false);
       this.router.transitionTo('association.recognition.index');
@@ -177,16 +187,16 @@ export default class FormComponent extends Component {
   }
 
   @action
-  async newRecognition() {
-    const { recognitionModel, selectedItem } = this.currentRecognition;
+  async newRecognition(fileData) {
+    const { recognitionModel } = this.currentRecognition;
 
     const recognition = await this.store.createRecord('recognition', {
       dateDocument: recognitionModel.dateDocument,
-      legalResource:
-        selectedItem === this.items[0] ? recognitionModel.legalResource : null,
+      legalResource: recognitionModel.legalResource,
       association: this.currentAssociation.association,
       validityPeriod: await this.updateOrGetPeriod(recognitionModel),
       awardedBy: await this.getAwardedBy(),
+      file: fileData || null,
     });
 
     try {
@@ -210,17 +220,30 @@ export default class FormComponent extends Component {
   }
 
   @action
-  async editRecognition() {
-    const { recognitionModel, selectedItem } = this.currentRecognition;
+  async editRecognition(fileData) {
+    const { recognitionModel } = this.currentRecognition;
     const validityPeriod = await this.updateOrGetPeriod(recognitionModel);
+    const file = await this.currentRecognition.recognition.file;
+    if (file && this.fileData === null) {
+      await file.deleteRecord();
+      const response = await file.save();
+      await this.currentRecognition.recognition.setProperties({
+        ...this.currentRecognition.recognition,
+        legalResource: null,
+        file: null,
+      });
+      await this.currentRecognition.recognition.save();
+      if (!response) {
+        throw new Error('File removal failed');
+      }
+    }
     const recognition = {
       dateDocument: recognitionModel.dateDocument,
-      legalResource:
-        selectedItem === this.items[0] ? recognitionModel.legalResource : null,
+      legalResource: recognitionModel.legalResource,
       awardedBy: await this.getAwardedBy(),
       validityPeriod,
+      file: (await fileData) || null,
     };
-
     try {
       await this.currentRecognition.recognition.setProperties({
         ...recognition,
@@ -310,5 +333,102 @@ export default class FormComponent extends Component {
       await awardedBy.save();
     }
     return awardedBy;
+  }
+  @action
+  async handleFileChange(event) {
+    this.legalResourceFile = event.target.files[0];
+    if (this.legalResourceFile) {
+      this.currentRecognition.recognitionModel.file = this.legalResourceFile;
+      this.currentRecognition.recognitionModel.file.download =
+        this.legalResourceFile;
+      set(this.validationErrors, 'legalResource', null);
+      this.currentRecognition.recognitionModel.file.isNew = true;
+    }
+  }
+
+  removeFile = task({ drop: true }, async () => {
+    try {
+      let file = await this.legalResourceFile;
+      if (!file.id) {
+        this.legalResourceFile = null;
+        this.clearFormError('legalResource');
+        this.clearFormError('file');
+        await this.currentRecognition.recognition.setProperties({
+          ...this.currentRecognition.recognition,
+          legalResource: null,
+          file: null,
+        });
+        return set(this.validationErrors, 'legalResource', null);
+      }
+      this.fileData = null;
+      this.clearFormError('legalResource');
+      this.clearFormError('file');
+      this.legalResourceFile = null;
+
+      return set(this.validationErrors, 'legalResource', null);
+    } catch (error) {
+      this.notify(
+        'Er is een fout opgetreden bij het verwijderen van het bestand.',
+        null,
+        'error',
+      );
+      console.error('An error occurred while removing the file', error);
+    }
+  });
+
+  @action
+  async openFileInNewTab(file) {
+    try {
+      if (file.id) {
+        await this.file.getFile(file);
+      } else {
+        const url = window.URL.createObjectURL(file.download);
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('An error occurred while opening the file', error);
+    }
+  }
+
+  @action
+  async uploadFile(file) {
+    if (file) {
+      let formData = new FormData();
+      formData.append('file', file);
+      try {
+        let response = await fetch('/files', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          let { data } = await response.json();
+          return await this.store.findRecord('file', data.id);
+        } else {
+          console.error('File upload failed', response.statusText);
+          if (response.status === 413) {
+            this.notify(
+              'Het bestand is te groot. Probeer het opnieuw',
+              null,
+              'error',
+            );
+          } else {
+            this.notify('Fout bij het uploaden van het bestand', null, 'error');
+          }
+          return null;
+        }
+      } catch (error) {
+        console.error('An error occurred while uploading the file', error);
+        this.notify('Fout bij het uploaden van het bestand', null, 'error');
+        return null;
+      }
+    }
+    return null;
   }
 }

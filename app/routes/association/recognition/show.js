@@ -34,7 +34,7 @@ export default class AssociationRecognitionShowRoute extends Route {
         id: recognitionId,
         ':has-no:status': true,
       },
-      include: ['awarded-by', 'validity-period'].join(','),
+      include: ['awarded-by', 'validity-period', 'file'].join(','),
     });
   });
 }

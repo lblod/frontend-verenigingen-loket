@@ -46,3 +46,10 @@
 .visibility-hidden {
   visibility: hidden;
 }
+
+.underline {
+  text-decoration: underline;
+}
+.underline:hover {
+  cursor: pointer;
+}

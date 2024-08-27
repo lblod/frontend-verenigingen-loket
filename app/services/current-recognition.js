@@ -1,8 +1,9 @@
-import Service from '@ember/service';
+import Service, { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 
 export default class CurrentRecognitionService extends Service {
   items = ['College van burgemeester en schepenen', 'Andere'];
+  @service store;
   @tracked recognition = null;
   @tracked selectedItem = this.items[0];
   @tracked isLoading = false;
@@ -14,6 +15,7 @@ export default class CurrentRecognitionService extends Service {
     dateDocument: null,
     awardedBy: null,
     legalResource: null,
+    file: null,
   };
 
   get hasExpired() {
@@ -41,10 +43,12 @@ export default class CurrentRecognitionService extends Service {
       dateDocument: null,
       awardedBy: null,
       legalResource: null,
+      file: null,
     };
     this.awardedBy = null;
     this.selectedItem = this.items[0];
     this.recognition = recognition;
+
     if (recognition) {
       this.recognitionModel.dateDocument = recognition.dateDocument ?? null;
       this.recognitionModel.startTime =
