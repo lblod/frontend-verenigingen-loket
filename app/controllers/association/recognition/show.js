@@ -26,6 +26,8 @@ export default class AssociationRecognitionShowController extends Controller {
       // await recognition.setProperties({
       //   status: 'http://data.lblod.info/document-statuses/verwijderd',
       // });
+      const file = await this.removeFile.perform(recognition);
+      if (!file) throw new Error('File removal failed');
       await recognition.deleteRecord();
       await recognition.save(); // HARD DELETE THE RECOGNITION
       this.router.transitionTo('association.recognition.index');
@@ -39,5 +41,28 @@ export default class AssociationRecognitionShowController extends Controller {
     } finally {
       this.toggleModal();
     }
+  });
+
+  removeFile = task({ drop: true }, async (recognition) => {
+    if (
+      recognition.legalResource &&
+      recognition.legalResource.includes('.pdf')
+    ) {
+      const fileId = recognition.legalResource.split('.pdf')[0];
+      try {
+        let response = await fetch(`/files/${fileId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          return true;
+        }
+        throw new Error('File removal failed');
+      } catch (error) {
+        console.error('An error occurred while removing the file', error);
+        return true;
+      }
+    }
+    return true;
   });
 }

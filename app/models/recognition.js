@@ -19,4 +19,9 @@ export default class RecognitionModel extends Model {
     async: true,
   })
   awardedBy;
+  @belongsTo('file', {
+    inverse: null,
+    async: true,
+  })
+  file;
 }

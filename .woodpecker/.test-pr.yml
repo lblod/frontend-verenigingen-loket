@@ -18,12 +18,11 @@ steps:
     group: lint
     commands:
       - npm run lint:css
-  # TODO: enable this once dependency-lint is setup
-  # dependency-lint:
-  #   image: danlynn/ember-cli:5.8.0-node_20.12
-  #   group: lint
-  #   commands:
-  #     - ember dependency-lint
+  dependency-lint:
+    image: danlynn/ember-cli:5.8.0-node_20.12
+    group: lint
+    commands:
+      - npm run lint:dependencies
   test:
     image: danlynn/ember-cli:5.8.0-node_20.12
     commands:

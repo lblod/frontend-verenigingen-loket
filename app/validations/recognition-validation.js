@@ -6,13 +6,15 @@ export const errorValidation = Joi.object()
     dateDocument: Joi.date()
       .optional()
       .messages({ 'date.base': 'Gelieve een geldige datum te kiezen.' }),
-    legalResource: Joi.string()
-      .allow(null)
-      .empty('')
-      .pattern(websiteRegex, { name: 'website' })
-      .messages({
-        'string.pattern.name': 'Geef een geldig internetadres in.',
-      }),
+    legalResource: Joi.alternatives().try(
+      Joi.string()
+        .allow(null)
+        .empty('')
+        .pattern(websiteRegex, { name: 'website' })
+        .messages({
+          'string.pattern.name': 'Geef een geldig internetadres in.',
+        }),
+    ),
     startTime: Joi.date().required().messages({
       'any.required': 'Gelieve een geldige ingangsdatum te kiezen.',
       'date.base': 'Gelieve een geldige ingangsdatum te kiezen.',
@@ -31,5 +33,6 @@ export const errorValidation = Joi.object()
       'string.base':
         'Gelieve de entiteit in te vullen die de erkenning toekent.',
     }),
+    file: Joi.any().messages({}),
   })
   .options({ abortEarly: false });

@@ -1,3 +1,10 @@
+## v1.2.0 (2024-08-27)
+
+#### :rocket: Enhancement
+* [#61](https://github.com/lblod/frontend-verenigingen-loket/pull/61) [CLBV-282] Upload only pdf to a recognition ([@Andresdev02](https://github.com/Andresdev02))
+* [#63](https://github.com/lblod/frontend-verenigingen-loket/pull/63) [CLBV-903] Update to Ember v5.8 LTS ([@Windvis](https://github.com/Windvis))
+* [#62](https://github.com/lblod/frontend-verenigingen-loket/pull/62) [CLBV-902] Appuniversum v3 update ([@Windvis](https://github.com/Windvis))
+
 ## v1.1.0 (2024-08-06)
 
 #### :rocket: Enhancement
