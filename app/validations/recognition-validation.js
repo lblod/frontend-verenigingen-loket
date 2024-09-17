@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const websiteRegex = /^https:\/\//;
+const websiteRegex = /^https:\/\/.+/;
 export const errorValidation = Joi.object()
   .keys({
     dateDocument: Joi.date()
@@ -33,6 +33,16 @@ export const errorValidation = Joi.object()
       'string.base':
         'Gelieve de entiteit in te vullen die de erkenning toekent.',
     }),
-    file: Joi.any().messages({}),
+    file: Joi.object()
+      .allow(null)
+      .custom((value, helpers) => {
+        if (!(value instanceof File)) {
+          return helpers.message('Gelieve een bestand te kiezen.');
+        }
+        if (!value.name.endsWith('.pdf')) {
+          return helpers.message('Enkel een PDF-bestand is toegelaten.');
+        }
+        return value;
+      }),
   })
   .options({ abortEarly: false });
