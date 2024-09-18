@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const websiteRegex = /^https:\/\/.+/;
+const websiteRegex = /^https:\/\//;
 export const errorValidation = Joi.object()
   .keys({
     dateDocument: Joi.date()
