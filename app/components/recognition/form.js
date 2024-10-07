@@ -131,13 +131,15 @@ export default class FormComponent extends Component {
       startTime,
       endTime,
     );
+    const isNew = !this.legalResourceFile?.id && this.legalResourceFile?.isNew;
+
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
       awardedBy:
         this.items[0] === this.currentRecognition.selectedItem
           ? this.currentRecognition.selectedItem
           : this.currentRecognition.recognitionModel.awardedBy,
-      file: await this.legalResourceFile,
+      file: isNew ? await this.legalResourceFile : null,
     });
     this.validationErrors = err.error
       ? this.mapValidationDetailsToErrors(err.error.details)

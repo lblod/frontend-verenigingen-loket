@@ -1,7 +1,7 @@
 {{page-title "Vertegenwoordigers"}}
 <AuDataTable
   @content={{this.members}}
-  @noDataMessage="Geen vertegenwoordigers"
+  @noDataMessage="Geen vertegenwoordigers beschikbaar"
   @isLoading={{this.isLoading}}
   as |t|
 >
@@ -32,6 +32,15 @@
           {{/if}}
         </span>
       </h3>
+      {{#if this.model.kboNumber}}
+        <h3
+          class="au-c-heading au-c-heading--5 au-u-margin-bottom-small au-u-flex au-u-flex--between au-u-flex--vertical-end">
+          <AuLinkExternal
+            href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer={{this.model.kboNumber}}">
+            Bekijk de functies op de KBO pagina (externe link)
+          </AuLinkExternal>
+        </h3>
+      {{/if}}
     </section>
   </t.menu>
   <t.content class="au-c-data-table__table--small" as |c|>

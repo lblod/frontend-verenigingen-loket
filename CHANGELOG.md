@@ -1,3 +1,9 @@
+## v1.2.1 (2024-10-07)
+
+#### :rocket: Enhancement
+* [#65](https://github.com/lblod/frontend-verenigingen-loket/pull/65) [CLBV-924] Add joi validation for pdf files only ([@Andresdev02](https://github.com/Andresdev02))
+* [#66](https://github.com/lblod/frontend-verenigingen-loket/pull/66) [CLBV-929] Link to the external kbo page ([@wolfderechter](https://github.com/wolfderechter))
+
 ## v1.2.0 (2024-08-27)
 
 #### :rocket: Enhancement
