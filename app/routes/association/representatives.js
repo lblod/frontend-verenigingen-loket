@@ -9,11 +9,6 @@ export default class AssociationRepresentativesRoute extends Route {
     sort: { refreshModel: true },
   };
 
-  // async model() {
-  //   const { id } = this.paramsFor('association');
-  //   return await this.store.findRecord('association', id);
-  // }
-
   async model() {
     const { id } = this.paramsFor('association');
     const association = await this.store.findRecord('association', id);
@@ -39,7 +34,7 @@ export default class AssociationRepresentativesRoute extends Route {
   loadKboNumber = task({ drop: true }, async (association) => {
     const identifiers = await association.get('identifiers');
 
-    // Find the KBO identifier (or similar logic for idName)
+    // Find the KBO identifier
     for (const identifier of identifiers) {
       const structuredIdentifier = await identifier.get('structuredIdentifier');
       if (identifier.idName === 'KBO nummer') {
@@ -47,6 +42,6 @@ export default class AssociationRepresentativesRoute extends Route {
       }
     }
 
-    return null; // Return null if no KBO number is found
+    return null;
   });
 }
