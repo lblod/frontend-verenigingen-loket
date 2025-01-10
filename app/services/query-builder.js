@@ -24,7 +24,13 @@ export default class QueryBuilderService extends Service {
   });
 }
 
-export const associationsQuery = ({ index, page, params, size }) => {
+export const associationsQuery = ({
+  index,
+  page,
+  params,
+  size,
+  distinct = true,
+}) => {
   const request = {};
   const search = params.search;
   request.index = index;
@@ -162,6 +168,10 @@ export const associationsQuery = ({ index, page, params, size }) => {
   request.page = page;
   request.size = size;
   request.sort = params.sort || '-createdOn';
+
+  if (distinct) {
+    request.collapseUuids = 't';
+  }
 
   request.filters = filters;
   return request;
