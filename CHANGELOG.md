@@ -1,3 +1,8 @@
+## v1.2.3 (2025-01-22)
+
+#### :bug: Bug Fix
+* [#69](https://github.com/lblod/frontend-verenigingen-loket/pull/69) [CLBV-943] Disable autocompletion for date inputs ([@Windvis](https://github.com/Windvis))
+
 ## v1.2.2 (2024-10-07)
 
 #### :bug: Bug Fix
