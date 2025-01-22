@@ -1,3 +1,8 @@
+## v1.2.2 (2024-10-07)
+
+#### :bug: Bug Fix
+* [#67](https://github.com/lblod/frontend-verenigingen-loket/pull/67) do not show duplicate associations in overview ([@bdevloed](https://github.com/bdevloed))
+
 ## v1.2.1 (2024-10-07)
 
 #### :rocket: Enhancement
