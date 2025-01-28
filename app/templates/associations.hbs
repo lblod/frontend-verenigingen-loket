@@ -86,13 +86,6 @@
               <AuHeading @level="1" @skin="3">
                 <span>Verenigingen</span>
               </AuHeading>
-              <AuButton
-                @skin="secondary"
-                {{on "click" (perform this.download)}}
-                @disabled={{eq (readonly this.associations.length) 0}}
-              >
-                Download
-              </AuButton>
             </div>
             <AuHr />
             <AuHeading @level="1" @skin="5">
