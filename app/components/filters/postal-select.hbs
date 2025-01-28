@@ -3,13 +3,12 @@
   <PowerSelectMultiple
     @noMatchesMessage="Geen resultaten"
     @searchEnabled={{true}}
-    @search={{this.searchMethod}}
-    @searchField="postalCode"
+    @search={{this.searchPostalCodes.perform}}
     @placeholder="Selecteer een postcode"
     @searchMessage="Typ om te zoeken"
-    @options={{this.postalCodes}}
-    @selected={{@selected}}
-    @onChange={{@onChange}}
+    @loadingMessage="Aan het laden"
+    @selected={{this.selectedPostalCodes}}
+    @onChange={{this.handleChange}}
     @triggerId={{@id}}
     as |postalCode|
   >

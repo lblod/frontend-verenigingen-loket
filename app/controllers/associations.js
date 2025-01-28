@@ -25,7 +25,6 @@ export default class IndexController extends Controller {
   @tracked status = '';
   @tracked selectedOrganizationStatus = '';
   @tracked postalCodes = '';
-  @tracked selectedPostalCodes = [];
   @tracked types = '';
   @tracked selectedTypes = [];
   @tracked targetAudiences = '';
@@ -46,6 +45,10 @@ export default class IndexController extends Controller {
     'end',
     'start',
   ];
+
+  get selectedPostalCodes() {
+    return this.postalCodes ? this.postalCodes.split(',') : [];
+  }
 
   @action
   setActivities(selectedActivities) {
@@ -68,7 +71,6 @@ export default class IndexController extends Controller {
   @action
   setPostalCodes(selectedPostals) {
     this.page = 0;
-    this.selectedPostalCodes = selectedPostals;
     this.postalCodes = selectedPostals
       .map((postal) => postal.postalCode)
       .join(',');
