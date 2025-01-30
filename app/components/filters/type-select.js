@@ -38,13 +38,12 @@ export default class ActivityMultipleSelectComponent extends Component {
   }
 
   loadTypes = task({ drop: true }, async () => {
-    const conceptScheme = await this.store.findRecord(
-      'concept-scheme',
-      // id of concept scheme representing the types.
-      'f3c67343-57f8-587e-89a8-afe88ccsc8',
-    );
+    const TYPES_CONCEPT_SCHEME = 'f3c67343-57f8-587e-89a8-afe88ccsc8';
+    this.types = await this.store.query('concept', {
+      'filter[top-concept-of][:id:]': TYPES_CONCEPT_SCHEME,
+      'page[size]': 1000, // TODO: This is a temporary workaround, remove this once we have a better UI solution
+    });
 
-    this.types = await conceptScheme.topConcept;
     this.args.onChange(this.selectedTypes());
   });
 }

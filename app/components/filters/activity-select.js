@@ -30,14 +30,11 @@ export default class ActivityMultipleSelectComponent extends Component {
   }
 
   loadActivities = task({ drop: true }, async () => {
-    const conceptScheme = await this.store.findRecord(
-      'concept-scheme',
-      // id of concept scheme representing the types.
-      '6c10d98a-9089-4fe8-ba81-3ed136db0265',
-    );
-    this.activities = await conceptScheme.topConcept;
-    this.activities = await [...this.activities].sort(function (a, b) {
-      return a.prefLabel.localeCompare(b.prefLabel);
+    const ACTIVITIES_CONCEPT_SCHEME = '6c10d98a-9089-4fe8-ba81-3ed136db0265';
+    this.activities = await this.store.query('concept', {
+      'filter[top-concept-of][:id:]': ACTIVITIES_CONCEPT_SCHEME,
+      sort: 'pref-label',
+      'page[size]': 1000, // TODO: This is a temporary workaround, remove this once we have a better UI solution
     });
     this.args.onChange(this.selectedActivities());
   });
