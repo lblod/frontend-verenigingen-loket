@@ -110,50 +110,28 @@
                     for="awarded-by"
                   >Erkend door</AuLabel></:label>
                 <:content>
-                  <PowerSelect
-                    @options={{this.items}}
-                    @selected={{this.currentRecognition.selectedItem}}
-                    @onChange={{fn (mut this.currentRecognition.selectedItem)}}
-                    @triggerId="awarded-by"
-                    as |name|
+                  <div
+                    class={{if
+                      this.validationErrors.awardedBy
+                      "ember-power-select--error"
+                    }}
                   >
-                    {{name}}
-                  </PowerSelect>
-                  {{#if
-                    (eq
-                      (get this "currentRecognition.selectedItem")
-                      (get this "items.1")
-                    )
-                  }}
-                    <section
-                      class="au-u-margin-top-small au-u-flex au-u-flex--vertical-center"
+                    <PowerSelect
+                      @options={{this.getGoverningBodiesInTime.last}}
+                      @loadingMessage="Aan het laden"
+                      @selected={{this.currentRecognition.selectedItem}}
+                      @onChange={{this.handleAwardedByChange}}
+                      @triggerId="awarded-by"
+                      as |governingBodyInTime|
                     >
-                      <div class="au-u-flex au-u-flex--column au-u-1-3">
-                        <AuLabel
-                          @inline={{true}}
-                          @required={{true}}
-                          for="awarded-by-organization-name"
-                        >Namelijk</AuLabel></div>
-                      <div class="au-u-flex au-u-flex--column au-u-1-1">
-                        <AuInput
-                          placeholder="Vul in organisatie"
-                          value={{model.awardedBy}}
-                          {{on "input" (fn this.clearFormError "awardedBy")}}
-                          {{on
-                            "input"
-                            (event-value (fn (mut model.awardedBy)))
-                          }}
-                          id="awarded-by-organization-name"
-                          @error={{this.validationErrors.awardedBy}}
-                          @width="block"
-                        />
-                        <AuHelpText
-                          @error={{this.validationErrors.awardedBy}}
-                        >{{this.validationErrors.awardedBy}}</AuHelpText>
-                      </div>
-                    </section>
-
-                  {{/if}}
+                      <Recognition::GoverningBodyInTimeInfo
+                        @governingBodyInTime={{governingBodyInTime}}
+                      />
+                    </PowerSelect>
+                  </div>
+                  <AuHelpText
+                    @error={{this.validationErrors.awardedBy}}
+                  >{{this.validationErrors.awardedBy}}</AuHelpText>
                 </:content>
               </Item>
             </:left>

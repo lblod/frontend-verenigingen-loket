@@ -14,7 +14,7 @@ export default class RecognitionModel extends Model {
     async: false,
   })
   validityPeriod;
-  @belongsTo('administrative-unit', {
+  @belongsTo('governing-body', {
     inverse: null,
     async: true,
   })

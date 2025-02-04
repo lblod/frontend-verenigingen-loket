@@ -1,0 +1,11 @@
+{{@governingBodyInTime.governingBody.classification.prefLabel}}
+
+{{#if @governingBodyInTime.start}}
+  {{date-year @governingBodyInTime.start}}
+{{/if}}
+-
+{{#if @governingBodyInTime.end}}
+  {{date-year @governingBodyInTime.end}}
+{{else}}
+  Heden
+{{/if}}
