@@ -1,11 +1,12 @@
 import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
+import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
 
 export default class SharedBreadCrumbComponent extends Component {
   @service router;
   @service() currentAssociation;
   @service() currentRecognition;
-  @service() dateYear;
+
   bread(name) {
     return [
       {
@@ -64,11 +65,11 @@ export default class SharedBreadCrumbComponent extends Component {
           { label: 'Erkenningen', link: 'association.recognition.index' },
           {
             label: this.currentRecognition.recognition
-              ? `Erkenning ${this.dateYear.getCurrentYear(
+              ? `Erkenning ${dateYear(
                   this.currentRecognition.recognition.validityPeriod.get(
                     'startTime',
                   ),
-                )} - ${this.dateYear.getCurrentYear(
+                )} - ${dateYear(
                   this.currentRecognition.recognition.validityPeriod.get(
                     'endTime',
                   ),

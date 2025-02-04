@@ -5,6 +5,7 @@ import { errorValidation } from '../../validations/recognition-validation';
 import { tracked } from '@glimmer/tracking';
 import dateFormat from '../../helpers/date-format';
 import { task } from 'ember-concurrency';
+import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
 
 export default class FormComponent extends Component {
   items = ['College van burgemeester en schepenen', 'Andere'];
@@ -14,7 +15,6 @@ export default class FormComponent extends Component {
   @service store;
   @service router;
   @service toaster;
-  @service dateYear;
   @service file;
   @tracked validationErrors = {};
   @tracked legalResourceFile = this.currentRecognition.recognition
@@ -203,10 +203,8 @@ export default class FormComponent extends Component {
 
     try {
       await recognition.save();
-      const startYear = this.dateYear.getCurrentYear(
-        recognitionModel.startTime,
-      );
-      const endYear = this.dateYear.getCurrentYear(recognitionModel.endTime);
+      const startYear = dateYear(recognitionModel.startTime);
+      const endYear = dateYear(recognitionModel.endTime);
       this.notify(
         `De erkenning voor de periode ${startYear} - ${endYear} is aangemaakt.`,
         `Erkenning succesvol aangemaakt.`,
@@ -251,8 +249,8 @@ export default class FormComponent extends Component {
         ...recognition,
       });
       await this.currentRecognition.recognition.save();
-      const startYear = this.dateYear.getCurrentYear(validityPeriod.startTime);
-      const endYear = this.dateYear.getCurrentYear(validityPeriod.endTime);
+      const startYear = dateYear(validityPeriod.startTime);
+      const endYear = dateYear(validityPeriod.endTime);
       this.notify(
         `De erkenning voor de periode ${startYear} - ${endYear} is bijgewerkt.`,
         `Erkenning succesvol bijgewerkt.`,
