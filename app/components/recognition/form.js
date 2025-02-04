@@ -118,14 +118,14 @@ export default class FormComponent extends Component {
   }
 
   async validateForm() {
-    const startTime = dateFormat.compute([
+    const startTime = dateFormat(
       this.currentRecognition.recognitionModel.startTime,
       'YYY-MM-DD',
-    ]);
-    const endTime = dateFormat.compute([
+    );
+    const endTime = dateFormat(
       this.currentRecognition.recognitionModel.endTime,
       'YYY-MM-DD',
-    ]);
+    );
 
     const [startDateExist, endDateExist] = await this.getRecognitionsInPeriod(
       startTime,

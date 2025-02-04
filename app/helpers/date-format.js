@@ -1,6 +1,4 @@
-import { helper } from '@ember/component/helper';
-
-export default helper(function DateFormat([date, format = 'DD-MM-YYYY']) {
+export default function dateFormat(date, format = 'DD-MM-YYYY') {
   const newDate = new Date(date);
 
   if (!isNaN(newDate)) {
@@ -14,4 +12,4 @@ export default helper(function DateFormat([date, format = 'DD-MM-YYYY']) {
     return day + '-' + month + '-' + year;
   }
   return null;
-});
+}
