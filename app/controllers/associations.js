@@ -119,7 +119,6 @@ export default class IndexController extends Controller {
     this.activities = '';
     this.selectedActivities = [];
     this.postalCodes = '';
-    this.selectedPostalCodes = [];
     this.types = '';
     this.selectedTypes = [];
     this.targetAudiences = '';
