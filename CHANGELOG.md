@@ -1,3 +1,7 @@
+## v1.2.9 (2025-02-06)
+#### :bug: Bug Fix
+* [#77](https://github.com/lblod/frontend-verenigingen-loket/pull/77) Allow the postal select filter to be cleared ([@Windvis](https://github.com/Windvis))
+
 ## v1.2.8 (2025-02-06)
 #### :bug: Bug Fix
 * [#73](https://github.com/lblod/frontend-verenigingen-loket/pull/73) [CLBV-951] Recognitions are awarded by "governing bodies in time" ([@Windvis](https://github.com/Windvis))
