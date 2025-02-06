@@ -104,9 +104,13 @@ export const associationsQuery = ({
     if (pattern.test(search)) {
       filters['identifiers.structuredIdentifier.localId'] = search;
     } else {
+      const sqs = search
+      .split(' ')
+      .map((str) => `(${str}*|${str})`)
+      .join(' ');
       filters[
-        ':fuzzy:name,primarySite.address.postcode,identifiers.structuredIdentifier.localId,activities.label'
-      ] = search;
+        ':sqs:name,primarySite.address.postcode,identifiers.structuredIdentifier.localId,activities.label'
+      ] = encodeURIComponent(sqs);
     }
   }
   if (params) {
