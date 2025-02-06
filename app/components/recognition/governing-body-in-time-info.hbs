@@ -1,5 +1,10 @@
 {{@governingBodyInTime.governingBody.classification.prefLabel}}
 
+(
+{{~@governingBodyInTime.governingBody.administrativeUnit.classification.label}}
+{{@governingBodyInTime.governingBody.administrativeUnit.name~}}
+)
+
 {{#if @governingBodyInTime.start}}
   {{date-year @governingBodyInTime.start}}
 {{/if}}

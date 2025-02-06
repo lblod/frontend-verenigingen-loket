@@ -11,6 +11,12 @@ export default class GoverningBodyModel extends Model {
   })
   governingBody;
 
+  @belongsTo('administrative-unit', {
+    async: false,
+    inverse: null,
+  })
+  administrativeUnit;
+
   @belongsTo('concept', {
     async: false,
     inverse: null,

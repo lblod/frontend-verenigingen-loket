@@ -67,7 +67,8 @@ export default class FormComponent extends Component {
     return await this.store.query('governing-body', {
       'filter[governing-body][administrative-unit][:id:]':
         currentAdministrativeUnitId,
-      include: 'governing-body.classification',
+      include:
+        'governing-body.classification,governing-body.administrative-unit',
       sort: ':no-case:governing-body.classification.pref-label,-start',
       // Just a precaution, if we actually hit a large amount of items we should use a different solution
       'page[size]': 100,

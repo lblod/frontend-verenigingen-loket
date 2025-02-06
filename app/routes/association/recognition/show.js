@@ -36,6 +36,7 @@ export default class AssociationRecognitionShowRoute extends Route {
       },
       include: [
         'awarded-by.governing-body.classification',
+        'awarded-by.governing-body.administrative-unit.classification',
         'validity-period',
         'file',
       ].join(','),

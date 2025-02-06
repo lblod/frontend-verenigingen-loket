@@ -105,9 +105,9 @@ export const associationsQuery = ({
       filters['identifiers.structuredIdentifier.localId'] = search;
     } else {
       const sqs = search
-      .split(' ')
-      .map((str) => `(${str}*|${str})`)
-      .join(' ');
+        .split(' ')
+        .map((str) => `(${str}*|${str})`)
+        .join(' ');
       filters[
         ':sqs:name,primarySite.address.postcode,identifiers.structuredIdentifier.localId,activities.label'
       ] = encodeURIComponent(sqs);

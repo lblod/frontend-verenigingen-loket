@@ -28,6 +28,7 @@ export default class AssociationGeneralRoute extends Route {
     const query = {
       include: [
         'awarded-by.governing-body.classification',
+        'awarded-by.governing-body.administrative-unit.classification',
         'validity-period',
       ].join(','),
       filter: {
