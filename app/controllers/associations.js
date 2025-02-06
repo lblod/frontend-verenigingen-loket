@@ -3,6 +3,7 @@ import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { timeout, task } from 'ember-concurrency';
 import { action } from '@ember/object';
+import { cell, resource, resourceFactory } from 'ember-resources';
 import ENV from 'frontend-verenigingen-loket/config/environment';
 import { associationsQuery } from '../services/query-builder';
 const DEBOUNCE_MS = 500;
@@ -32,6 +33,7 @@ export default class IndexController extends Controller {
   @tracked end = '';
   @tracked start = '';
   @tracked ENVIRONMENT_NAME = ENV.environmentName;
+  PostalCodes = PostalCodes;
 
   queryParams = [
     'sort',
@@ -45,10 +47,6 @@ export default class IndexController extends Controller {
     'end',
     'start',
   ];
-
-  get selectedPostalCodes() {
-    return this.postalCodes ? this.postalCodes.split(',') : [];
-  }
 
   @action
   setActivities(selectedActivities) {
@@ -299,3 +297,29 @@ export default class IndexController extends Controller {
     URL.revokeObjectURL(href);
   };
 }
+
+// This fetches the postal code records based on the postalCodes query param
+function PostalCodes(store, postalCodesQP) {
+  return resource(() => {
+    const postalCodes = cell([]);
+
+    (async () => {
+      if (postalCodesQP) {
+        const records = await Promise.all(
+          postalCodesQP.split(',').map(async (postalCode) => {
+            const result = await store.query('postal-code', {
+              'filter[postal-code]': postalCode,
+            });
+
+            return result.at(0);
+          }),
+        );
+
+        postalCodes.current = records;
+      }
+    })();
+
+    return postalCodes;
+  });
+}
+resourceFactory(PostalCodes);
