@@ -34,6 +34,7 @@ export default class AssociationsRoute extends Route {
         params,
         PAGE_SIZE,
       );
+
       return {
         associations,
         PAGE_SIZE,

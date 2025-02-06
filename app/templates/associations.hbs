@@ -25,7 +25,7 @@
             />
             <Filters::PostalSelect
               @onChange={{this.setPostalCodes}}
-              @selected={{this.selectedPostalCodes}}
+              @selected={{(this.PostalCodes this.store this.postalCodes)}}
             />
             <Filters::OrganizationStatusSelect
               @onChange={{this.setOrganizationStatus}}
