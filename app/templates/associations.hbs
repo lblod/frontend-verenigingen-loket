@@ -110,26 +110,15 @@
             @label="Postcode"
             @class="data-table__header-title"
           />
-          <th class="data-table__header-title">Hoofdactiviteiten</th>
-          <AuDataTableThSortable
-            @field="identifiers.structured-identifier.local-id"
-            @currentSorting={{this.sort}}
-            @label="vCode"
-            @class="data-table__header-title"
-          />
+          <th>Hoofdactiviteiten</th>
+          <th>vCode</th>
           <AuDataTableThSortable
             @field="targetAudience.minimumLeeftijd,targetAudience.maximumLeeftijd"
             @currentSorting={{this.sort}}
             @label="Leeftijd"
             @class="data-table__header-title"
           />
-          <AuDataTableThSortable
-            @field="recognitions.validityPeriod.endTime"
-            @currentSorting={{this.sort}}
-            @label="Erkenning"
-            @class="data-table__header-title"
-          />
-          {{! <th class="data-table__header-title">Erkenning</th> }}
+          <th>Erkenning</th>
         </c.header>
         {{#if this.hasErrored}}
           <TableMessage::Error />
