@@ -1,3 +1,7 @@
+## v1.2.7 (2025-02-06)
+#### :rocket: Enhancement
+* [#75](https://github.com/lblod/frontend-verenigingen-loket/pull/75)  Switch to SQS instead of fuzzy search. ([@cecemel](https://github.com/cecemel))
+
 ## v1.2.3 (2025-01-22)
 
 #### :bug: Bug Fix
