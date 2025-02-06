@@ -1,3 +1,8 @@
+## v1.2.8 (2025-02-06)
+#### :bug: Bug Fix
+* [#73](https://github.com/lblod/frontend-verenigingen-loket/pull/73) [CLBV-951] Recognitions are awarded by "governing bodies in time" ([@Windvis](https://github.com/Windvis))
+* [#76](https://github.com/lblod/frontend-verenigingen-loket/pull/76) [CLBV-948] Disable sorting on the "vCode" and "Erkenning" columns  ([@Windvis](https://github.com/Windvis))
+
 ## v1.2.7 (2025-02-06)
 #### :rocket: Enhancement
 * [#75](https://github.com/lblod/frontend-verenigingen-loket/pull/75)  Switch to SQS instead of fuzzy search. ([@cecemel](https://github.com/cecemel))
