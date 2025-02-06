@@ -31,7 +31,9 @@
         <Item>
           <:label>Erkend door</:label>
           <:content>
-            {{@recognition.awardedBy.name}}
+            <Recognition::GoverningBodyInTimeInfo
+              @governingBodyInTime={{@recognition.awardedBy}}
+            />
           </:content>
         </Item>
       </:left>

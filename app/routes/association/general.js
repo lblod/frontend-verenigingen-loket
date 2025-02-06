@@ -16,7 +16,7 @@ export default class AssociationGeneralRoute extends Route {
   }
 
   loadRecognition = task({ keepLatest: true }, async (id) => {
-    const today = dateFormat.compute([new Date(), 'YYY-MM-DD']);
+    const today = dateFormat(new Date(), 'YYY-MM-DD');
     const [currentRecognition, lastRecognition] = await Promise.all([
       this.getRecognition(id, today),
       this.getRecognition(id),
@@ -26,7 +26,11 @@ export default class AssociationGeneralRoute extends Route {
   });
   async getRecognition(id, date) {
     const query = {
-      include: ['awarded-by', 'validity-period'].join(','),
+      include: [
+        'awarded-by.governing-body.classification',
+        'awarded-by.governing-body.administrative-unit.classification',
+        'validity-period',
+      ].join(','),
       filter: {
         ':has-no:status': true,
         association: {

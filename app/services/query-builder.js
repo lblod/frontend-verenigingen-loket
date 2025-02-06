@@ -60,7 +60,7 @@ export const associationsQuery = ({
       'primarySite.address.postcode',
       params.postalCodes,
     );
-    const today = dateFormat.compute([new Date(), 'YYY-MM-DD']);
+    const today = dateFormat(new Date(), 'YYY-MM-DD');
 
     if (activitiesQuery && postalCodesQuery) {
       addFilter(
