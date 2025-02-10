@@ -1,3 +1,8 @@
+## v1.2.10 (2025-02-10)
+
+#### :bug: Bug Fix
+* [#78](https://github.com/lblod/frontend-verenigingen-loket/pull/78) Some improvements to the postal code filter ([@Windvis](https://github.com/Windvis))
+
 ## v1.2.9 (2025-02-06)
 #### :bug: Bug Fix
 * [#77](https://github.com/lblod/frontend-verenigingen-loket/pull/77) Allow the postal select filter to be cleared ([@Windvis](https://github.com/Windvis))
