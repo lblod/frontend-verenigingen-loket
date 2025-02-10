@@ -6,6 +6,8 @@ import { action } from '@ember/object';
 import { cell, resource, resourceFactory } from 'ember-resources';
 import ENV from 'frontend-verenigingen-loket/config/environment';
 import { associationsQuery } from '../services/query-builder';
+import { dedupeTracked } from '../utils/tracked-toolbox';
+
 const DEBOUNCE_MS = 500;
 
 export default class IndexController extends Controller {
@@ -25,7 +27,7 @@ export default class IndexController extends Controller {
   @tracked selectedActivities = [];
   @tracked status = '';
   @tracked selectedOrganizationStatus = '';
-  @tracked postalCodes = '';
+  @dedupeTracked postalCodes = '';
   @tracked types = '';
   @tracked selectedTypes = [];
   @tracked targetAudiences = '';
@@ -72,6 +74,10 @@ export default class IndexController extends Controller {
     this.postalCodes = selectedPostals
       .map((postal) => postal.postalCode)
       .join(',');
+
+    // We update the postalCodes value so the interface updates immediately instead of having to wait until the fetch finishes.
+    // TODO: There has to be a better pattern so the resource stays self-contained.
+    postalCodes.current = selectedPostals;
   }
 
   @action
@@ -298,11 +304,13 @@ export default class IndexController extends Controller {
   };
 }
 
+// We store the postalCodes cell in module scope so the previous data is retained between data fetches.
+// This prevents the select from temporarily showing an empty selection.
+const postalCodes = cell([]);
+
 // This fetches the postal code records based on the postalCodes query param
 function PostalCodes(store, postalCodesQP) {
   return resource(() => {
-    const postalCodes = cell([]);
-
     (async () => {
       if (postalCodesQP) {
         const records = await Promise.all(
@@ -316,6 +324,9 @@ function PostalCodes(store, postalCodesQP) {
         );
 
         postalCodes.current = records;
+      } else {
+        await Promise.resolve();
+        postalCodes.current = [];
       }
     })();
 
