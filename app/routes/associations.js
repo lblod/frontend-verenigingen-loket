@@ -30,13 +30,18 @@ export default class AssociationsRoute extends Route {
 
   async model(params) {
     try {
+      const exportFile = (await this.store.query('file', {
+        filter: { ':exact:subject': 'http://data.lblod.info/datasets/verenigingen-loket-organisations-dump' },
+        sort: '-created'
+      }))[0];
       const associations = this.queryBuilder.buildAndExecuteQuery.perform(
         params,
         PAGE_SIZE,
       );
       return {
+        exportFile,
         associations,
-        PAGE_SIZE,
+        PAGE_SIZE
       };
     } catch (error) {
       throw new Error('Something went wrong while fetching associations', {
