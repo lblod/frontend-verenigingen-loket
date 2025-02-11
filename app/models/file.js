@@ -5,6 +5,7 @@ export default class FileModel extends Model {
   @attr name;
   @attr format;
   @attr size;
+  @attr created;
   @attr({ defaultValue: 'n/a' }) extension;
 
   get humanReadableSize() {
