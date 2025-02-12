@@ -1,0 +1,10 @@
+{{#if this.hasFileMeta}}
+  <AuFileCard
+    @filename={{this.exportFile.name}}
+    @downloadLink={{this.exportFile.downloadLink}}
+    {{! The AuFileCard component doesn't have an option to display the created time, so we (mis)use the @fileSize argument instead for now }}
+    @fileSize={{date-format this.exportFile.created}}
+    {{!template-lint-disable no-inline-styles}}
+    style="text-align: right;"
+  />
+{{/if}}

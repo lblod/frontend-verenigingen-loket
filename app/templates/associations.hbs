@@ -1,6 +1,5 @@
 {{page-title "Verenigingen"}}
 
-
 <AuMainContainer as |m|>
   <m.sidebar>
     <div class="au-c-sidebar">
@@ -89,12 +88,7 @@
                 <span>Verenigingen</span>
               </AuHeading>
 
-              <AuFileCard
-                @filename={{@model.exportFile.name}}
-                @downloadLink={{@model.exportFile.downloadLink}}
-                @created= {{@model.exportFile.created}}
-              />
-
+              <AssociationsDownload />
             </div>
             <AuHr />
             <AuHeading @level="1" @skin="5">
