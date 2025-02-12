@@ -1,6 +1,5 @@
 {{page-title "Verenigingen"}}
 
-
 <AuMainContainer as |m|>
   <m.sidebar>
     <div class="au-c-sidebar">
@@ -89,12 +88,16 @@
                 <span>Verenigingen</span>
               </AuHeading>
 
-              <AuFileCard
-                @filename={{@model.exportFile.name}}
-                @downloadLink={{@model.exportFile.downloadLink}}
-                @created= {{@model.exportFile.created}}
-              />
-
+              {{#if @model.exportFile}}
+                <AuFileCard
+                  @filename={{@model.exportFile.name}}
+                  @downloadLink={{@model.exportFile.downloadLink}}
+                  {{! The AuFileCard component doesn't support displaying creation dates , so we (mis)use the fileSize arg instead }}
+                  @fileSize={{date-format @model.exportFile.created}}
+                  style="text-align: right"
+                  {{! template-lint-disable no-inline-styles }}
+                />
+              {{/if}}
             </div>
             <AuHr />
             <AuHeading @level="1" @skin="5">
