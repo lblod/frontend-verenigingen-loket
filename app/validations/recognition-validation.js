@@ -27,11 +27,9 @@ export const errorValidation = Joi.object()
       'date.greater':
         'Gelieve een einddatum te kiezen dat na de ingangsdatum komt.',
     }),
-    awardedBy: Joi.string().messages({
-      'string.empty':
-        'Gelieve de entiteit in te vullen die de erkenning toekent.',
-      'string.base':
-        'Gelieve de entiteit in te vullen die de erkenning toekent.',
+    awardedBy: Joi.any().required().messages({
+      'any.required':
+        'Gelieve de entiteit te selecteren die de erkenning toekent.',
     }),
     file: Joi.object()
       .allow(null)

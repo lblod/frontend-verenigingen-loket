@@ -7,7 +7,7 @@
     @placeholder="Selecteer een postcode"
     @searchMessage="Typ om te zoeken"
     @loadingMessage="Aan het laden"
-    @selected={{this.selectedPostalCodes}}
+    @selected={{@selected}}
     @onChange={{this.handleChange}}
     @triggerId={{@id}}
     as |postalCode|

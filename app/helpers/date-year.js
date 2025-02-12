@@ -1,6 +1,4 @@
-import { helper } from '@ember/component/helper';
-
-export default helper(function DateYear([date]) {
+export default function dateYear(date) {
   const newDate = new Date(date);
   return newDate.getFullYear();
-});
+}
