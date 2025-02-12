@@ -1,3 +1,8 @@
+## v1.3.0 / v1.3.1 (2025-02-12)
+
+#### :rocket: Enhancement
+* [#79](https://github.com/lblod/frontend-verenigingen-loket/pull/79)  Change scope spreadsheet feature: one file for all ([@cecemel](https://github.com/cecemel))
+
 ## v1.2.10 (2025-02-10)
 
 #### :bug: Bug Fix
