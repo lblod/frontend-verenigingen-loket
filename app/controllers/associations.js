@@ -5,19 +5,12 @@ import { timeout, task } from 'ember-concurrency';
 import { action } from '@ember/object';
 import { cell, resource, resourceFactory } from 'ember-resources';
 import ENV from 'frontend-verenigingen-loket/config/environment';
-import { associationsQuery } from '../services/query-builder';
 import { dedupeTracked } from '../utils/tracked-toolbox';
 
 const DEBOUNCE_MS = 500;
 
 export default class IndexController extends Controller {
   @service store;
-  @service currentSession;
-  @service router;
-  @service toaster;
-  @service contactPoints;
-  @service queryBuilder;
-  @service muSearch;
 
   size = ENV.pageSize ?? 50;
   @tracked page = 0;
@@ -133,175 +126,6 @@ export default class IndexController extends Controller {
     this.page = null;
     this.sort = '-created-on';
   }
-
-  download = task({ drop: true }, async () => {
-    const toast = this.toaster.loading(
-      'Het downloaden van het bestand is begonnen.',
-      'Download gestart',
-    );
-    const params = this.getQueryParamsAsObject(window.location.href);
-    const associations = await this.muSearch.search(
-      associationsQuery({
-        index: 'associations',
-        page: 0,
-        params,
-        size: this.associations.meta.count,
-      }),
-    );
-    const adminUnitId = this.currentSession.group.id;
-    if (associations.items && adminUnitId) {
-      try {
-        const associationIds = associations.items.map(({ id }) => id);
-        const port = window.location.port;
-        const hostname = window.location.hostname;
-        const protocol = window.location.protocol;
-        const storeDataUrl = `${protocol}//${hostname}${
-          port ? ':' + port : ''
-        }/storeData`;
-
-        const storeResponse = await fetch(storeDataUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ associationIds, adminUnitId }),
-        });
-
-        if (!storeResponse.ok) {
-          throw new Error('Failed to initiate job');
-        }
-
-        const { referenceId } = await storeResponse.json();
-        const statusUrl = `${protocol}//${hostname}${
-          port ? ':' + port : ''
-        }/status?jobId=${referenceId}`;
-
-        const status = await this.pollForStatus(statusUrl);
-        if (status.error) {
-          throw new Error(status.error);
-        }
-
-        const downloadUrl = `${protocol}//${hostname}${
-          port ? ':' + port : ''
-        }/download?ref=${status.referenceId}`;
-
-        const response = await fetch(downloadUrl, { method: 'GET' });
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-
-        const blob = await response.blob();
-        await this.downloadBlob(blob);
-        this.downloadFinished(toast);
-      } catch (error) {
-        let message =
-          'Er is een fout opgetreden bij het downloaden van het bestand. Probeer het opnieuw.';
-        this.downloadFailed(toast, message);
-        console.error(error);
-      }
-    } else {
-      this.toaster.close(toast);
-      this.toaster.warning(
-        'Geen resultaten gevonden. Probeer het opnieuw.',
-        'Download geannuleerd',
-        { timeOut: 3000 },
-      );
-    }
-  });
-  @action
-  async pollForStatus(statusUrl, maxAttempts = 25) {
-    const initialIntervals = [500, 500, 500];
-    const subsequentInterval = 1000;
-
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      try {
-        const response = await fetch(statusUrl, { method: 'GET' });
-
-        if (!response.ok) {
-          console.error(`Status polling error: ${response.statusText}`);
-          return { error: response.statusText };
-        }
-
-        const status = await response.json();
-
-        if (status.complete) {
-          return status;
-        }
-
-        const interval =
-          attempt < initialIntervals.length
-            ? initialIntervals[attempt]
-            : subsequentInterval;
-
-        await this.timeout(interval);
-      } catch (error) {
-        console.error(`Error during polling: ${error.message}`);
-        return { error: error.message };
-      }
-    }
-    console.error('Status polling timed out');
-    throw new Error('Status polling timed out');
-  }
-
-  timeout(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  @action
-  downloadFinished(toast) {
-    this.toaster.close(toast);
-    this.toaster.success(
-      'Het bestand is succesvol gedownload.',
-      'Download Voltooid',
-      {
-        timeOut: 3000,
-      },
-    );
-  }
-  @action
-  downloadFailed(toast, message) {
-    this.toaster.close(toast);
-    this.toaster.error(message, 'Download Mislukt', {
-      timeOut: 3000,
-    });
-  }
-
-  getQueryParamsAsObject(url) {
-    const urlObj = new URL(url);
-    const params = urlObj.searchParams;
-    const queryParams = {};
-
-    for (const [key, value] of params.entries()) {
-      if (queryParams[key]) {
-        if (Array.isArray(queryParams[key])) {
-          queryParams[key].push(value);
-        } else {
-          queryParams[key] = [queryParams[key], value];
-        }
-      } else {
-        queryParams[key] = value;
-      }
-    }
-
-    return queryParams;
-  }
-
-  downloadBlob = async (blob) => {
-    const currentDate = new Date();
-    const timestamp = currentDate
-      .toISOString()
-      .replace(/[-:]/g, '_')
-      .replace(/\.\d+/, '');
-    const fileName = `verenigingen_${timestamp}.xlsx`;
-
-    const aElement = document.createElement('a');
-    aElement.setAttribute('download', fileName);
-    const href = URL.createObjectURL(blob);
-    aElement.href = href;
-    aElement.setAttribute('target', '_blank');
-    aElement.click();
-    URL.revokeObjectURL(href);
-  };
 }
 
 // We store the postalCodes cell in module scope so the previous data is retained between data fetches.
