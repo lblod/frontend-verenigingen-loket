@@ -22,7 +22,11 @@ export default class FileService extends Service {
         document.body.appendChild(a);
         a.click();
         a.remove();
-        window.URL.revokeObjectURL(url);
+
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 1);
+
         return true;
       } catch (error) {
         console.error(error.message);

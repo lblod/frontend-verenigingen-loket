@@ -392,7 +392,10 @@ export default class FormComponent extends Component {
         document.body.appendChild(a);
         a.click();
         a.remove();
-        window.URL.revokeObjectURL(url);
+
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 1);
       }
     } catch (error) {
       console.error('An error occurred while opening the file', error);
