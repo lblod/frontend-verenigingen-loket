@@ -1,3 +1,8 @@
+## v1.3.2 (2025-02-13)
+
+#### :bug: Bug Fix
+* [#80](https://github.com/lblod/frontend-verenigingen-loket/pull/80) [CLBV-965] Fix an issue with file downloads in Firefox ([@Windvis](https://github.com/Windvis))
+
 ## v1.3.0 / v1.3.1 (2025-02-12)
 
 #### :rocket: Enhancement
