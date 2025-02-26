@@ -1,3 +1,8 @@
+## v1.3.4 (2025-02-26)
+
+#### :bug: Bug Fix
+* [#81](https://github.com/lblod/frontend-verenigingen-loket/pull/81) [CLBV-970] Fix an issue with file downloads in Chrome ([@Windvis](https://github.com/Windvis))
+
 ## v1.3.3 (2025-02-14)
 * More specific help text for filter postcode: `hoofdzetel`. 
 ## v1.3.2 (2025-02-13)
