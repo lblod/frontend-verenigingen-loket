@@ -15,6 +15,12 @@ export default class FileService extends Service {
           );
         }
         const fileBlob = await response.blob();
+        // We intentionally don't call URL.revokeObjectURL because it breaks file downloads in Chrome.
+        // The revoked url causes the download to fail, even if the file is still visible in the browser's built-in pdf viewer.
+        // We could go for a long delay before calling revokeObjectURL,
+        // but that could still fail if the user keeps a file open for a very long time before downloading.
+        // The browser does clean up these references when all the tabs of the app are closed,
+        // so not calling revokeObjectURL simply means the data stays in memory longer.
         const url = window.URL.createObjectURL(fileBlob);
         const a = document.createElement('a');
         a.href = url;
@@ -22,10 +28,6 @@ export default class FileService extends Service {
         document.body.appendChild(a);
         a.click();
         a.remove();
-
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 1);
 
         return true;
       } catch (error) {
