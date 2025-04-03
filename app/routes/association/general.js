@@ -8,7 +8,9 @@ export default class AssociationGeneralRoute extends Route {
 
   async model() {
     const { id } = this.paramsFor('association');
-    const association = await this.store.findRecord('association', id);
+    const association = await this.store.findRecord('association', id, {
+      include: 'organization-status',
+    });
     return {
       association,
       recognitions: this.loadRecognition.perform(id),
