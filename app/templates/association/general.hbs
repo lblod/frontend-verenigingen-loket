@@ -45,15 +45,6 @@
               </:content>
             </Item>
             <Item>
-              <:label>Status</:label>
-            <:content>
-              <OrganizationStatus
-                @id={{this.model.association.organizationStatus.id}}
-                @label={{this.model.association.organizationStatus.label}}
-              />
-            </:content>
-            </Item>
-            <Item>
               <:label>Type</:label>
               <:content>
                 {{#if this.model.association.classification}}
@@ -98,6 +89,15 @@
             </Item>
           </:left>
           <:right as |Item|>
+            <Item>
+              <:label>Status</:label>
+            <:content>
+              <OrganizationStatus
+                @id={{this.model.association.organizationStatus.id}}
+                @label={{this.model.association.organizationStatus.label}}
+              />
+            </:content>
+            </Item>
             <Item>
               <:label>Minimum leeftijd</:label>
               <:content>
