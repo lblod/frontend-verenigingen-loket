@@ -123,6 +123,7 @@
             @class="data-table__header-title"
           />
           <th>Hoofdactiviteiten</th>
+          <th>Status</th>
           <th>vCode</th>
           <AuDataTableThSortable
             @field="targetAudience.minimumLeeftijd,targetAudience.maximumLeeftijd"
@@ -179,7 +180,14 @@
               {{/each}}
             </td>
             <td>
-
+              {{#if association.status}}
+                <OrganizationStatus
+                  @id={{association.status_id}}
+                  @label={{association.status}}
+                />
+              {{/if}}
+            </td>
+            <td>
               {{#each association.identifiers as |identifier|}}
                 {{#if (eq identifier.idName "vCode")}}
                   {{get identifier.structuredIdentifier "localId"}}
