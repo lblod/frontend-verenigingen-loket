@@ -28,8 +28,7 @@ export default class IndexController extends Controller {
   @tracked selectedTargetAudiences = [];
   @tracked end = '';
   @tracked start = '';
-  @tracked organizationStatus = '';
-  @tracked selectedOrganizationStatus = '';
+  @tracked organizationStatus = true;
   @tracked ENVIRONMENT_NAME = ENV.environmentName;
   PostalCodes = PostalCodes;
 
@@ -85,18 +84,6 @@ export default class IndexController extends Controller {
   }
 
   @action
-  setOrganizationStatus(selectedOrganizationStatus) {
-    this.page = 0;
-    if (selectedOrganizationStatus !== null) {
-      this.organizationStatus = selectedOrganizationStatus.id;
-      this.selectedOrganizationStatus = selectedOrganizationStatus;
-    } else {
-      this.organizationStatus = '';
-      this.selectedOrganizationStatus = '';
-    }
-  }
-
-  @action
   setDates(start, end) {
     this.start = start;
     this.end = end;
@@ -141,11 +128,7 @@ export default class IndexController extends Controller {
     this.end = '';
     this.page = null;
     // Active is the default organizationStatus filter state
-    this.organizationStatus = ORGANIZATION_STATUS.ACTIVE;
-    this.selectedOrganizationStatus = this.store.peekRecord(
-      'organization-status-code',
-      ORGANIZATION_STATUS.ACTIVE,
-    );
+    this.organizationStatus = true;
     this.sort = '-created-on';
   }
 }

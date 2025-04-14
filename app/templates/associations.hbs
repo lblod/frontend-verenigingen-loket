@@ -56,14 +56,9 @@
                 class="au-u-margin-top"
               />
             {{/key}}
-
             <Filters::OrganizationStatusSelect
-              @onChange={{this.setOrganizationStatus}}
-              @selected={{this.selectedOrganizationStatus}}
-            />
-            <Filters::OrganizationStatusSelect2
-              @onChange={{this.setOrganizationStatus}}
-              @selected={{this.selectedOrganizationStatus}}
+              @organizationStatus={{this.organizationStatus}}
+              @onOrganizationStatusChange={{fn (mut this.organizationStatus)}}
             />
           </div>
           <div class="au-o-grid__item">
@@ -108,6 +103,10 @@
                 />
               {{/if}}
             </div>
+            <Filters::OrganizationStatusToggle
+              @organizationStatus={{this.organizationStatus}}
+              @onOrganizationStatusChange={{fn (mut this.organizationStatus)}}
+            />
             <AuHr />
             <AuHeading @level="1" @skin="5">
               {{this.associations.meta.count}}

@@ -2,6 +2,7 @@ import Service from '@ember/service';
 import { inject as service } from '@ember/service';
 import { task } from 'ember-concurrency';
 import dateFormat from '../helpers/date-format';
+import { ORGANIZATION_STATUS } from '../models/organization-status-code';
 export default class QueryBuilderService extends Service {
   @service store;
   @service muSearch;
@@ -149,9 +150,10 @@ export const associationsQuery = ({
     if (params.types && params.types !== '') {
       filters['classification.uuid'] = params.types.split(',');
     }
-
-    if (params.organizationStatus && params.organizationStatus !== '') {
-      filters['status_id'] = params.organizationStatus;
+    if (params.organizationStatus) {
+      filters['status_id'] = ORGANIZATION_STATUS.ACTIVE;
+    } else {
+      filters['status_id'] = ORGANIZATION_STATUS.INACTIVE;
     }
 
     if (params.status && params.status !== '') {

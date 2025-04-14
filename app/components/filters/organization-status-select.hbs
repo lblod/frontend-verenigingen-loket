@@ -1,16 +1,17 @@
 <AuLabel class="au-u-margin-top" for="filter-name">Status</AuLabel>
 <div class={{if @error "ember-power-select--error"}}>
-  <PowerSelect
-    @allowClear={{@allowClear}}
-    @searchEnabled={{true}}
-    @searchField="label"
-    @loadingMessage="Aan het laden..."
-    @options={{this.organizationStatuses}}
-    @selected={{@selected}}
-    @onChange={{@onChange}}
-    @triggerId={{@id}}
-    as |organizationStatus|
-  >
-    {{organizationStatus.label}}
-  </PowerSelect>
+  <AuRadioGroup
+  @alignment="left"
+  @name="is-cross-border"
+  @selected={{
+    @organizationStatus
+  }}
+  @onChange={{fn
+    (mut @organizationStatus)
+  }}
+  as |Group|
+>
+  <Group.Radio @value={{true}}>Actief</Group.Radio>
+  <Group.Radio @value={{false}}>Niet actief</Group.Radio>
+</AuRadioGroup>
 </div>

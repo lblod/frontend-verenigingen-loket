@@ -1,0 +1,8 @@
+<div class={{if @error "ember-power-select--error"}}>
+  <AuToggleSwitch
+    @checked={{@organizationStatus}}
+    @onChange={{fn (mut @organizationStatus) (not @organizationStatus)}}
+  >
+    Verberg niet actieve verenigingen
+  </AuToggleSwitch>
+</div>
