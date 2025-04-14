@@ -28,9 +28,9 @@
               @onChange={{this.setPostalCodes}}
               @selected={{(this.PostalCodes this.store this.postalCodes)}}
             />
-            <Filters::OrganizationStatusSelect
-              @onChange={{this.setOrganizationStatus}}
-              @selected={{this.selectedOrganizationStatus}}
+            <Filters::RecognitionStatusSelect
+              @onChange={{this.setRecognitionStatus}}
+              @selected={{this.selectedRecognitionStatus}}
             />
             <Filters::TypeSelect
               @onChange={{this.setTypes}}
@@ -56,6 +56,15 @@
                 class="au-u-margin-top"
               />
             {{/key}}
+
+            <Filters::OrganizationStatusSelect
+              @onChange={{this.setOrganizationStatus}}
+              @selected={{this.selectedOrganizationStatus}}
+            />
+            <Filters::OrganizationStatusSelect2
+              @onChange={{this.setOrganizationStatus}}
+              @selected={{this.selectedOrganizationStatus}}
+            />
           </div>
           <div class="au-o-grid__item">
             <AuButton @skin="link" type="reset" onclick={{this.resetFilters}}>

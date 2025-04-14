@@ -1,0 +1,9 @@
+<AuLabel class="au-u-margin-top" for="filter-name">Status</AuLabel>
+<div class={{if @error "ember-power-select--error"}}>
+  <AuToggleSwitch
+    @checked={{@organizationStatus}}
+    @onChange={{fn @onChange (not @organizationStatus)}}
+  >
+    Verberg niet actieve organisaties
+  </AuToggleSwitch>
+</div>

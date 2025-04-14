@@ -1,10 +1,16 @@
-<AuLabel class="au-u-margin-top" for="filter-municipality">Erkenning</AuLabel>
-<AuCheckboxGroup
-  @alignment="default"
-  @selected={{@selected}}
-  @onChange={{@onChange}}
-  as |Group|
->
-  <Group.Checkbox @value="Erkend">Erkend</Group.Checkbox>
-  <Group.Checkbox @value="Verlopen">Verlopen</Group.Checkbox>
-</AuCheckboxGroup>
+<AuLabel class="au-u-margin-top" for="filter-name">Status</AuLabel>
+<div class={{if @error "ember-power-select--error"}}>
+  <PowerSelect
+    @allowClear={{@allowClear}}
+    @searchEnabled={{true}}
+    @searchField="label"
+    @loadingMessage="Aan het laden..."
+    @options={{this.organizationStatuses}}
+    @selected={{@selected}}
+    @onChange={{@onChange}}
+    @triggerId={{@id}}
+    as |organizationStatus|
+  >
+    {{organizationStatus.label}}
+  </PowerSelect>
+</div>

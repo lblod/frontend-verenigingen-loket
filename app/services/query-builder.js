@@ -150,6 +150,10 @@ export const associationsQuery = ({
       filters['classification.uuid'] = params.types.split(',');
     }
 
+    if (params.organizationStatus && params.organizationStatus !== '') {
+      filters['status_id'] = params.organizationStatus;
+    }
+
     if (params.status && params.status !== '') {
       if (
         params.status === 'Erkend,Verlopen' ||

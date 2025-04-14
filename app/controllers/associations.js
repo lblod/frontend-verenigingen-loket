@@ -6,6 +6,7 @@ import { action } from '@ember/object';
 import { cell, resource, resourceFactory } from 'ember-resources';
 import ENV from 'frontend-verenigingen-loket/config/environment';
 import { dedupeTracked } from '../utils/tracked-toolbox';
+import { ORGANIZATION_STATUS } from '../models/organization-status-code';
 
 const DEBOUNCE_MS = 500;
 
@@ -19,7 +20,7 @@ export default class IndexController extends Controller {
   @tracked activities = '';
   @tracked selectedActivities = [];
   @tracked status = '';
-  @tracked selectedOrganizationStatus = '';
+  @tracked selectedRecognitionStatus = '';
   @dedupeTracked postalCodes = '';
   @tracked types = '';
   @tracked selectedTypes = [];
@@ -27,6 +28,8 @@ export default class IndexController extends Controller {
   @tracked selectedTargetAudiences = [];
   @tracked end = '';
   @tracked start = '';
+  @tracked organizationStatus = '';
+  @tracked selectedOrganizationStatus = '';
   @tracked ENVIRONMENT_NAME = ENV.environmentName;
   PostalCodes = PostalCodes;
 
@@ -41,6 +44,7 @@ export default class IndexController extends Controller {
     'targetAudiences',
     'end',
     'start',
+    'organizationStatus',
   ];
 
   @action
@@ -74,10 +78,22 @@ export default class IndexController extends Controller {
   }
 
   @action
-  setOrganizationStatus(selectedStatus) {
+  setRecognitionStatus(selectedStatus) {
     this.page = 0;
-    this.selectedOrganizationStatus = selectedStatus;
+    this.selectedRecognitionStatus = selectedStatus;
     this.status = selectedStatus.join(',');
+  }
+
+  @action
+  setOrganizationStatus(selectedOrganizationStatus) {
+    this.page = 0;
+    if (selectedOrganizationStatus !== null) {
+      this.organizationStatus = selectedOrganizationStatus.id;
+      this.selectedOrganizationStatus = selectedOrganizationStatus;
+    } else {
+      this.organizationStatus = '';
+      this.selectedOrganizationStatus = '';
+    }
   }
 
   @action
@@ -112,7 +128,7 @@ export default class IndexController extends Controller {
   @action
   resetFilters() {
     this.status = '';
-    this.selectedOrganizationStatus = [];
+    this.selectedRecognitionStatus = [];
     this.activities = '';
     this.selectedActivities = [];
     this.postalCodes = '';
@@ -124,6 +140,12 @@ export default class IndexController extends Controller {
     this.start = '';
     this.end = '';
     this.page = null;
+    // Active is the default organizationStatus filter state
+    this.organizationStatus = ORGANIZATION_STATUS.ACTIVE;
+    this.selectedOrganizationStatus = this.store.peekRecord(
+      'organization-status-code',
+      ORGANIZATION_STATUS.ACTIVE,
+    );
     this.sort = '-created-on';
   }
 }

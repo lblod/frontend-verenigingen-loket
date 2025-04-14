@@ -22,6 +22,7 @@ export default class AssociationsRoute extends Route {
     targetAudiences: { refreshModel: true },
     start: { refreshModel: true },
     end: { refreshModel: true },
+    organizationStatus: { refreshModel: true },
   };
 
   beforeModel(transition) {

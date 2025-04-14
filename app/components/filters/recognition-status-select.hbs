@@ -1,0 +1,10 @@
+<AuLabel class="au-u-margin-top" for="filter-municipality">Erkenning</AuLabel>
+<AuCheckboxGroup
+  @alignment="default"
+  @selected={{@selected}}
+  @onChange={{@onChange}}
+  as |Group|
+>
+  <Group.Checkbox @value="Erkend">Erkend</Group.Checkbox>
+  <Group.Checkbox @value="Verlopen">Verlopen</Group.Checkbox>
+</AuCheckboxGroup>
