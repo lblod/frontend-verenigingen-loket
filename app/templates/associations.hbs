@@ -101,7 +101,7 @@
             </div>
             <Filters::OrganizationStatusToggle
               @organizationStatus={{this.status}}
-              @onOrganizationStatusChange={{fn (mut this.status)}}
+              @onChange={{this.setOrganizationStatus}}
             />
             <AuHr />
             <AuHeading @level="1" @skin="5">

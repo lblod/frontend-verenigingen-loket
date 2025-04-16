@@ -95,6 +95,13 @@ export default class IndexController extends Controller {
     this.selectedTargetAudiences = selectedTargetAudiences;
     this.targetAudiences = selectedTargetAudiences.join(',');
   }
+
+  @action
+  setOrganizationStatus(selectedStatus) {
+    this.page = 0;
+    this.status = selectedStatus;
+  }
+
   get isLoading() {
     return this.model.associations.isRunning;
   }
