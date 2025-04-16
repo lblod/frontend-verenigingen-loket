@@ -152,8 +152,6 @@ export const associationsQuery = ({
     }
     if (params.organizationStatus) {
       filters['status_id'] = ORGANIZATION_STATUS.ACTIVE;
-    } else {
-      filters['status_id'] = ORGANIZATION_STATUS.INACTIVE;
     }
 
     if (params.status && params.status !== '') {

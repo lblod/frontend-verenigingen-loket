@@ -56,10 +56,6 @@
                 class="au-u-margin-top"
               />
             {{/key}}
-            <Filters::OrganizationStatusSelect
-              @organizationStatus={{this.organizationStatus}}
-              @onOrganizationStatusChange={{fn (mut this.organizationStatus)}}
-            />
           </div>
           <div class="au-o-grid__item">
             <AuButton @skin="link" type="reset" onclick={{this.resetFilters}}>

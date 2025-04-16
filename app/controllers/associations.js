@@ -6,7 +6,6 @@ import { action } from '@ember/object';
 import { cell, resource, resourceFactory } from 'ember-resources';
 import ENV from 'frontend-verenigingen-loket/config/environment';
 import { dedupeTracked } from '../utils/tracked-toolbox';
-import { ORGANIZATION_STATUS } from '../models/organization-status-code';
 
 const DEBOUNCE_MS = 500;
 
