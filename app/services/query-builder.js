@@ -28,8 +28,7 @@ export const associationsQuery = ({
   index,
   page,
   params,
-  size,
-  distinct = true,
+  size
 }) => {
   const request = {};
   const search = params.search;
@@ -172,10 +171,6 @@ export const associationsQuery = ({
   request.page = page;
   request.size = size;
   request.sort = params.sort || '-createdOn';
-
-  if (distinct) {
-    request.collapseUuids = 't';
-  }
 
   request.filters = filters;
   return request;
