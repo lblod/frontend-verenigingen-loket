@@ -18,7 +18,7 @@ export default class IndexController extends Controller {
   @tracked search = '';
   @tracked activities = '';
   @tracked selectedActivities = [];
-  @tracked status = '';
+  @tracked recognition = '';
   @tracked selectedRecognitionStatus = '';
   @dedupeTracked postalCodes = '';
   @tracked types = '';
@@ -27,7 +27,7 @@ export default class IndexController extends Controller {
   @tracked selectedTargetAudiences = [];
   @tracked end = '';
   @tracked start = '';
-  @tracked organizationStatus = true;
+  @tracked status = true;
   @tracked ENVIRONMENT_NAME = ENV.environmentName;
   PostalCodes = PostalCodes;
 
@@ -36,13 +36,13 @@ export default class IndexController extends Controller {
     'page',
     'search',
     'activities',
-    'status',
+    'recognition',
     'postalCodes',
     'types',
     'targetAudiences',
     'end',
     'start',
-    'organizationStatus',
+    'status',
   ];
 
   @action
@@ -79,7 +79,7 @@ export default class IndexController extends Controller {
   setRecognitionStatus(selectedStatus) {
     this.page = 0;
     this.selectedRecognitionStatus = selectedStatus;
-    this.status = selectedStatus.join(',');
+    this.recognition = selectedStatus.join(',');
   }
 
   @action
@@ -113,7 +113,7 @@ export default class IndexController extends Controller {
 
   @action
   resetFilters() {
-    this.status = '';
+    this.recognition = '';
     this.selectedRecognitionStatus = [];
     this.activities = '';
     this.selectedActivities = [];
@@ -126,8 +126,8 @@ export default class IndexController extends Controller {
     this.start = '';
     this.end = '';
     this.page = null;
-    // Active is the default organizationStatus filter state
-    this.organizationStatus = true;
+    // Active is the default organization status filter state
+    this.status = true;
     this.sort = '-created-on';
   }
 }

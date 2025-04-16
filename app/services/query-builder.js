@@ -74,21 +74,21 @@ export const associationsQuery = ({
       addFilter(':query:primarySite.address.postcode', `(${postalCodesQuery})`);
     }
 
-    if (params.status === 'Erkend') {
+    if (params.recognition === 'Erkend') {
       addFilter(
         ':query:recognitions.validityPeriod',
         `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})) OR (NOT (recognitions.validityPeriod.startTime:>${today}) AND (recognitions.validityPeriod.endTime:>${today}))`,
       );
       addFilter(':has:recognitions.validityPeriod.endTime', true);
-    } else if (params.status === 'Verlopen') {
+    } else if (params.recognition === 'Verlopen') {
       addFilter(
         ':query:recognitions.validityPeriod',
         `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))) AND NOT (recognitions.validityPeriod.startTime:>${today})`,
       );
       addFilter(':has:recognitions.validityPeriod.endTime', true);
     } else if (
-      params.status === 'Erkend,Verlopen' ||
-      params.status === 'Verlopen,Erkend'
+      params.recognition === 'Erkend,Verlopen' ||
+      params.recognition === 'Verlopen,Erkend'
     ) {
       // Filter out "upcoming" recognitions when both filters are selected
       addFilter(
@@ -150,14 +150,14 @@ export const associationsQuery = ({
     if (params.types && params.types !== '') {
       filters['classification.uuid'] = params.types.split(',');
     }
-    if (params.organizationStatus) {
+    if (params.status) {
       filters['status_id'] = ORGANIZATION_STATUS.ACTIVE;
     }
 
-    if (params.status && params.status !== '') {
+    if (params.recognition && params.recognition !== '') {
       if (
-        params.status === 'Erkend,Verlopen' ||
-        params.status === 'Verlopen,Erkend'
+        params.recognition === 'Erkend,Verlopen' ||
+        params.recognition === 'Verlopen,Erkend'
       ) {
         filters[':has:recognitions.validityPeriod.endTime'] = true;
         filters[':has-no:recognitions.status'] = true;
