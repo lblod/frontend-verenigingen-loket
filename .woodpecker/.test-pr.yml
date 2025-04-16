@@ -25,6 +25,7 @@ steps:
       - npm run lint:dependencies
   test:
     image: danlynn/ember-cli:5.8.0-node_20.12
+    depends_on: [lint-js, lint-hbs, lint-css, dependency-lint]
     commands:
       - npm run test:ember
 when:
