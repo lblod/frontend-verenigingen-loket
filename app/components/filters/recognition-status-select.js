@@ -2,22 +2,23 @@ import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 
-export default class OrganizationStatusSelectComponent extends Component {
+export default class RecognitionStatusSelectComponent extends Component {
   @service router;
   @service store;
 
-  @tracked organizationStatusQuery = '';
-  @tracked organizationStatus;
+  @tracked recognitionStatusQuery = '';
+  @tracked recognitionStatus;
 
   constructor() {
     super(...arguments);
-    this.organizationStatusQuery = this.router.currentRoute.queryParams.status;
+    this.recognitionStatusQuery =
+      this.router.currentRoute.queryParams.recognition;
     this.args.onChange(this.selectedRecognitionStatus());
   }
 
   selectedRecognitionStatus() {
-    return this.organizationStatusQuery
-      ? this.organizationStatusQuery.split(',').map((id) => id)
+    return this.recognitionStatusQuery
+      ? this.recognitionStatusQuery.split(',').map((id) => id)
       : [];
   }
 }
