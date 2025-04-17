@@ -1,3 +1,8 @@
+## v1.4.0 (2025-04-17)
+
+#### :rocket: Enhancement
+* [#82](https://github.com/lblod/frontend-verenigingen-loket/pull/82) [CLBV-986]: show association status ([@wolfderechter](https://github.com/wolfderechter))
+
 ## v1.3.4 (2025-02-26)
 
 #### :bug: Bug Fix
