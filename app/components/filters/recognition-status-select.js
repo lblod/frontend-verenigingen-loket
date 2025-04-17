@@ -12,10 +12,10 @@ export default class OrganizationStatusSelectComponent extends Component {
   constructor() {
     super(...arguments);
     this.organizationStatusQuery = this.router.currentRoute.queryParams.status;
-    this.args.onChange(this.selectedOrganizationStatus());
+    this.args.onChange(this.selectedRecognitionStatus());
   }
 
-  selectedOrganizationStatus() {
+  selectedRecognitionStatus() {
     return this.organizationStatusQuery
       ? this.organizationStatusQuery.split(',').map((id) => id)
       : [];

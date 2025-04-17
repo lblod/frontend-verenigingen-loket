@@ -18,8 +18,8 @@ export default class IndexController extends Controller {
   @tracked search = '';
   @tracked activities = '';
   @tracked selectedActivities = [];
-  @tracked status = '';
-  @tracked selectedOrganizationStatus = '';
+  @tracked recognition = '';
+  @tracked selectedRecognitionStatus = '';
   @dedupeTracked postalCodes = '';
   @tracked types = '';
   @tracked selectedTypes = [];
@@ -27,6 +27,7 @@ export default class IndexController extends Controller {
   @tracked selectedTargetAudiences = [];
   @tracked end = '';
   @tracked start = '';
+  @tracked status = true;
   @tracked ENVIRONMENT_NAME = ENV.environmentName;
   PostalCodes = PostalCodes;
 
@@ -35,12 +36,13 @@ export default class IndexController extends Controller {
     'page',
     'search',
     'activities',
-    'status',
+    'recognition',
     'postalCodes',
     'types',
     'targetAudiences',
     'end',
     'start',
+    'status',
   ];
 
   @action
@@ -74,10 +76,10 @@ export default class IndexController extends Controller {
   }
 
   @action
-  setOrganizationStatus(selectedStatus) {
+  setRecognitionStatus(selectedStatus) {
     this.page = 0;
-    this.selectedOrganizationStatus = selectedStatus;
-    this.status = selectedStatus.join(',');
+    this.selectedRecognitionStatus = selectedStatus;
+    this.recognition = selectedStatus.join(',');
   }
 
   @action
@@ -93,6 +95,13 @@ export default class IndexController extends Controller {
     this.selectedTargetAudiences = selectedTargetAudiences;
     this.targetAudiences = selectedTargetAudiences.join(',');
   }
+
+  @action
+  setOrganizationStatus(selectedStatus) {
+    this.page = 0;
+    this.status = selectedStatus;
+  }
+
   get isLoading() {
     return this.model.associations.isRunning;
   }
@@ -111,8 +120,8 @@ export default class IndexController extends Controller {
 
   @action
   resetFilters() {
-    this.status = '';
-    this.selectedOrganizationStatus = [];
+    this.recognition = '';
+    this.selectedRecognitionStatus = [];
     this.activities = '';
     this.selectedActivities = [];
     this.postalCodes = '';
@@ -124,6 +133,8 @@ export default class IndexController extends Controller {
     this.start = '';
     this.end = '';
     this.page = null;
+    // Active is the default organization status filter state
+    this.status = true;
     this.sort = '-created-on';
   }
 }

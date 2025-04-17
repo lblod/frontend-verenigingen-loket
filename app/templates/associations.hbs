@@ -28,9 +28,9 @@
               @onChange={{this.setPostalCodes}}
               @selected={{(this.PostalCodes this.store this.postalCodes)}}
             />
-            <Filters::OrganizationStatusSelect
-              @onChange={{this.setOrganizationStatus}}
-              @selected={{this.selectedOrganizationStatus}}
+            <Filters::RecognitionStatusSelect
+              @onChange={{this.setRecognitionStatus}}
+              @selected={{this.selectedRecognitionStatus}}
             />
             <Filters::TypeSelect
               @onChange={{this.setTypes}}
@@ -99,6 +99,10 @@
                 />
               {{/if}}
             </div>
+            <Filters::OrganizationStatusToggle
+              @organizationStatus={{this.status}}
+              @onChange={{this.setOrganizationStatus}}
+            />
             <AuHr />
             <AuHeading @level="1" @skin="5">
               {{this.associations.meta.count}}
@@ -123,6 +127,7 @@
             @class="data-table__header-title"
           />
           <th>Hoofdactiviteiten</th>
+          <th>Status</th>
           <th>vCode</th>
           <AuDataTableThSortable
             @field="targetAudience.minimumLeeftijd,targetAudience.maximumLeeftijd"
@@ -179,7 +184,14 @@
               {{/each}}
             </td>
             <td>
-
+              {{#if association.status}}
+                <OrganizationStatus
+                  @id={{association.status_id}}
+                  @label={{association.status}}
+                />
+              {{/if}}
+            </td>
+            <td>
               {{#each association.identifiers as |identifier|}}
                 {{#if (eq identifier.idName "vCode")}}
                   {{get identifier.structuredIdentifier "localId"}}

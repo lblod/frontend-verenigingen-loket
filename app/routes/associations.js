@@ -16,12 +16,13 @@ export default class AssociationsRoute extends Route {
     size: { refreshModel: true },
     page: { refreshModel: true },
     activities: { refreshModel: true },
-    status: { refreshModel: true },
+    recognition: { refreshModel: true },
     postalCodes: { refreshModel: true },
     types: { refreshModel: true },
     targetAudiences: { refreshModel: true },
     start: { refreshModel: true },
     end: { refreshModel: true },
+    status: { refreshModel: true },
   };
 
   beforeModel(transition) {

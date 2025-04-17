@@ -12,7 +12,9 @@ export default class AssociationRoute extends Route {
   }
   async model({ id }) {
     try {
-      const model = await this.store.findRecord('association', id);
+      const model = await this.store.findRecord('association', id, {
+        include: 'organization-status',
+      });
       if (model == null) {
         throw new Error(`Error loading association with id: (${id})`);
       }
