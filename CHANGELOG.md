@@ -1,3 +1,7 @@
+## v1.4.3 (2025-04-18)
+#### :bug: Bug Fix
+- Revert https://github.com/lblod/frontend-verenigingen-loket/pull/83
+
 ## v1.4.0 (2025-04-17)
 
 #### :rocket: Enhancement
