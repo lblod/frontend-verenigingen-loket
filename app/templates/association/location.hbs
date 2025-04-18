@@ -56,9 +56,9 @@
         @class="data-table__header-title"
       />
     </c.header>
-    {{#if this.hasErrored}}
+    {{!-- {{#if this.hasErrored}}
       <TableMessage::Error />
-    {{else}}
+    {{else}} --}}
       <c.body as |site|>
         <td>
           {{#if site.address.isPrimary}}
@@ -75,6 +75,6 @@
           {{site.description}}
         </td>
       </c.body>
-    {{/if}}
+    {{!-- {{/if}} --}}
   </t.content>
 </AuDataTable>

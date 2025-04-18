@@ -138,9 +138,9 @@
           <th>Erkenning</th>
         </c.header>
         {{#if this.hasErrored}}
-          <TableMessage::Error />
+          {{!-- <TableMessage::Error /> --}}
         {{else if this.hasNoResults}}
-          <TableMessage>
+          {{!-- <TableMessage>
             <p>
               Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of
               probeer een andere zoekopdracht. Indien een organisatie ontbreekt,
@@ -153,7 +153,7 @@
               <AuLink @route="administrative-units.new">maak een organisatie
                 aan.</AuLink>
             </p>
-          </TableMessage>
+          </TableMessage> --}}
         {{else}}
           <c.body as |association|>
             <td>
