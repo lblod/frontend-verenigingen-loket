@@ -89,6 +89,16 @@ export default class SharedBreadCrumbComponent extends Component {
         ],
       },
       {
+        route: 'association.contact-edit',
+        crumbs: [
+          { label: 'Verenigingen', link: 'associations' },
+          {
+            label: name,
+          },
+          { label: 'Bewerk contactgegevens' },
+        ],
+      },
+      {
         route: 'association.location',
         crumbs: [
           { label: 'Verenigingen', link: 'associations' },

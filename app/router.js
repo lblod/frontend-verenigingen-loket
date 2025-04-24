@@ -40,7 +40,8 @@ Router.map(function () {
   this.route('association', { path: 'vereniging/:id' }, function () {
     this.route('general', { path: '/' });
     this.route('general', { path: '/algemeen' });
-    this.route('contact-detail');
+    this.route('contact-detail', { path: '/contactgegevens' });
+    this.route('contact-edit', { path: '/contactgegevens/bewerk' });
     this.route('location');
     this.route('representatives');
     this.route('recognition', { path: 'erkenningen' }, function () {
