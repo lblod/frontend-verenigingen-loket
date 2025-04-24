@@ -29,8 +29,7 @@ export default class AssociationGeneralRoute extends Route {
   async getRecognition(id, date) {
     const query = {
       include: [
-        'awarded-by.governing-body.classification',
-        'awarded-by.governing-body.administrative-unit.classification',
+        'awarded-by.classification',
         'validity-period',
       ].join(','),
       filter: {

@@ -14,7 +14,8 @@ export default class RecognitionModel extends Model {
     async: false,
   })
   validityPeriod;
-  @belongsTo('governing-body', {
+  // TODO: this should be "organization" according to the data model?
+  @belongsTo('administrative-unit', {
     inverse: null,
     async: true,
   })

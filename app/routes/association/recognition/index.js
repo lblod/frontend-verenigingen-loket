@@ -18,8 +18,7 @@ export default class AssociationRecognitionRoute extends Route {
   loadRecognition = task({ keepLatest: true }, async (id, params) => {
     return await this.store.query('recognition', {
       include: [
-        'awarded-by.governing-body.classification',
-        'awarded-by.governing-body.administrative-unit.classification',
+        'awarded-by.classification',
         'validity-period',
         'file',
       ].join(','),
