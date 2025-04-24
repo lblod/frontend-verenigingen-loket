@@ -18,13 +18,19 @@
       <div
         class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
       >
-        <AuLink
-          @route="association.contact-edit"
-          @skin="button-secondary"
-          @icon="pencil"
-        >
-          Bewerk
-        </AuLink>
+        {{#if this.currentSession.canEdit}}
+          <AuLink
+            @route="association.contact-edit"
+            @skin="button-secondary"
+            @icon="pencil"
+          >
+            Bewerk
+          </AuLink>
+        {{else}}
+          {{#if this.association}}
+            <ReportWrongData @model={{this.association}} />
+          {{/if}}
+        {{/if}}
       </div>
     </section>
     <section>
