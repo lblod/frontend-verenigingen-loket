@@ -1,4 +1,5 @@
 {{page-title "Contactgegevens"}}
+
 {{#if
   (or
     this.isLoading
@@ -53,6 +54,8 @@
                     {{/if}}
                   </:content>
                 </Item>
+              </:left>
+              <:right as |Item|>
                 <Item>
                   <:label>Telefoon</:label>
                   <:content>
@@ -81,8 +84,6 @@
                     {{/if}}
                   </:content>
                 </Item>
-              </:left>
-              <:right as |Item|>
                 <Item>
                   <:label>Website</:label>
                   <:content>
