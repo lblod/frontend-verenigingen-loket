@@ -14,7 +14,7 @@ export default class AddressRegisterSelectorComponent extends Component {
   constructor() {
     super(...arguments);
 
-    this.addressRegister.setup({ endpoint: '/adresses-register' });
+    this.addressRegister.setup({ endpoint: '/address-register' });
     if (this.args.address) {
       let addressSuggestion = this.args.address;
 
@@ -60,4 +60,10 @@ export default class AddressRegisterSelectorComponent extends Component {
     const addressSuggestions = yield this.addressRegister.suggest(searchData);
     return addressSuggestions;
   }
+
+  maybePrefillSearch = (selectApi) => {
+    if (this.addressSuggestion) {
+      selectApi.actions.search(this.addressSuggestion.fullAddress);
+    }
+  };
 }

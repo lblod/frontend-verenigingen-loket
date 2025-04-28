@@ -10,27 +10,28 @@
   <AuLoader class="au-u-margin-top-huge">Contactgegevens aan het laden</AuLoader>
 {{else}}
   <div class="au-o-box au-u-padding-left au-u-padding-right au-u-padding-top">
-    <section class="au-u-flex au-u-flex--between">
-      <div>
+    <section class="au-u-flex au-u-flex--between au-u-margin-bottom-large">
+      <div class="">
         <AuHeading @level="1" @skin="1">Bewerk contactgegevens</AuHeading>
-        <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
+        <AuHeading @level="2" @skin="3">{{this.association.name}}</AuHeading>
       </div>
-      <div
-        class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
-      >
-        <AuLink
-          @route="association.contact-detail"
-          @skin="button-secondary"
-        >
-          Annuleer
-        </AuLink>
 
-        <AuButton
-          type="submit"
-          form="contact-edit-form"
-        >
-          Opslaan
-        </AuButton>
+      <div
+        class="au-u-text-right au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
+      >
+        <AuButtonGroup class="au-c-button-group--align-right">
+          <AuLink @route="association.contact-detail" @skin="button-secondary">
+            Annuleer
+          </AuLink>
+          <AuButton
+            {{!-- @loading={{this.save.isRunning}}
+            @disabled={{this.save.isRunning}} --}}
+            form="contact-edit-form"
+            type="submit"
+          >
+            Opslaan
+          </AuButton>
+        </AuButtonGroup>
       </div>
     </section>
 
@@ -42,7 +43,7 @@
             <:left as |Item|>
               <AddressSearch
                 {{!-- @address={{get this.association "primarySite.address"}} --}}
-                @address={{hash street="foo" number="1" postcode="1234"}}
+                @address={{hash street="foo" number="1" postcode="1234" fullAddress="foo 1 1234"}}
                 @itemComponent={{Item}}
                 {{!-- @isSearchEnabledInitially={{@isAddressSearchEnabledInitially}} --}}
                 @isSearchEnabledInitially={{true}}
@@ -67,69 +68,70 @@
                     </:content>
                   </Item>
                   <Item
-                    @labelFor="site-address-street-name"
+                    @labelFor="address-street-name"
                     @required={{true}}
                     @errorMessage={{@address.error.street.message}}
                   >
                     <:label>Straat</:label>
                     <:content as |hasError|>
-                      {{!-- <TrimInput
+                      <TrimInput
                         @width="block"
                         @value={{@address.street}}
-                        @onUpdate={{fn (mut @address.street)}}
+                        {{! // Todo update }}
+                        @onUpdate={{fn (mut this.address.street)}}
                         @error={{hasError}}
-                        id="site-address-street-name"
-                      /> --}}
+                        id="address-street-name"
+                      />
                     </:content>
                   </Item>
                 </:manualAddressInputBeforeButton>
                 <:manualAddressInput>
                   <Item
-                    @labelFor="site-address-house-number"
+                    @labelFor="address-house-number"
                     @required={{true}}
                     @errorMessage={{@address.error.number.message}}
                   >
                     <:label>Huisnummer</:label>
                     <:content as |hasError|>
-                      {{!-- <TrimInput
+                      <TrimInput
                         @width="block"
                         @value={{@address.number}}
                         @onUpdate={{fn (mut @address.number)}}
                         @error={{hasError}}
-                        id="site-address-house-number"
-                      /> --}}
+                        id="address-house-number"
+                      />
                     </:content>
                   </Item>
-                  <Item @labelFor="site-address-bus-number">
+                  <Item @labelFor="address-bus-number">
                     <:label>Busnummer</:label>
                     <:content>
-                      {{!-- <TrimInput
+                      <TrimInput
                         @width="block"
                         @value={{@address.boxNumber}}
                         @onUpdate={{fn (mut @address.boxNumber)}}
-                        id="site-address-bus-number"
-                      /> --}}
+                        id="address-bus-number"
+                      />
                     </:content>
                   </Item>
                   <Item
-                    @labelFor="site-address-postal-code"
+                    @labelFor="address-postal-code"
                     @required={{true}}
                     @errorMessage={{@address.error.postcode.message}}
                   >
                     <:label>Postcode</:label>
                     <:content as |hasError|>
-                      {{!-- <TrimInput
+                      <TrimInput
                         @width="block"
                         @value={{@address.postcode}}
                         @onUpdate={{fn (mut @address.postcode)}}
                         @error={{hasError}}
-                        id="site-address-postal-code"
-                      /> --}}
+                        id="address-postal-code"
+                      />
                     </:content>
                   </Item>
                   {{!-- {{#if @address.isCountryBelgium}}
                     <Item
-                      @labelFor="site-address-municipality"
+                      @labelFor="address-municipality"
                       @required={{true}}
                       @errorMessage={{@address.error.municipality.message}}
                     >
@@ -139,14 +141,14 @@
                           @selected={{@address.municipality}}
                           @selectedProvince={{@address.province}}
                           @onChange={{fn (mut @address.municipality)}}
-                          @id="site-address-municipality"
+                          @id="address-municipality"
                           @error={{hasError}}
                         />
                       </:content>
                     </Item>
                   {{else}}
                     <Item
-                      @labelFor="site-address-municipality"
+                      @labelFor="address-municipality"
                       @required={{true}}
                       @errorMessage={{@address.error.municipality.message}}
                     >
@@ -157,7 +159,7 @@
                           @value={{@address.municipality}}
                           @onUpdate={{fn (mut @address.municipality)}}
                           @error={{hasError}}
-                          id="site-address-municipality"
+                          id="address-municipality"
                         />
                       </:content>
                     </Item>
@@ -166,7 +168,7 @@
                 <:commonInput>
                   {{!-- {{#if @address.isCountryBelgium}}
                     <Item
-                      @labelFor="site-address-province"
+                      @labelFor="address-province"
                       @required={{true}}
                       @errorMessage={{@address.error.province.message}}
                     >
@@ -176,7 +178,7 @@
                           @selected={{@address.province}}
                           @selectedMunicipality={{@address.municipality}}
                           @onChange={{fn (mut @address.province)}}
-                          @id="site-address-province"
+                          @id="address-province"
                           @error={{hasError}}
                         />
                       </:content>
@@ -192,16 +194,16 @@
               >
                 <:label>Telefoon</:label>
                 <:content as |hasError|>
-                  {{!-- <TrimInput
+                  <TrimInput
                     @width="block"
                     @value={{@primaryContact.telephone}}
-                    @onUpdate={{fn (mut @primaryContact.telephone)}}
+                    {{! todo path }}
+                    @onUpdate={{fn (mut this.primaryContact.telephone)}}
                     @error={{hasError}}
-                    id="site-contact-phone-number"
+                    id="contact-phone-number"
                     type="tel"
-                    {{inputmaskTel}}
-                  /> --}}
-                  todo
+                    {{!-- {{inputmaskTel}} --}}
+                  />
                 </:content>
                 <:helpText>
                   {{!-- {{help-text "phone-number"}} --}}
@@ -214,14 +216,13 @@
               >
                 <:label>E-mail</:label>
                 <:content as |errorMessage|>
-                todo
-                  {{!-- <TrimInput
+                  <TrimInput
                     @width="block"
                     @value={{@primaryContact.email}}
-                    @onUpdate={{fn (mut @primaryContact.email)}}
+                    @onUpdate={{fn (mut this.primaryContact.email)}}
                     @error={{errorMessage}}
-                    id="site-contact-email"
-                  /> --}}
+                    id="contact-email"
+                  />
                 </:content>
                 <:helpText>
                   {{!-- {{help-text "email"}} --}}
@@ -233,14 +234,13 @@
               >
                 <:label>Website</:label>
                 <:content as |hasError|>
-                todo
-                  {{!-- <TrimInput
+                  <TrimInput
                     @width="block"
-                    @value={{@primaryContact.website}}
-                    @onUpdate={{fn (mut @primaryContact.website)}}
+                    @value={{this.primaryContact.website}}
+                    @onUpdate={{fn (mut this.primaryContact.website)}}
                     @error={{hasError}}
-                    id="site-contact-website"
-                  /> --}}
+                    id="contact-website"
+                  />
                 </:content>
                 <:helpText>
                   {{!-- {{help-text "url"}} --}}
@@ -252,14 +252,13 @@
               >
                 <:label>Social media</:label>
                 <:content as |hasError|>
-                todo
-                  {{!-- <TrimInput
+                  <TrimInput
                     @width="block"
-                    @value={{@primaryContact.website}}
-                    @onUpdate={{fn (mut @primaryContact.website)}}
+                    @value={{this.primaryContact.website}}
+                    @onUpdate={{fn (mut this.primaryContact.website)}}
                     @error={{hasError}}
-                    id="site-contact-website"
-                  /> --}}
+                    id="contact-social-media"
+                  />
                 </:content>
                 <:helpText>
                   {{!-- {{help-text "url"}} --}}
