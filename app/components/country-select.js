@@ -16,7 +16,7 @@ export default class CountrySelectComponent extends Component {
       query['filter[country-label]'] = search;
     }
 
-    const nationalities = await this.store.query('nationality', query);
+    const nationalities = await this.store.query('country', query);
     return nationalities.map((n) => n.countryLabel);
   });
 }
