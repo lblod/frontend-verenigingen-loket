@@ -4,15 +4,13 @@
   <AuLoader class="au-u-margin-top-huge">Contactgegevens aan het laden</AuLoader>
 {{else}}
   <div class="au-o-box au-u-padding-left au-u-padding-right au-u-padding-top">
-    <section class="au-u-flex au-u-flex--between au-u-margin-bottom-large">
+    <section class="au-u-flex au-u-flex--between au-u-flex--vertical-baseline au-u-margin-bottom">
       <div class="">
         <AuHeading @level="1" @skin="1">Bewerk contactgegevens</AuHeading>
         <AuHeading @level="2" @skin="3">{{this.association.name}}</AuHeading>
       </div>
 
-      <div
-        {{! class="au-u-text-right au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end" }}
-      >
+      <div>
         <AuButtonGroup class="au-c-button-group--align-right">
           <AuLink @route="association.contact-detail" @skin="button-secondary">
             Annuleer

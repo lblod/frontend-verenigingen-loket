@@ -32,7 +32,7 @@ export default class CurrentSessionService extends Service {
     }
   }
   get canEdit() {
-    // TODO: for demo purposes only -> change asap
+    // TODO: check actual roles
     return true;
   }
 
