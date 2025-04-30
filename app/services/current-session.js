@@ -32,7 +32,8 @@ export default class CurrentSessionService extends Service {
     }
   }
   get canEdit() {
-    return true; // for demo purposes only -> change asap
+    // TODO: check if this is the correct role
+    return this.roles.includes('LoketLB-verenigingenGebruiker');
   }
 
   get fullName() {

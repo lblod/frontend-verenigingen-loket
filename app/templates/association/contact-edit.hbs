@@ -1,0 +1,273 @@
+{{page-title "Bewerk contactgegevens"}}
+
+{{#if this.isLoading}}
+  <AuLoader class="au-u-margin-top-huge">Contactgegevens aan het laden</AuLoader>
+{{else}}
+  <div class="au-o-box au-u-padding-left au-u-padding-right au-u-padding-top">
+    <section class="au-u-flex au-u-flex--between au-u-flex--vertical-baseline au-u-margin-bottom">
+      <div class="">
+        <AuHeading @level="1" @skin="1">Bewerk contactgegevens</AuHeading>
+        <AuHeading @level="2" @skin="3">{{this.association.name}}</AuHeading>
+      </div>
+
+      <div>
+        <AuButtonGroup class="au-c-button-group--align-right">
+          <AuLink @route="association.contact-detail" @skin="button-secondary">
+            Annuleer
+          </AuLink>
+          <AuButton
+            @loading={{this.save.isRunning}}
+            @loadingMessage="Opslaan"
+            form="contact-edit-form"
+            type="submit"
+          >
+            Opslaan
+          </AuButton>
+        </AuButtonGroup>
+      </div>
+    </section>
+
+    <form id="contact-edit-form" {{on "submit" (perform this.save)}}>
+      <EditCard @containsRequiredFields={{true}}>
+        <:title>Contactgegevens</:title>
+        <:card as |Card|>
+          <Card.Columns>
+            <:left as |Item|>
+              <AddressSearch
+                @address={{this.address}}
+                @itemComponent={{Item}}
+                @isSearchEnabledInitially={{if
+                  (or (not this.address.id) this.address.addressRegisterUri)
+                  true
+                  false
+                }}
+                @required={{true}}
+                @error={{this.address.error}}
+              >
+                <:manualAddressInputBeforeButton>
+                  <Item
+                    @labelFor="address-country"
+                    @required={{true}}
+                    @errorMessage={{this.address.error.country.message}}
+                  >
+                    <:label>Land</:label>
+                    <:content as |hasError|>
+                      <CountrySelect
+                        @selected={{this.address.country}}
+                        {{!-- @onChange={{this.updateCountry}} --}}
+                        @onChange={{fn (mut this.country)}}
+                        @id="address-country"
+                        @error={{hasError}}
+                      />
+                    </:content>
+                  </Item>
+                  <Item
+                    @labelFor="address-street-name"
+                    @required={{true}}
+                    @errorMessage={{this.address.error.street.message}}
+                  >
+                    <:label>Straat</:label>
+                    <:content as |hasError|>
+                      <TrimInput
+                        @width="block"
+                        @value={{this.address.street}}
+                        {{! // Todo update }}
+                        @onUpdate={{fn (mut this.address.street)}}
+                        @error={{hasError}}
+                        id="address-street-name"
+                      />
+                    </:content>
+                  </Item>
+                </:manualAddressInputBeforeButton>
+                <:manualAddressInput>
+                  <Item
+                    @labelFor="address-house-number"
+                    @required={{true}}
+                    @errorMessage={{this.address.error.number.message}}
+                  >
+                    <:label>Huisnummer</:label>
+                    <:content as |hasError|>
+                      <TrimInput
+                        @width="block"
+                        @value={{this.address.number}}
+                        @onUpdate={{fn (mut this.address.number)}}
+                        @error={{hasError}}
+                        id="address-house-number"
+                      />
+                    </:content>
+                  </Item>
+                  <Item @labelFor="address-bus-number">
+                    <:label>Busnummer</:label>
+                    <:content>
+                      <TrimInput
+                        @width="block"
+                        @value={{this.address.boxNumber}}
+                        @onUpdate={{fn (mut this.address.boxNumber)}}
+                        id="address-bus-number"
+                      />
+                    </:content>
+                  </Item>
+                  <Item
+                    @labelFor="address-postal-code"
+                    @required={{true}}
+                    @errorMessage={{this.address.error.postcode.message}}
+                  >
+                    <:label>Postcode</:label>
+                    <:content as |hasError|>
+                      <TrimInput
+                        @width="block"
+                        @value={{this.address.postcode}}
+                        @onUpdate={{fn (mut this.address.postcode)}}
+                        @error={{hasError}}
+                        id="address-postal-code"
+                      />
+                    </:content>
+                  </Item>
+                  {{! TODO: use a helper? }}
+                  {{#if (eq this.address.country "België")}}
+                    <Item
+                      @labelFor="address-municipality"
+                      @required={{true}}
+                      @errorMessage={{this.address.error.municipality.message}}
+                    >
+                      <:label>Gemeente</:label>
+                      <:content as |hasError|>
+                        <MunicipalitySelectByName
+                          @selected={{this.address.municipality}}
+                          @selectedProvince={{this.address.province}}
+                          @onChange={{fn (mut this.address.municipality)}}
+                          @id="address-municipality"
+                          @error={{hasError}}
+                        />
+                      </:content>
+                    </Item>
+                  {{else}}
+                    <Item
+                      @labelFor="address-municipality"
+                      @required={{true}}
+                      @errorMessage={{this.address.error.municipality.message}}
+                    >
+                      <:label>Gemeente</:label>
+                      <:content as |hasError|>
+                        <TrimInput
+                          @width="block"
+                          @value={{this.address.municipality}}
+                          @onUpdate={{fn (mut this.address.municipality)}}
+                          @error={{hasError}}
+                          id="address-municipality"
+                        />
+                      </:content>
+                    </Item>
+                  {{/if}}
+                </:manualAddressInput>
+                <:commonInput>
+                  {{! TODO: use a helper? }}
+                  {{#if (eq this.address.country "België")}}
+                    <Item
+                      @labelFor="address-province"
+                      @required={{true}}
+                      @errorMessage={{this.address.error.province.message}}
+                    >
+                      <:label>Provincie</:label>
+                      <:content as |hasError|>
+                        <ProvinceSelect
+                          @selected={{this.address.province}}
+                          @selectedMunicipality={{this.address.municipality}}
+                          @onChange={{fn (mut this.address.province)}}
+                          @id="address-province"
+                          @error={{hasError}}
+                        />
+                      </:content>
+                    </Item>
+                  {{/if}}
+                </:commonInput>
+              </AddressSearch>
+            </:left>
+            <:right as |Item|>
+              <Item
+                @labelFor="contact-phone-number"
+                @errorMessage={{@primaryContact.error.telephone.message}}
+              >
+                <:label>Telefoon</:label>
+                <:content as |hasError|>
+                  <TrimInput
+                    @width="block"
+                    @value={{@primaryContact.telephone}}
+                    {{! todo path }}
+                    @onUpdate={{fn (mut this.primaryContact.telephone)}}
+                    @error={{hasError}}
+                    id="contact-phone-number"
+                    type="tel"
+                    {{! src: https://github.com/lblod/frontend-organization-portal/blob/327cf97c190be46750fea1bdc28a83a437ac9872/app/modifiers/inputmaskTel.js#L6 }}
+                    {{au-inputmask
+                      options=(hash regex="(\+)\d{10}\d*" lazy=true)
+                    }}
+                  />
+                </:content>
+                <:helpText>
+                  Bijvoorbeeld +3211211430
+                </:helpText>
+              </Item>
+
+              <Item
+                @labelFor="contact-email"
+                @errorMessage={{@primaryContact.error.email.message}}
+              >
+                <:label>E-mail</:label>
+                <:content as |errorMessage|>
+                  <TrimInput
+                    @width="block"
+                    @value={{@primaryContact.email}}
+                    @onUpdate={{fn (mut this.primaryContact.email)}}
+                    @error={{errorMessage}}
+                    id="contact-email"
+                  />
+                </:content>
+                <:helpText>
+                  Bijvoorbeeld mail@adres.com
+                </:helpText>
+              </Item>
+              <Item
+                @labelFor="contact-website"
+                @errorMessage={{@primaryContact.error.website.message}}
+              >
+                <:label>Website</:label>
+                <:content as |hasError|>
+                  <TrimInput
+                    @width="block"
+                    @value={{this.primaryContact.website}}
+                    @onUpdate={{fn (mut this.primaryContact.website)}}
+                    @error={{hasError}}
+                    id="contact-website"
+                  />
+                </:content>
+                <:helpText>
+                  Bijvoorbeeld https://www.vlaanderen.be
+                </:helpText>
+              </Item>
+              <Item
+                @labelFor="contact-social-media"
+                {{!-- @errorMessage={{@primaryContact.error.website.message}} --}}
+              >
+                <:label>Social media</:label>
+                <:content as |hasError|>
+                  {{! TODO: There are potentially more than one social media link? How do we differentiate and visualize? }}
+                  <TrimInput
+                    @width="block"
+                    @value={{this.primaryContact.website}}
+                    @onUpdate={{fn (mut this.primaryContact.website)}}
+                    @error={{hasError}}
+                    id="contact-social-media"
+                  />
+                </:content>
+                <:helpText>
+                  Bijvoorbeeld https://www.vlaanderen.be
+                </:helpText>
+              </Item>
+            </:right>
+          </Card.Columns>
+        </:card>
+      </EditCard>
+    </form>
+  </div>
+{{/if}}

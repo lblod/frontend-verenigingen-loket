@@ -1,4 +1,5 @@
 {{page-title "Contactgegevens"}}
+
 {{#if
   (or
     this.isLoading
@@ -9,16 +10,24 @@
   <AuLoader class="au-u-margin-top-huge">Contactgegevens aan het laden</AuLoader>
 {{else}}
   <div class="au-o-box au-u-padding-left au-u-padding-right au-u-padding-top">
-    <section class="au-u-flex au-u-flex--between">
+    <section class="au-u-flex au-u-flex--between {{if this.currentSession.canEdit 'au-u-flex--vertical-baseline' 'au-u-flex--vertical-end'}}">
       <div>
         <AuHeading @level="1" @skin="1">Contactgegevens</AuHeading>
         <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
       </div>
-      <div
-        class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
-      >
-        {{#if this.association}}
-          <ReportWrongData @model={{this.association}} />
+      <div>
+        {{#if this.currentSession.canEdit}}
+          <AuLink
+            @route="association.contact-edit"
+            @skin="button-secondary"
+            @icon="pencil"
+          >
+            Bewerk
+          </AuLink>
+        {{else}}
+          {{#if this.association}}
+            <ReportWrongData @model={{this.association}} />
+          {{/if}}
         {{/if}}
       </div>
     </section>
@@ -32,8 +41,8 @@
             <div
               class="au-u-padding-top au-u-flex au-u-flex--between au-u-flex--vertical-end"
             >
-              Contactgegevens (zoals bekend in het Verenigingsregister)
-              <div class="au-u-margin-bottom-tiny">
+              Contactgegevens
+              <div>
                 {{#if this.association}}
                   <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
                 {{/if}}
@@ -53,6 +62,8 @@
                     {{/if}}
                   </:content>
                 </Item>
+              </:left>
+              <:right as |Item|>
                 <Item>
                   <:label>Telefoon</:label>
                   <:content>
@@ -70,7 +81,7 @@
                   </:content>
                 </Item>
                 <Item>
-                  <:label>Email</:label>
+                  <:label>E-mail</:label>
                   <:content>
                     {{#if contact.email}}
                       <AuLinkExternal href="mailto:{{contact.email}}">
@@ -81,8 +92,6 @@
                     {{/if}}
                   </:content>
                 </Item>
-              </:left>
-              <:right as |Item|>
                 <Item>
                   <:label>Website</:label>
                   <:content>
@@ -110,7 +119,6 @@
                     {{else}}
                       Niet opgegeven
                     {{/if}}
-
                   </:content>
                 </Item>
               </:right>
