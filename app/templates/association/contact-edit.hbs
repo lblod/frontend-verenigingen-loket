@@ -200,7 +200,10 @@
                     @error={{hasError}}
                     id="contact-phone-number"
                     type="tel"
-                    {{!-- {{inputmaskTel}} --}}
+                    {{! src: https://github.com/lblod/frontend-organization-portal/blob/327cf97c190be46750fea1bdc28a83a437ac9872/app/modifiers/inputmaskTel.js#L6 }}
+                    {{au-inputmask
+                      options=(hash regex="(\+)\d{10}\d*" lazy=true)
+                    }}
                   />
                 </:content>
                 <:helpText>
