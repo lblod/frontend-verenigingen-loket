@@ -332,8 +332,14 @@ export default class FormComponent extends Component {
 
   @action
   async getAwardedBy() {
-    let awardedByValue = this.items[0];
-    if (this.currentRecognition.selectedItem !== this.items[0]) {
+    let awardedByValue;
+    if (this.currentRecognition.selectedItem == this.items[0]) {
+      // The user selected the option "College van burgemeester en schepenen"
+      // We want to link the recognition to the organization the user is logged in with
+      awardedByValue = this.currentSession.group.name;
+    } else {
+      // The user selected the option "Andere"
+      // We want to link the recognition to the organization added in the Namelijk field
       awardedByValue = this.currentRecognition.recognitionModel.awardedBy;
     }
 

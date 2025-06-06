@@ -5,6 +5,7 @@ export default class CurrentRecognitionService extends Service {
   items = ['College van burgemeester en schepenen', 'Andere'];
 
   @service store;
+  @service currentSession;
 
   @tracked recognition = null;
   @tracked selectedItem = this.items[0];
@@ -62,7 +63,7 @@ export default class CurrentRecognitionService extends Service {
       this.recognitionModel.legalResource = recognition.legalResource ?? null;
       this.recognitionModel.awardedBy = await recognition.awardedBy.get('name');
       this.selectedItem =
-        this.recognitionModel.awardedBy === this.items[0]
+        this.recognitionModel.awardedBy === this.currentSession.group.name
           ? this.items[0]
           : this.items[1];
     }
