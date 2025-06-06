@@ -117,17 +117,48 @@
                     }}
                   >
                     <PowerSelect
-                      @options={{this.getGoverningBodiesInTime.last}}
+                      @options={{this.items}}
                       @loadingMessage="Aan het laden"
                       @selected={{this.currentRecognition.selectedItem}}
                       @onChange={{this.handleAwardedByChange}}
                       @triggerId="awarded-by"
-                      as |governingBodyInTime|
+                      as |name|
                     >
-                      <Recognition::GoverningBodyInTimeInfo
-                        @governingBodyInTime={{governingBodyInTime}}
-                      />
+                      {{name}}
                     </PowerSelect>
+                    {{#if
+                      (eq
+                        (get this "currentRecognition.selectedItem")
+                        (get this "items.1")
+                      )
+                    }}
+                      <section
+                        class="au-u-margin-top-small au-u-flex au-u-flex--vertical-center"
+                      >
+                        <div class="au-u-flex au-u-flex--column au-u-1-3">
+                          <AuLabel
+                            @inline={{true}}
+                            @required={{true}}
+                            for="awarded-by-organization-name"
+                          >
+                            Namelijk
+                          </AuLabel>
+                        </div>
+                        <div class="au-u-flex au-u-flex--column au-u-1-1">
+                          <AuInput
+                            placeholder="Vul in organisatie"
+                            value={{model.awardedBy}}
+                            {{on "blur" this.handleAwardedByChangeEvent}}
+                            id="awarded-by-organization-name"
+                            @error={{this.validationErrors.awardedBy}}
+                            @width="block"
+                          />
+                          <AuHelpText
+                            @error={{this.validationErrors.awardedBy}}
+                          >{{this.validationErrors.awardedBy}}</AuHelpText>
+                        </div>
+                      </section>
+                    {{/if}}
                   </div>
                   <AuHelpText
                     @error={{this.validationErrors.awardedBy}}

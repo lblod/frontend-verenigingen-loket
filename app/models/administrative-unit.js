@@ -1,7 +1,7 @@
 import { belongsTo, attr } from '@ember-data/model';
-import OrganizationModel from './organization';
+import PublicOrganizationModel from './public-organization';
 
-export default class AdministrativeUnitModel extends OrganizationModel {
+export default class AdministrativeUnitModel extends PublicOrganizationModel {
   @attr name;
   @belongsTo('administrative-unit-classification-code', {
     inverse: null,

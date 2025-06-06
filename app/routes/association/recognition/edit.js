@@ -42,12 +42,7 @@ export default class AssociationRecognitionEditRoute extends Route {
         id: recognitionId,
         ':has-no:status': true,
       },
-      include: [
-        'awarded-by.governing-body.classification',
-        'awarded-by.governing-body.administrative-unit.classification',
-        'validity-period',
-        'file',
-      ].join(','),
+      include: ['awarded-by', 'validity-period', 'file'].join(','),
     });
   });
 }

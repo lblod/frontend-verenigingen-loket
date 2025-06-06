@@ -19,20 +19,18 @@ export default class AssociationGeneralRoute extends Route {
 
   loadRecognition = task({ keepLatest: true }, async (id) => {
     const today = dateFormat(new Date(), 'YYY-MM-DD');
-    const [currentRecognition, lastRecognition] = await Promise.all([
-      this.getRecognition(id, today),
-      this.getRecognition(id),
-    ]);
+
+    const currentRecognition = await this.getRecognition(id, today);
+    const lastRecognition = await this.getRecognition(id);
+
     if (currentRecognition.length > 0) return currentRecognition;
+
     return lastRecognition;
   });
+
   async getRecognition(id, date) {
     const query = {
-      include: [
-        'awarded-by.governing-body.classification',
-        'awarded-by.governing-body.administrative-unit.classification',
-        'validity-period',
-      ].join(','),
+      include: ['awarded-by', 'validity-period'].join(','),
       filter: {
         ':has-no:status': true,
         association: {
@@ -41,12 +39,14 @@ export default class AssociationGeneralRoute extends Route {
       },
       sort: `-validity-period.end-time`,
     };
+
     if (date) {
       query.filter['validity-period'] = {
         ':lte:start-time': date,
         ':gte:end-time': date,
       };
     }
+
     return await this.store.query('recognition', query);
   }
 }

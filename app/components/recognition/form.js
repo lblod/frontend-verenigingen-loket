@@ -8,6 +8,8 @@ import { task } from 'ember-concurrency';
 import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
 
 export default class FormComponent extends Component {
+  items = ['College van burgemeester en schepenen', 'Andere'];
+
   @service currentAssociation;
   @service contactPoints;
   @service currentRecognition;
@@ -42,6 +44,7 @@ export default class FormComponent extends Component {
     }
     return null;
   }
+
   get getEndDate() {
     if (this.currentRecognition.recognition) {
       const endTime =
@@ -54,26 +57,6 @@ export default class FormComponent extends Component {
     }
     return null;
   }
-
-  constructor() {
-    super(...arguments);
-
-    this.getGoverningBodiesInTime.perform();
-  }
-
-  getGoverningBodiesInTime = task(async () => {
-    const currentAdministrativeUnitId = this.currentSession.group.id;
-
-    return await this.store.query('governing-body', {
-      'filter[governing-body][administrative-unit][:id:]':
-        currentAdministrativeUnitId,
-      include:
-        'governing-body.classification,governing-body.administrative-unit',
-      sort: ':no-case:governing-body.classification.pref-label,-start',
-      // Just a precaution, if we actually hit a large amount of items we should use a different solution
-      'page[size]': 100,
-    });
-  });
 
   formatDate(date) {
     const day = date.toLocaleDateString('nl-BE', { day: '2-digit' }),
@@ -156,7 +139,10 @@ export default class FormComponent extends Component {
 
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
-      awardedBy: this.currentRecognition.selectedItem,
+      awardedBy:
+        this.items[0] === this.currentRecognition.selectedItem
+          ? this.currentRecognition.selectedItem
+          : this.currentRecognition.recognitionModel.awardedBy,
       file: isNew ? await this.legalResourceFile : null,
     });
     this.validationErrors = err.error
@@ -215,7 +201,7 @@ export default class FormComponent extends Component {
       legalResource: recognitionModel.legalResource,
       association: this.currentAssociation.association,
       validityPeriod: await this.updateOrGetPeriod(recognitionModel),
-      awardedBy: this.currentRecognition.selectedItem,
+      awardedBy: await this.getAwardedBy(),
       file: fileData || null,
     });
 
@@ -258,7 +244,7 @@ export default class FormComponent extends Component {
     const recognition = {
       dateDocument: recognitionModel.dateDocument,
       legalResource: recognitionModel.legalResource,
-      awardedBy: this.currentRecognition.selectedItem,
+      awardedBy: await this.getAwardedBy(),
       validityPeriod,
       file: (await fileData) || null,
     };
@@ -299,6 +285,7 @@ export default class FormComponent extends Component {
       return await this.createValidityPeriod();
     }
   }
+
   @action
   async updateValidityPeriod(recognitionModel, validityPeriodId) {
     const validityPeriod = await this.store.findRecord(
@@ -332,9 +319,37 @@ export default class FormComponent extends Component {
   }
 
   @action
-  handleAwardedByChange(governingBody) {
-    this.currentRecognition.selectedItem = governingBody;
+  handleAwardedByChange(organizationName) {
+    this.currentRecognition.selectedItem = organizationName;
     this.clearFormError('awardedBy');
+  }
+
+  @action
+  handleAwardedByChangeEvent(event) {
+    this.currentRecognition.recognitionModel.awardedBy = event.target.value;
+    this.clearFormError('awardedBy');
+  }
+
+  @action
+  async getAwardedBy() {
+    let awardedByValue = this.items[0];
+    if (this.currentRecognition.selectedItem !== this.items[0]) {
+      awardedByValue = this.currentRecognition.recognitionModel.awardedBy;
+    }
+
+    const administrativeUnits = await this.store.query('public-organization', {
+      filter: {
+        ':exact:name': awardedByValue,
+      },
+    });
+    let awardedBy = administrativeUnits?.[0];
+    if (!awardedBy) {
+      awardedBy = this.store.createRecord('public-organization', {
+        name: awardedByValue,
+      });
+      await awardedBy.save();
+    }
+    return awardedBy;
   }
 
   @action
