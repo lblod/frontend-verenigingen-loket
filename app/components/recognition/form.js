@@ -326,7 +326,7 @@ export default class FormComponent extends Component {
 
   @action
   handleAwardedByChangeEvent(event) {
-    this.currentRecognition.recognitionModel.awardedBy = event.target.value;
+    this.currentRecognition.recognitionModel.awardedBy = event.target.value.trim();
     this.clearFormError('awardedBy');
   }
 
