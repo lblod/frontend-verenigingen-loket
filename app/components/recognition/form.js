@@ -332,32 +332,33 @@ export default class FormComponent extends Component {
   }
 
   async getAwardedBy() {
-    let awardedByValue;
     if (
       this.currentRecognition.selectedItem === this.currentRecognition.COLLEGE
     ) {
       // The user selected the option "College van burgemeester en schepenen"
       // We want to link the recognition to the organization the user is logged in with
-      awardedByValue = this.currentSession.group.name;
+      return this.currentSession.group;
     } else {
       // The user selected the option "Andere"
       // We want to link the recognition to the organization added in the Namelijk field
-      awardedByValue = this.currentRecognition.recognitionModel.awardedBy;
+      const awardedByValue = this.currentRecognition.recognitionModel.awardedBy;
+      const administrativeUnits = await this.store.query(
+        'public-organization',
+        {
+          filter: {
+            ':exact:name': awardedByValue,
+          },
+        },
+      );
+      let awardedBy = administrativeUnits?.[0];
+      if (!awardedBy) {
+        awardedBy = this.store.createRecord('public-organization', {
+          name: awardedByValue,
+        });
+        await awardedBy.save();
+      }
+      return awardedBy;
     }
-
-    const administrativeUnits = await this.store.query('public-organization', {
-      filter: {
-        ':exact:name': awardedByValue,
-      },
-    });
-    let awardedBy = administrativeUnits?.[0];
-    if (!awardedBy) {
-      awardedBy = this.store.createRecord('public-organization', {
-        name: awardedByValue,
-      });
-      await awardedBy.save();
-    }
-    return awardedBy;
   }
 
   @action
