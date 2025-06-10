@@ -1,15 +1,13 @@
 import Service, { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-
-const COLLEGE = 'College van burgemeester en schepenen';
-const OTHER = 'Andere';
+import { AWARDED_BY_OPTIONS } from 'frontend-verenigingen-loket/models/recognition';
 
 export default class CurrentRecognitionService extends Service {
   @service store;
   @service currentSession;
 
   @tracked recognition = null;
-  @tracked selectedItem = this.COLLEGE;
+  @tracked selectedItem = AWARDED_BY_OPTIONS.COLLEGE;
   @tracked isLoading = false;
   @tracked generalError = '';
 
@@ -23,7 +21,7 @@ export default class CurrentRecognitionService extends Service {
   };
 
   get isOtherOrganization() {
-    return this.selectedItem === OTHER;
+    return this.selectedItem === AWARDED_BY_OPTIONS.OTHER;
   }
 
   get hasExpired() {
@@ -55,7 +53,7 @@ export default class CurrentRecognitionService extends Service {
     };
 
     this.awardedBy = null;
-    this.selectedItem = COLLEGE;
+    this.selectedItem = AWARDED_BY_OPTIONS.COLLEGE;
 
     this.recognition = recognition;
 
@@ -69,7 +67,9 @@ export default class CurrentRecognitionService extends Service {
       const awardedBy = await recognition.awardedBy;
       this.recognitionModel.awardedBy = awardedBy.name;
       this.selectedItem =
-        awardedBy === this.currentSession.group ? COLLEGE : OTHER;
+        awardedBy === this.currentSession.group
+          ? AWARDED_BY_OPTIONS.COLLEGE
+          : AWARDED_BY_OPTIONS.OTHER;
     }
   }
 }

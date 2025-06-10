@@ -1,5 +1,10 @@
 import Model, { attr, belongsTo } from '@ember-data/model';
 
+export const AWARDED_BY_OPTIONS = {
+  COLLEGE: 'College van burgemeester en schepenen',
+  OTHER: 'Andere',
+};
+
 export default class RecognitionModel extends Model {
   @attr dateDocument;
   @attr legalResource;

@@ -6,9 +6,10 @@ import { tracked } from '@glimmer/tracking';
 import dateFormat from '../../helpers/date-format';
 import { task } from 'ember-concurrency';
 import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
+import { AWARDED_BY_OPTIONS } from 'frontend-verenigingen-loket/models/recognition';
 
 export default class FormComponent extends Component {
-  items = [this.currentRecognition.COLLEGE, this.currentRecognition.OTHER];
+  items = [AWARDED_BY_OPTIONS.COLLEGE, AWARDED_BY_OPTIONS.OTHER];
 
   @service currentAssociation;
   @service contactPoints;
@@ -140,7 +141,7 @@ export default class FormComponent extends Component {
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
       awardedBy:
-        this.currentRecognition.selectedItem === this.currentRecognition.COLLEGE
+        this.currentRecognition.selectedItem === AWARDED_BY_OPTIONS.COLLEGE
           ? this.currentRecognition.selectedItem
           : this.currentRecognition.recognitionModel.awardedBy,
       file: isNew ? await this.legalResourceFile : null,
@@ -332,9 +333,7 @@ export default class FormComponent extends Component {
   }
 
   async getAwardedBy() {
-    if (
-      this.currentRecognition.selectedItem === this.currentRecognition.COLLEGE
-    ) {
+    if (this.currentRecognition.selectedItem === AWARDED_BY_OPTIONS.COLLEGE) {
       // The user selected the option "College van burgemeester en schepenen"
       // We want to link the recognition to the organization the user is logged in with
       return this.currentSession.group;
