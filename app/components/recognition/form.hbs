@@ -108,7 +108,8 @@
                     @inline={{true}}
                     @required={{true}}
                     for="awarded-by"
-                  >Erkend door</AuLabel></:label>
+                  >Erkend door</AuLabel>
+                </:label>
                 <:content>
                   <div
                     class={{if
@@ -126,7 +127,7 @@
                     >
                       {{name}}
                     </PowerSelect>
-                    {{#if this.isOtherOrganization}}
+                    {{#if this.currentRecognition.isOtherOrganization}}
                       <section
                         class="au-u-margin-top-small au-u-flex au-u-flex--vertical-center"
                       >

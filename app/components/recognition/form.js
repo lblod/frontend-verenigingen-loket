@@ -58,12 +58,6 @@ export default class FormComponent extends Component {
     return null;
   }
 
-  get isOtherOrganization() {
-    return (
-      this.currentRecognition.selectedItem === this.currentRecognition.OTHER
-    );
-  }
-
   formatDate(date) {
     const day = date.toLocaleDateString('nl-BE', { day: '2-digit' }),
       month = date.toLocaleDateString('nl-BE', { month: '2-digit' }),

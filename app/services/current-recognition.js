@@ -22,6 +22,10 @@ export default class CurrentRecognitionService extends Service {
     file: null,
   };
 
+  get isOtherOrganization() {
+    return this.selectedItem === OTHER;
+  }
+
   get hasExpired() {
     const { endTime } = this.recognitionModel;
 
@@ -62,7 +66,8 @@ export default class CurrentRecognitionService extends Service {
       this.recognitionModel.endTime =
         await recognition.validityPeriod.get('endTime');
       this.recognitionModel.legalResource = recognition.legalResource ?? null;
-      this.recognitionModel.awardedBy = (await recognition.awardedBy).name;
+      const awardedBy = await recognition.awardedBy;
+      this.recognitionModel.awardedBy = awardedBy.name;
       this.selectedItem =
         this.recognitionModel.awardedBy === this.currentSession.group.name
           ? COLLEGE

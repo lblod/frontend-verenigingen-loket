@@ -7,6 +7,7 @@ export default class AssociationRecognitionEditRoute extends Route {
   @service router;
   @service toaster;
   @service currentRecognition;
+
   async model(params) {
     const { recognition_id } = params;
 
