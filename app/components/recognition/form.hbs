@@ -144,7 +144,7 @@
                           <AuInput
                             placeholder="Vul in organisatie"
                             value={{model.awardedBy}}
-                            {{on "blur" this.handleAwardedByChangeEvent}}
+                            {{on "blur" this.handleAwardedByOtherEvent}}
                             id="awarded-by-organization-name"
                             @error={{this.validationErrors.awardedBy}}
                             @width="block"
