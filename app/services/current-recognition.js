@@ -1,14 +1,15 @@
 import Service, { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 
-export default class CurrentRecognitionService extends Service {
-  items = ['College van burgemeester en schepenen', 'Andere'];
+const COLLEGE = 'College van burgemeester en schepenen';
+const OTHER = 'Andere';
 
+export default class CurrentRecognitionService extends Service {
   @service store;
   @service currentSession;
 
   @tracked recognition = null;
-  @tracked selectedItem = this.items[0];
+  @tracked selectedItem = this.COLLEGE;
   @tracked isLoading = false;
   @tracked generalError = '';
 
@@ -50,7 +51,7 @@ export default class CurrentRecognitionService extends Service {
     };
 
     this.awardedBy = null;
-    this.selectedItem = this.items[0];
+    this.selectedItem = COLLEGE;
 
     this.recognition = recognition;
 
@@ -64,8 +65,8 @@ export default class CurrentRecognitionService extends Service {
       this.recognitionModel.awardedBy = (await recognition.awardedBy).name;
       this.selectedItem =
         this.recognitionModel.awardedBy === this.currentSession.group.name
-          ? this.items[0]
-          : this.items[1];
+          ? COLLEGE
+          : OTHER;
     }
   }
 }

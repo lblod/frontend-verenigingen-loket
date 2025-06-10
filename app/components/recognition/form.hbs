@@ -126,12 +126,7 @@
                     >
                       {{name}}
                     </PowerSelect>
-                    {{#if
-                      (eq
-                        (get this "currentRecognition.selectedItem")
-                        (get this "items.1")
-                      )
-                    }}
+                    {{#if this.isOtherOrganization}}
                       <section
                         class="au-u-margin-top-small au-u-flex au-u-flex--vertical-center"
                       >

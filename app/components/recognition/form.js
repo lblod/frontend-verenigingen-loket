@@ -8,7 +8,7 @@ import { task } from 'ember-concurrency';
 import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
 
 export default class FormComponent extends Component {
-  items = ['College van burgemeester en schepenen', 'Andere'];
+  items = [this.currentRecognition.COLLEGE, this.currentRecognition.OTHER];
 
   @service currentAssociation;
   @service contactPoints;
@@ -56,6 +56,12 @@ export default class FormComponent extends Component {
       }
     }
     return null;
+  }
+
+  get isOtherOrganization() {
+    return (
+      this.currentRecognition.selectedItem === this.currentRecognition.OTHER
+    );
   }
 
   formatDate(date) {
@@ -140,7 +146,7 @@ export default class FormComponent extends Component {
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
       awardedBy:
-        this.items[0] === this.currentRecognition.selectedItem
+        this.currentRecognition.selectedItem === this.currentRecognition.COLLEGE
           ? this.currentRecognition.selectedItem
           : this.currentRecognition.recognitionModel.awardedBy,
       file: isNew ? await this.legalResourceFile : null,
@@ -333,7 +339,9 @@ export default class FormComponent extends Component {
 
   async getAwardedBy() {
     let awardedByValue;
-    if (this.currentRecognition.selectedItem == this.items[0]) {
+    if (
+      this.currentRecognition.selectedItem === this.currentRecognition.COLLEGE
+    ) {
       // The user selected the option "College van burgemeester en schepenen"
       // We want to link the recognition to the organization the user is logged in with
       awardedByValue = this.currentSession.group.name;
