@@ -330,7 +330,6 @@ export default class FormComponent extends Component {
     this.clearFormError('awardedBy');
   }
 
-  @action
   async getAwardedBy() {
     let awardedByValue;
     if (this.currentRecognition.selectedItem == this.items[0]) {
