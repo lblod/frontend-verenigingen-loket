@@ -69,9 +69,7 @@ export default class CurrentRecognitionService extends Service {
       const awardedBy = await recognition.awardedBy;
       this.recognitionModel.awardedBy = awardedBy.name;
       this.selectedItem =
-        this.recognitionModel.awardedBy === this.currentSession.group.name
-          ? COLLEGE
-          : OTHER;
+        awardedBy === this.currentSession.group ? COLLEGE : OTHER;
     }
   }
 }
