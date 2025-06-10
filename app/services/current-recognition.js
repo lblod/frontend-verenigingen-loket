@@ -61,7 +61,7 @@ export default class CurrentRecognitionService extends Service {
       this.recognitionModel.endTime =
         await recognition.validityPeriod.get('endTime');
       this.recognitionModel.legalResource = recognition.legalResource ?? null;
-      this.recognitionModel.awardedBy = await recognition.awardedBy.get('name');
+      this.recognitionModel.awardedBy = (await recognition.awardedBy).name;
       this.selectedItem =
         this.recognitionModel.awardedBy === this.currentSession.group.name
           ? this.items[0]
