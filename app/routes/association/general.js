@@ -20,8 +20,10 @@ export default class AssociationGeneralRoute extends Route {
   loadRecognition = task({ keepLatest: true }, async (id) => {
     const today = dateFormat(new Date(), 'YYY-MM-DD');
 
-    const currentRecognition = await this.getRecognition(id, today);
-    const lastRecognition = await this.getRecognition(id);
+    const [currentRecognition, lastRecognition] = await Promise.all([
+      this.getRecognition(id, today),
+      this.getRecognition(id),
+    ]);
 
     if (currentRecognition.length > 0) return currentRecognition;
 
