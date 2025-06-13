@@ -96,6 +96,12 @@
           {{date-format recognition.validityPeriod.endTime}}
         </td>
         <td>
+          {{#if recognition.delegatedTo}}
+            {{recognition.delegatedTo.name}}
+          {{else}}
+            College van burgemeester en schepenen
+          {{/if}}
+          -
           {{recognition.awardedBy.name}}
         </td>
         <td>

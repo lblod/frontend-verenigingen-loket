@@ -16,6 +16,7 @@ export default class CurrentRecognitionService extends Service {
     endTime: null,
     dateDocument: null,
     awardedBy: null,
+    delegatedTo: null,
     legalResource: null,
     file: null,
   };
@@ -48,11 +49,13 @@ export default class CurrentRecognitionService extends Service {
       endTime: null,
       dateDocument: null,
       awardedBy: null,
+      delegatedTo: null,
       legalResource: null,
       file: null,
     };
 
     this.awardedBy = null;
+    this.delegatedTo = null;
     this.selectedItem = AWARDED_BY_OPTIONS.COLLEGE;
 
     this.recognition = recognition;
@@ -65,11 +68,12 @@ export default class CurrentRecognitionService extends Service {
         await recognition.validityPeriod.get('endTime');
       this.recognitionModel.legalResource = recognition.legalResource ?? null;
       const awardedBy = await recognition.awardedBy;
+      const delegatedTo = await recognition.delegatedTo;
       this.recognitionModel.awardedBy = awardedBy.name;
-      this.selectedItem =
-        awardedBy === this.currentSession.group
-          ? AWARDED_BY_OPTIONS.COLLEGE
-          : AWARDED_BY_OPTIONS.OTHER;
+      this.recognitionModel.delegatedTo = delegatedTo?.name;
+      this.selectedItem = delegatedTo
+        ? AWARDED_BY_OPTIONS.OTHER
+        : AWARDED_BY_OPTIONS.COLLEGE;
     }
   }
 }

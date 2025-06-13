@@ -143,15 +143,15 @@
                         <div class="au-u-flex au-u-flex--column au-u-1-1">
                           <AuInput
                             placeholder="Vul in organisatie"
-                            value={{model.awardedBy}}
-                            {{on "blur" this.handleAwardedByOtherEvent}}
-                            id="awarded-by-organization-name"
-                            @error={{this.validationErrors.awardedBy}}
+                            value={{model.delegatedTo}}
+                            {{on "blur" this.handleDelegatedToEvent}}
+                            id="delegated-to-organization-name"
                             @width="block"
+                            @error={{this.validationErrors.delegatedTo}}
                           />
                           <AuHelpText
-                            @error={{this.validationErrors.awardedBy}}
-                          >{{this.validationErrors.awardedBy}}</AuHelpText>
+                            @error={{this.validationErrors.delegatedTo}}
+                          >{{this.validationErrors.delegatedTo}}</AuHelpText>
                         </div>
                       </section>
                     {{/if}}

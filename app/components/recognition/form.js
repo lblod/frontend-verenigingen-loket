@@ -202,7 +202,8 @@ export default class FormComponent extends Component {
       legalResource: recognitionModel.legalResource,
       association: this.currentAssociation.association,
       validityPeriod: await this.updateOrGetPeriod(recognitionModel),
-      awardedBy: await this.getAwardedBy(),
+      awardedBy: this.getAwardedBy(),
+      delegatedTo: await this.getDelegatedTo(),
       file: fileData || null,
     });
 
@@ -245,7 +246,8 @@ export default class FormComponent extends Component {
     const recognition = {
       dateDocument: recognitionModel.dateDocument,
       legalResource: recognitionModel.legalResource,
-      awardedBy: await this.getAwardedBy(),
+      awardedBy: this.getAwardedBy(),
+      delegatedTo: await this.getDelegatedTo(),
       validityPeriod,
       file: (await fileData) || null,
     };
@@ -320,44 +322,43 @@ export default class FormComponent extends Component {
   }
 
   @action
-  handleAwardedByChange(organizationName) {
-    this.currentRecognition.selectedItem = organizationName;
+  handleAwardedByChange(option) {
+    this.currentRecognition.selectedItem = option;
     this.clearFormError('awardedBy');
   }
 
   @action
-  handleAwardedByOtherEvent(event) {
-    this.currentRecognition.recognitionModel.awardedBy =
+  handleDelegatedToEvent(event) {
+    this.currentRecognition.recognitionModel.delegatedTo =
       event.target.value.trim();
-    this.clearFormError('awardedBy');
   }
 
-  async getAwardedBy() {
-    if (this.currentRecognition.selectedItem === AWARDED_BY_OPTIONS.COLLEGE) {
-      // The user selected the option "College van burgemeester en schepenen"
-      // We want to link the recognition to the organization the user is logged in with
-      return this.currentSession.group;
-    } else {
-      // The user selected the option "Andere"
-      // We want to link the recognition to the organization added in the Namelijk field
-      const awardedByValue = this.currentRecognition.recognitionModel.awardedBy;
+  getAwardedBy() {
+    return this.currentSession.group;
+  }
+
+  async getDelegatedTo() {
+    if (this.currentRecognition.selectedItem === AWARDED_BY_OPTIONS.OTHER) {
+      const delegatedToValue =
+        this.currentRecognition.recognitionModel.delegatedTo;
       const administrativeUnits = await this.store.query(
         'public-organization',
         {
           filter: {
-            ':exact:name': awardedByValue,
+            ':exact:name': delegatedToValue,
           },
         },
       );
-      let awardedBy = administrativeUnits?.[0];
-      if (!awardedBy) {
-        awardedBy = this.store.createRecord('public-organization', {
-          name: awardedByValue,
+      let delegatedTo = administrativeUnits?.[0];
+      if (!delegatedTo) {
+        delegatedTo = this.store.createRecord('public-organization', {
+          name: delegatedToValue,
         });
-        await awardedBy.save();
+        await delegatedTo.save();
       }
-      return awardedBy;
+      return delegatedTo;
     }
+    return null;
   }
 
   @action

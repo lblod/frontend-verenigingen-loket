@@ -31,6 +31,10 @@ export const errorValidation = Joi.object()
       'any.required':
         'Gelieve de entiteit te selecteren die de erkenning toekent.',
     }),
+    delegatedTo: Joi.any().required().messages({
+      'any.required':
+        'Gelieve de gedelegeerde entiteit te selecteren die de erkenning toekent.',
+    }),
     file: Joi.object()
       .allow(null)
       .custom((value, helpers) => {

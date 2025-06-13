@@ -29,6 +29,13 @@ export default class RecognitionModel extends Model {
   })
   awardedBy;
 
+  @belongsTo('public-organization', {
+    inverse: null,
+    async: true,
+    polymorphic: true,
+  })
+  delegatedTo;
+
   @belongsTo('file', {
     inverse: null,
     async: true,

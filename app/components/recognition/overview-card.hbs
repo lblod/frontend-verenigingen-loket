@@ -31,6 +31,12 @@
         <Item>
           <:label>Erkend door</:label>
           <:content>
+            {{#if @recognition.delegatedTo}}
+              {{@recognition.delegatedTo.name}}
+            {{else}}
+              College van burgemeester en schepenen
+            {{/if}}
+            -
             {{@recognition.awardedBy.name}}
           </:content>
         </Item>
