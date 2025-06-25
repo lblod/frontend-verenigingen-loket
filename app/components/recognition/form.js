@@ -342,7 +342,7 @@ export default class FormComponent extends Component {
       const delegatedToValue =
         this.currentRecognition.recognitionModel.delegatedTo;
       const administrativeUnits = await this.store.query(
-        'public-organization',
+        'ad-hoc-organization',
         {
           filter: {
             ':exact:name': delegatedToValue,
@@ -351,7 +351,7 @@ export default class FormComponent extends Component {
       );
       let delegatedTo = administrativeUnits?.[0];
       if (!delegatedTo) {
-        delegatedTo = this.store.createRecord('public-organization', {
+        delegatedTo = this.store.createRecord('ad-hoc-organization', {
           name: delegatedToValue,
         });
         await delegatedTo.save();
