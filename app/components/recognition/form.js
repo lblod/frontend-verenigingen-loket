@@ -6,8 +6,11 @@ import { tracked } from '@glimmer/tracking';
 import dateFormat from '../../helpers/date-format';
 import { task } from 'ember-concurrency';
 import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
+import { AWARDED_BY_OPTIONS } from 'frontend-verenigingen-loket/models/recognition';
 
 export default class FormComponent extends Component {
+  items = [AWARDED_BY_OPTIONS.COLLEGE, AWARDED_BY_OPTIONS.OTHER];
+
   @service currentAssociation;
   @service contactPoints;
   @service currentRecognition;
@@ -42,6 +45,7 @@ export default class FormComponent extends Component {
     }
     return null;
   }
+
   get getEndDate() {
     if (this.currentRecognition.recognition) {
       const endTime =
@@ -54,26 +58,6 @@ export default class FormComponent extends Component {
     }
     return null;
   }
-
-  constructor() {
-    super(...arguments);
-
-    this.getGoverningBodiesInTime.perform();
-  }
-
-  getGoverningBodiesInTime = task(async () => {
-    const currentAdministrativeUnitId = this.currentSession.group.id;
-
-    return await this.store.query('governing-body', {
-      'filter[governing-body][administrative-unit][:id:]':
-        currentAdministrativeUnitId,
-      include:
-        'governing-body.classification,governing-body.administrative-unit',
-      sort: ':no-case:governing-body.classification.pref-label,-start',
-      // Just a precaution, if we actually hit a large amount of items we should use a different solution
-      'page[size]': 100,
-    });
-  });
 
   formatDate(date) {
     const day = date.toLocaleDateString('nl-BE', { day: '2-digit' }),
@@ -156,7 +140,10 @@ export default class FormComponent extends Component {
 
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
-      awardedBy: this.currentRecognition.selectedItem,
+      awardedBy: this.currentRecognition.recognitionModel.awardedBy,
+      isDelegatedToRequired:
+        this.currentRecognition.selectedItem === AWARDED_BY_OPTIONS.OTHER,
+      delegatedTo: this.currentRecognition.recognitionModel.delegatedTo,
       file: isNew ? await this.legalResourceFile : null,
     });
     this.validationErrors = err.error
@@ -215,7 +202,8 @@ export default class FormComponent extends Component {
       legalResource: recognitionModel.legalResource,
       association: this.currentAssociation.association,
       validityPeriod: await this.updateOrGetPeriod(recognitionModel),
-      awardedBy: this.currentRecognition.selectedItem,
+      awardedBy: this.getAwardedBy(),
+      delegatedTo: await this.getDelegatedTo(),
       file: fileData || null,
     });
 
@@ -258,7 +246,8 @@ export default class FormComponent extends Component {
     const recognition = {
       dateDocument: recognitionModel.dateDocument,
       legalResource: recognitionModel.legalResource,
-      awardedBy: this.currentRecognition.selectedItem,
+      awardedBy: this.getAwardedBy(),
+      delegatedTo: await this.getDelegatedTo(),
       validityPeriod,
       file: (await fileData) || null,
     };
@@ -299,6 +288,7 @@ export default class FormComponent extends Component {
       return await this.createValidityPeriod();
     }
   }
+
   @action
   async updateValidityPeriod(recognitionModel, validityPeriodId) {
     const validityPeriod = await this.store.findRecord(
@@ -332,9 +322,43 @@ export default class FormComponent extends Component {
   }
 
   @action
-  handleAwardedByChange(governingBody) {
-    this.currentRecognition.selectedItem = governingBody;
+  handleAwardedByChange(option) {
+    this.currentRecognition.selectedItem = option;
     this.clearFormError('awardedBy');
+  }
+
+  @action
+  handleDelegatedToEvent(event) {
+    this.currentRecognition.recognitionModel.delegatedTo =
+      event.target.value.trim();
+  }
+
+  getAwardedBy() {
+    return this.currentSession.group;
+  }
+
+  async getDelegatedTo() {
+    if (this.currentRecognition.selectedItem === AWARDED_BY_OPTIONS.OTHER) {
+      const delegatedToValue =
+        this.currentRecognition.recognitionModel.delegatedTo;
+      const administrativeUnits = await this.store.query(
+        'ad-hoc-organization',
+        {
+          filter: {
+            ':exact:name': delegatedToValue,
+          },
+        },
+      );
+      let delegatedTo = administrativeUnits?.[0];
+      if (!delegatedTo) {
+        delegatedTo = this.store.createRecord('ad-hoc-organization', {
+          name: delegatedToValue,
+        });
+        await delegatedTo.save();
+      }
+      return delegatedTo;
+    }
+    return null;
   }
 
   @action

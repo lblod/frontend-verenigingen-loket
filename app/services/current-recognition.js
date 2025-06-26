@@ -1,11 +1,13 @@
 import Service, { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
+import { AWARDED_BY_OPTIONS } from 'frontend-verenigingen-loket/models/recognition';
 
 export default class CurrentRecognitionService extends Service {
   @service store;
+  @service currentSession;
 
   @tracked recognition = null;
-  @tracked selectedItem;
+  @tracked selectedItem = AWARDED_BY_OPTIONS.COLLEGE;
   @tracked isLoading = false;
   @tracked generalError = '';
 
@@ -14,9 +16,14 @@ export default class CurrentRecognitionService extends Service {
     endTime: null,
     dateDocument: null,
     awardedBy: null,
+    delegatedTo: null,
     legalResource: null,
     file: null,
   };
+
+  get isOtherOrganization() {
+    return this.selectedItem === AWARDED_BY_OPTIONS.OTHER;
+  }
 
   get hasExpired() {
     const { endTime } = this.recognitionModel;
@@ -42,9 +49,15 @@ export default class CurrentRecognitionService extends Service {
       endTime: null,
       dateDocument: null,
       awardedBy: null,
+      delegatedTo: null,
       legalResource: null,
       file: null,
     };
+
+    this.awardedBy = null;
+    this.delegatedTo = null;
+    this.selectedItem = AWARDED_BY_OPTIONS.COLLEGE;
+
     this.recognition = recognition;
 
     if (recognition) {
@@ -54,8 +67,13 @@ export default class CurrentRecognitionService extends Service {
       this.recognitionModel.endTime =
         await recognition.validityPeriod.get('endTime');
       this.recognitionModel.legalResource = recognition.legalResource ?? null;
-      this.recognitionModel.awardedBy = await recognition.awardedBy;
-      this.selectedItem = await recognition.awardedBy;
+      const awardedBy = await recognition.awardedBy;
+      const delegatedTo = await recognition.delegatedTo;
+      this.recognitionModel.awardedBy = awardedBy.name;
+      this.recognitionModel.delegatedTo = delegatedTo?.name;
+      this.selectedItem = delegatedTo
+        ? AWARDED_BY_OPTIONS.OTHER
+        : AWARDED_BY_OPTIONS.COLLEGE;
     }
   }
 }
