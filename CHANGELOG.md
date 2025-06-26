@@ -1,3 +1,11 @@
+## v1.5.0 (2025-06-26)
+
+#### :rocket: Enhancement
+* [#85](https://github.com/lblod/frontend-verenigingen-loket/pull/85) [CLBV-972] Introduce back static options for awardedBy relationship ([@claire-lovisa](https://github.com/claire-lovisa))
+
+#### Committers: 1
+- Claire Lovisa ([@claire-lovisa](https://github.com/claire-lovisa))
+
 ## v1.4.3 (2025-04-18)
 #### :bug: Bug Fix
 - Revert https://github.com/lblod/frontend-verenigingen-loket/pull/83
