@@ -143,8 +143,7 @@ export default class FormComponent extends Component {
       awardedBy: this.currentRecognition.recognitionModel.awardedBy,
       isDelegatedToRequired:
         this.currentRecognition.selectedItem === AWARDED_BY_OPTIONS.OTHER,
-      delegatedTo:
-        this.currentRecognition.recognitionModel.delegatedTo,
+      delegatedTo: this.currentRecognition.recognitionModel.delegatedTo,
       file: isNew ? await this.legalResourceFile : null,
     });
     this.validationErrors = err.error

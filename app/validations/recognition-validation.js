@@ -35,9 +35,10 @@ export const errorValidation = Joi.object()
     delegatedTo: Joi.when('isDelegatedToRequired', {
       is: true,
       then: Joi.required().messages({
-        'any.required': 'Gelieve de gedelegeerde entiteit te selecteren die de erkenning toekent.'
+        'any.required':
+          'Gelieve de gedelegeerde entiteit te selecteren die de erkenning toekent.',
       }),
-      otherwise: Joi.allow(null)
+      otherwise: Joi.allow(null),
     }),
     file: Joi.object()
       .allow(null)
