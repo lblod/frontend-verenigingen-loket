@@ -140,10 +140,11 @@ export default class FormComponent extends Component {
 
     const err = errorValidation.validate({
       ...this.currentRecognition.recognitionModel,
-      awardedBy:
-        this.currentRecognition.selectedItem === AWARDED_BY_OPTIONS.COLLEGE
-          ? this.currentRecognition.selectedItem
-          : this.currentRecognition.recognitionModel.awardedBy,
+      awardedBy: this.currentRecognition.recognitionModel.awardedBy,
+      isDelegatedToRequired:
+        this.currentRecognition.selectedItem === AWARDED_BY_OPTIONS.OTHER,
+      delegatedTo:
+        this.currentRecognition.recognitionModel.delegatedTo,
       file: isNew ? await this.legalResourceFile : null,
     });
     this.validationErrors = err.error
