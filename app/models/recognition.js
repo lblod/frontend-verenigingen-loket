@@ -5,6 +5,11 @@ export const AWARDED_BY_OPTIONS = {
   OTHER: 'Andere',
 };
 
+export const STATUS = {
+  RECOGNIZED: 'Erkend',
+  EXPIRED: 'Verlopen',
+};
+
 export default class RecognitionModel extends Model {
   @attr dateDocument;
   @attr legalResource;

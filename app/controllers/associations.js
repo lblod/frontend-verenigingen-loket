@@ -18,8 +18,7 @@ export default class IndexController extends Controller {
   @tracked search = '';
   @tracked activities = '';
   @tracked selectedActivities = [];
-  @tracked recognition = '';
-  @tracked selectedRecognitionStatus = '';
+  @tracked recognition = [];
   @dedupeTracked postalCodes = '';
   @tracked types = '';
   @tracked selectedTypes = [];
@@ -76,10 +75,9 @@ export default class IndexController extends Controller {
   }
 
   @action
-  setRecognitionStatus(selectedStatus) {
+  setRecognitionStatus(selectedStatuses) {
+    this.recognition = selectedStatuses;
     this.page = 0;
-    this.selectedRecognitionStatus = selectedStatus;
-    this.recognition = selectedStatus.join(',');
   }
 
   @action
@@ -120,8 +118,7 @@ export default class IndexController extends Controller {
 
   @action
   resetFilters() {
-    this.recognition = '';
-    this.selectedRecognitionStatus = [];
+    this.recognition = [];
     this.activities = '';
     this.selectedActivities = [];
     this.postalCodes = '';
