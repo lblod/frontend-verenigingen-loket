@@ -120,10 +120,12 @@ export const associationsQuery = ({
   }
 
   if (params) {
-    if (params.targetAudiences && params.targetAudiences !== '') {
-      const targetAudiences = params.targetAudiences.split(',');
+    const { targetAudiences } = params;
+
+    if (Array.isArray(targetAudiences) && targetAudiences.length > 0) {
       let minAge = 0;
       let maxAge = 500;
+
       if (targetAudiences.length === 1) {
         if (targetAudiences.includes('-18')) {
           maxAge = 18;

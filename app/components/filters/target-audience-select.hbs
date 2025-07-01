@@ -1,11 +1,17 @@
-<AuLabel class="au-u-margin-top" for="filter-municipality">Doelgroep</AuLabel>
-<AuCheckboxGroup
-  @alignment="default"
-  @selected={{@selected}}
-  @onChange={{@onChange}}
-  as |Group|
->
-  <Group.Checkbox @value="-18">-18</Group.Checkbox>
-  <Group.Checkbox @value="18+">18+</Group.Checkbox>
-  <Group.Checkbox @value="65+">65+</Group.Checkbox>
-</AuCheckboxGroup>
+<AuFieldset class="au-u-margin-top" as |f|>
+  <f.legend>
+    Doelgroep
+  </f.legend>
+  <f.content>
+    <AuCheckboxGroup
+      @name="target-audience-filter"
+      @selected={{@selected}}
+      @onChange={{@onChange}}
+      as |Group|
+    >
+      <Group.Checkbox @value="-18">-18</Group.Checkbox>
+      <Group.Checkbox @value="18+">18+</Group.Checkbox>
+      <Group.Checkbox @value="65+">65+</Group.Checkbox>
+    </AuCheckboxGroup>
+  </f.content>
+</AuFieldset>

@@ -22,8 +22,7 @@ export default class IndexController extends Controller {
   @dedupeTracked postalCodes = '';
   @tracked types = '';
   @tracked selectedTypes = [];
-  @tracked targetAudiences = '';
-  @tracked selectedTargetAudiences = [];
+  @tracked targetAudiences = [];
   @tracked end = '';
   @tracked start = '';
   @tracked status = true;
@@ -89,9 +88,8 @@ export default class IndexController extends Controller {
 
   @action
   setTargetAudiences(selectedTargetAudiences) {
+    this.targetAudiences = selectedTargetAudiences;
     this.page = 0;
-    this.selectedTargetAudiences = selectedTargetAudiences;
-    this.targetAudiences = selectedTargetAudiences.join(',');
   }
 
   @action
@@ -124,7 +122,7 @@ export default class IndexController extends Controller {
     this.postalCodes = '';
     this.types = '';
     this.selectedTypes = [];
-    this.targetAudiences = '';
+    this.targetAudiences = [];
     this.selectedTargetAudiences = [];
     this.search = '';
     this.start = '';
