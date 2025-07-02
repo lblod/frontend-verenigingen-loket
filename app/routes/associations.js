@@ -1,6 +1,7 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import ENV from 'frontend-verenigingen-loket/config/environment';
+import { CONCEPT_SCHEME } from '../models/concept';
 
 export const PAGE_SIZE = ENV.pageSize ?? 50;
 export default class AssociationsRoute extends Route {
@@ -63,6 +64,17 @@ export default class AssociationsRoute extends Route {
   }
 
   async loadQPRecords(params, transition) {
+    transition.data.selectedActivities = await Promise.all(
+      params.activities.map(async (activityNotation) => {
+        return (
+          await this.store.query('concept', {
+            'filter[top-concept-of][:id:]': CONCEPT_SCHEME.ACTIVITIES,
+            'filter[:exact:notation]': activityNotation,
+          })
+        ).at(0);
+      }),
+    );
+
     transition.data.selectedTypes = await Promise.all(
       params.types.map((typeId) => {
         return this.store.findRecord('concept', typeId);
@@ -74,6 +86,7 @@ export default class AssociationsRoute extends Route {
     super.setupController(controller, model, transition);
 
     if (isRouteEnterTransition(transition, this)) {
+      controller.selectedActivities = transition.data.selectedActivities;
       controller.selectedTypes = transition.data.selectedTypes;
     }
   }

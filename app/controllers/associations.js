@@ -16,7 +16,7 @@ export default class IndexController extends Controller {
   @tracked page = 0;
   @tracked sort = '-created-on';
   @tracked search = '';
-  @tracked activities = '';
+  @tracked activities = [];
   @tracked selectedActivities = [];
   @tracked recognition = [];
   @dedupeTracked postalCodes = '';
@@ -45,12 +45,10 @@ export default class IndexController extends Controller {
 
   @action
   setActivities(selectedActivities) {
-    this.page = 0;
+    // TODO: Find out and explain why we are serializing the notation instead of the concept id
+    this.activities = selectedActivities.map((activity) => activity.notation);
     this.selectedActivities = selectedActivities;
-    this.activities = selectedActivities
-      .map((activity) => activity.notation)
-      .join(',');
-    return this.activities;
+    this.page = 0;
   }
 
   @action
@@ -116,7 +114,7 @@ export default class IndexController extends Controller {
   @action
   resetFilters() {
     this.recognition = [];
-    this.activities = '';
+    this.activities = [];
     this.selectedActivities = [];
     this.postalCodes = '';
     this.types = [];
