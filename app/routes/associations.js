@@ -29,7 +29,11 @@ export default class AssociationsRoute extends Route {
     this.session.requireAuthentication(transition, 'login');
   }
 
-  async model(params) {
+  async model(params, transition) {
+    if (isRouteEnterTransition(transition, this)) {
+      await this.loadQPRecords(params, transition);
+    }
+
     try {
       const exportFile = (
         await this.store.query('file', {
@@ -40,6 +44,7 @@ export default class AssociationsRoute extends Route {
           sort: '-created',
         })
       )[0];
+
       const associations = this.queryBuilder.buildAndExecuteQuery.perform(
         params,
         PAGE_SIZE,
@@ -56,4 +61,24 @@ export default class AssociationsRoute extends Route {
       });
     }
   }
+
+  async loadQPRecords(params, transition) {
+    transition.data.selectedTypes = await Promise.all(
+      params.types.map((typeId) => {
+        return this.store.findRecord('concept', typeId);
+      }),
+    );
+  }
+
+  setupController(controller, model, transition) {
+    super.setupController(controller, model, transition);
+
+    if (isRouteEnterTransition(transition, this)) {
+      controller.selectedTypes = transition.data.selectedTypes;
+    }
+  }
+}
+
+function isRouteEnterTransition(transition, route) {
+  return transition.from?.name !== route.fullRouteName;
 }

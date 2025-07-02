@@ -155,8 +155,8 @@ export const associationsQuery = ({
       filters[':lt:targetAudience.maximumLeeftijd'] = maxAge;
     }
 
-    if (params.types && params.types !== '') {
-      filters['classification.uuid'] = params.types.split(',');
+    if (params.types.length > 0) {
+      filters['classification.uuid'] = params.types;
     }
 
     if (params.status) {

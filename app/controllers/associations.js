@@ -20,7 +20,7 @@ export default class IndexController extends Controller {
   @tracked selectedActivities = [];
   @tracked recognition = [];
   @dedupeTracked postalCodes = '';
-  @tracked types = '';
+  @tracked types = [];
   @tracked selectedTypes = [];
   @tracked targetAudiences = [];
   @tracked end = '';
@@ -55,10 +55,9 @@ export default class IndexController extends Controller {
 
   @action
   setTypes(selectedTypes) {
-    this.page = 0;
+    this.types = selectedTypes.map((type) => type.id);
     this.selectedTypes = selectedTypes;
-    this.types = selectedTypes.map((type) => type.id).join(',');
-    return this.types;
+    this.page = 0;
   }
 
   @action
@@ -120,7 +119,7 @@ export default class IndexController extends Controller {
     this.activities = '';
     this.selectedActivities = [];
     this.postalCodes = '';
-    this.types = '';
+    this.types = [];
     this.selectedTypes = [];
     this.targetAudiences = [];
     this.selectedTargetAudiences = [];
