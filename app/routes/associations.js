@@ -75,6 +75,16 @@ export default class AssociationsRoute extends Route {
       }),
     );
 
+    transition.data.selectedPostalCodes = await Promise.all(
+      params.postalCodes.map(async (postalCode) => {
+        return (
+          await this.store.query('postal-code', {
+            'filter[postal-code]': postalCode,
+          })
+        ).at(0);
+      }),
+    );
+
     transition.data.selectedTypes = await Promise.all(
       params.types.map((typeId) => {
         return this.store.findRecord('concept', typeId);
@@ -87,6 +97,7 @@ export default class AssociationsRoute extends Route {
 
     if (isRouteEnterTransition(transition, this)) {
       controller.selectedActivities = transition.data.selectedActivities;
+      controller.selectedPostalCodes = transition.data.selectedPostalCodes;
       controller.selectedTypes = transition.data.selectedTypes;
     }
   }

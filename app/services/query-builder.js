@@ -41,14 +41,6 @@ export const associationsQuery = ({
   const generateQueryString = (params) => {
     const filters = {};
 
-    const generateFilterQuery = (key, values) => {
-      if (!values) return '';
-
-      // TODO: remove this line once all QPs that use this are changed to arrays instead of strings
-      values = typeof values === 'string' ? values.split(',') : values;
-      return values.map((value) => `${key}:${value}`).join(' OR ');
-    };
-
     const addFilter = (queryKey, filterQuery) => {
       if (filterQuery) {
         filters[queryKey] = filterQuery;
@@ -194,3 +186,9 @@ export const associationsQuery = ({
   request.filters = filters;
   return request;
 };
+
+function generateFilterQuery(key, values) {
+  if (!values) return '';
+
+  return values.map((value) => `${key}:${value}`).join(' OR ');
+}
