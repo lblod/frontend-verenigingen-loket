@@ -1,10 +1,17 @@
-<AuLabel class="au-u-margin-top" for="filter-municipality">Erkenning</AuLabel>
-<AuCheckboxGroup
-  @alignment="default"
-  @selected={{@selected}}
-  @onChange={{@onChange}}
-  as |Group|
->
-  <Group.Checkbox @value="Erkend">Erkend</Group.Checkbox>
-  <Group.Checkbox @value="Verlopen">Verlopen</Group.Checkbox>
-</AuCheckboxGroup>
+<AuFieldset class="au-u-margin-top" as |f|>
+  <f.legend>
+    Erkenning
+  </f.legend>
+  <f.content>
+    <AuCheckboxGroup
+      @name="recognition-status-filter"
+      @selected={{@selected}}
+      @onChange={{@onChange}}
+      as |Group|
+    >
+      {{! TODO: use the STATUS const instead of hardcoding the strings when we switch to .gjs }}
+      <Group.Checkbox @value="Erkend">Erkend</Group.Checkbox>
+      <Group.Checkbox @value="Verlopen">Verlopen</Group.Checkbox>
+    </AuCheckboxGroup>
+  </f.content>
+</AuFieldset>

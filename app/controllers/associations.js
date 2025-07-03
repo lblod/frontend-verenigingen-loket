@@ -3,9 +3,7 @@ import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { timeout, task } from 'ember-concurrency';
 import { action } from '@ember/object';
-import { cell, resource, resourceFactory } from 'ember-resources';
 import ENV from 'frontend-verenigingen-loket/config/environment';
-import { dedupeTracked } from '../utils/tracked-toolbox';
 
 const DEBOUNCE_MS = 500;
 
@@ -16,20 +14,18 @@ export default class IndexController extends Controller {
   @tracked page = 0;
   @tracked sort = '-created-on';
   @tracked search = '';
-  @tracked activities = '';
+  @tracked activities = [];
   @tracked selectedActivities = [];
-  @tracked recognition = '';
-  @tracked selectedRecognitionStatus = '';
-  @dedupeTracked postalCodes = '';
-  @tracked types = '';
+  @tracked recognition = [];
+  @tracked postalCodes = [];
+  @tracked selectedPostalCodes = [];
+  @tracked types = [];
   @tracked selectedTypes = [];
-  @tracked targetAudiences = '';
-  @tracked selectedTargetAudiences = [];
+  @tracked targetAudiences = [];
   @tracked end = '';
   @tracked start = '';
   @tracked status = true;
   @tracked ENVIRONMENT_NAME = ENV.environmentName;
-  PostalCodes = PostalCodes;
 
   queryParams = [
     'sort',
@@ -47,39 +43,30 @@ export default class IndexController extends Controller {
 
   @action
   setActivities(selectedActivities) {
-    this.page = 0;
+    // TODO: Find out and explain why we are serializing the notation instead of the concept id
+    this.activities = selectedActivities.map((activity) => activity.notation);
     this.selectedActivities = selectedActivities;
-    this.activities = selectedActivities
-      .map((activity) => activity.notation)
-      .join(',');
-    return this.activities;
+    this.page = 0;
   }
 
   @action
   setTypes(selectedTypes) {
-    this.page = 0;
+    this.types = selectedTypes.map((type) => type.id);
     this.selectedTypes = selectedTypes;
-    this.types = selectedTypes.map((type) => type.id).join(',');
-    return this.types;
+    this.page = 0;
   }
 
   @action
   setPostalCodes(selectedPostals) {
+    this.postalCodes = selectedPostals.map((postal) => postal.postalCode);
+    this.selectedPostalCodes = selectedPostals;
     this.page = 0;
-    this.postalCodes = selectedPostals
-      .map((postal) => postal.postalCode)
-      .join(',');
-
-    // We update the postalCodes value so the interface updates immediately instead of having to wait until the fetch finishes.
-    // TODO: There has to be a better pattern so the resource stays self-contained.
-    postalCodes.current = selectedPostals;
   }
 
   @action
-  setRecognitionStatus(selectedStatus) {
+  setRecognitionStatus(selectedStatuses) {
+    this.recognition = selectedStatuses;
     this.page = 0;
-    this.selectedRecognitionStatus = selectedStatus;
-    this.recognition = selectedStatus.join(',');
   }
 
   @action
@@ -91,9 +78,8 @@ export default class IndexController extends Controller {
 
   @action
   setTargetAudiences(selectedTargetAudiences) {
+    this.targetAudiences = selectedTargetAudiences;
     this.page = 0;
-    this.selectedTargetAudiences = selectedTargetAudiences;
-    this.targetAudiences = selectedTargetAudiences.join(',');
   }
 
   @action
@@ -120,14 +106,14 @@ export default class IndexController extends Controller {
 
   @action
   resetFilters() {
-    this.recognition = '';
-    this.selectedRecognitionStatus = [];
-    this.activities = '';
+    this.recognition = [];
+    this.activities = [];
     this.selectedActivities = [];
-    this.postalCodes = '';
-    this.types = '';
+    this.postalCodes = [];
+    this.selectedPostalCodes = [];
+    this.types = [];
     this.selectedTypes = [];
-    this.targetAudiences = '';
+    this.targetAudiences = [];
     this.selectedTargetAudiences = [];
     this.search = '';
     this.start = '';
@@ -138,34 +124,3 @@ export default class IndexController extends Controller {
     this.sort = '-created-on';
   }
 }
-
-// We store the postalCodes cell in module scope so the previous data is retained between data fetches.
-// This prevents the select from temporarily showing an empty selection.
-const postalCodes = cell([]);
-
-// This fetches the postal code records based on the postalCodes query param
-function PostalCodes(store, postalCodesQP) {
-  return resource(() => {
-    (async () => {
-      if (postalCodesQP) {
-        const records = await Promise.all(
-          postalCodesQP.split(',').map(async (postalCode) => {
-            const result = await store.query('postal-code', {
-              'filter[postal-code]': postalCode,
-            });
-
-            return result.at(0);
-          }),
-        );
-
-        postalCodes.current = records;
-      } else {
-        await Promise.resolve();
-        postalCodes.current = [];
-      }
-    })();
-
-    return postalCodes;
-  });
-}
-resourceFactory(PostalCodes);

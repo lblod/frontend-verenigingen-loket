@@ -1,6 +1,8 @@
 import Component from '@glimmer/component';
 import { task } from 'ember-concurrency';
 import { inject as service } from '@ember/service';
+import { STATUS } from 'frontend-verenigingen-loket/models/recognition';
+
 export default class StatusComponent extends Component {
   @service store;
   get getCurrentRecognitionStatus() {
@@ -27,14 +29,14 @@ export default class StatusComponent extends Component {
         if (!startTime || !endTime) {
           resolve(active);
         } else if (today >= new Date(startTime) && today <= new Date(endTime)) {
-          active = 'Erkend';
+          active = STATUS.RECOGNIZED;
           resolve(active);
         } else if (
           active === null &&
           index == recognitions.length - 1 &&
           new Date(endTime) < today
         ) {
-          active = 'Verlopen';
+          active = STATUS.EXPIRED;
           resolve(active);
         }
       });

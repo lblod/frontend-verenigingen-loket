@@ -3,6 +3,8 @@ import { inject as service } from '@ember/service';
 import { task } from 'ember-concurrency';
 import dateFormat from '../helpers/date-format';
 import { ORGANIZATION_STATUS } from '../models/organization-status-code';
+import { STATUS as RECOGNITION_STATUS } from '../models/recognition';
+
 export default class QueryBuilderService extends Service {
   @service store;
   @service muSearch;
@@ -39,14 +41,6 @@ export const associationsQuery = ({
   const generateQueryString = (params) => {
     const filters = {};
 
-    const generateFilterQuery = (key, values) => {
-      if (!values) return '';
-      return values
-        .split(',')
-        .map((value) => `${key}:${value}`)
-        .join(' OR ');
-    };
-
     const addFilter = (queryKey, filterQuery) => {
       if (filterQuery) {
         filters[queryKey] = filterQuery;
@@ -74,30 +68,32 @@ export const associationsQuery = ({
       addFilter(':query:primarySite.address.postcode', `(${postalCodesQuery})`);
     }
 
-    if (params.recognition === 'Erkend') {
-      addFilter(
-        ':query:recognitions.validityPeriod',
-        `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})) OR (NOT (recognitions.validityPeriod.startTime:>${today}) AND (recognitions.validityPeriod.endTime:>${today}))`,
-      );
-      addFilter(':has:recognitions.validityPeriod.endTime', true);
-    } else if (params.recognition === 'Verlopen') {
-      addFilter(
-        ':query:recognitions.validityPeriod',
-        `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))) AND NOT (recognitions.validityPeriod.startTime:>${today})`,
-      );
-      addFilter(':has:recognitions.validityPeriod.endTime', true);
-    } else if (
-      params.recognition === 'Erkend,Verlopen' ||
-      params.recognition === 'Verlopen,Erkend'
+    if (
+      params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED) &&
+      params.recognition.includes(RECOGNITION_STATUS.EXPIRED)
     ) {
       // Filter out "upcoming" recognitions when both filters are selected
       addFilter(
         ':query:recognitions.validityPeriod',
         `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})) OR ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:<=${today}))`,
       );
+    } else if (params.recognition.includes(RECOGNITION_STATUS.EXPIRED)) {
+      addFilter(
+        ':query:recognitions.validityPeriod',
+        `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))) AND NOT (recognitions.validityPeriod.startTime:>${today})`,
+      );
+      addFilter(':has:recognitions.validityPeriod.endTime', true);
+    } else if (params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED)) {
+      addFilter(
+        ':query:recognitions.validityPeriod',
+        `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})) OR (NOT (recognitions.validityPeriod.startTime:>${today}) AND (recognitions.validityPeriod.endTime:>${today}))`,
+      );
+      addFilter(':has:recognitions.validityPeriod.endTime', true);
     }
+
     return filters;
   };
+
   const filters = generateQueryString(params);
 
   if (search) {
@@ -114,11 +110,14 @@ export const associationsQuery = ({
       ] = encodeURIComponent(sqs);
     }
   }
+
   if (params) {
-    if (params.targetAudiences && params.targetAudiences !== '') {
-      const targetAudiences = params.targetAudiences.split(',');
+    const { targetAudiences } = params;
+
+    if (Array.isArray(targetAudiences) && targetAudiences.length > 0) {
       let minAge = 0;
       let maxAge = 500;
+
       if (targetAudiences.length === 1) {
         if (targetAudiences.includes('-18')) {
           maxAge = 18;
@@ -147,22 +146,25 @@ export const associationsQuery = ({
       filters[':gte:targetAudience.minimumLeeftijd'] = minAge;
       filters[':lt:targetAudience.maximumLeeftijd'] = maxAge;
     }
-    if (params.types && params.types !== '') {
-      filters['classification.uuid'] = params.types.split(',');
+
+    if (params.types.length > 0) {
+      filters['classification.uuid'] = params.types;
     }
+
     if (params.status) {
       filters['status_id'] = ORGANIZATION_STATUS.ACTIVE;
     }
 
-    if (params.recognition && params.recognition !== '') {
+    if (Array.isArray(params.recognition)) {
       if (
-        params.recognition === 'Erkend,Verlopen' ||
-        params.recognition === 'Verlopen,Erkend'
+        params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED) &&
+        params.recognition.includes(RECOGNITION_STATUS.EXPIRED)
       ) {
         filters[':has:recognitions.validityPeriod.endTime'] = true;
         filters[':has-no:recognitions.status'] = true;
       }
     }
+
     if (
       params.end &&
       params.start &&
@@ -184,3 +186,9 @@ export const associationsQuery = ({
   request.filters = filters;
   return request;
 };
+
+function generateFilterQuery(key, values) {
+  if (!values) return '';
+
+  return values.map((value) => `${key}:${value}`).join(' OR ');
+}

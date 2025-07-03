@@ -26,11 +26,11 @@
             />
             <Filters::PostalSelect
               @onChange={{this.setPostalCodes}}
-              @selected={{(this.PostalCodes this.store this.postalCodes)}}
+              @selected={{this.selectedPostalCodes}}
             />
             <Filters::RecognitionStatusSelect
               @onChange={{this.setRecognitionStatus}}
-              @selected={{this.selectedRecognitionStatus}}
+              @selected={{this.recognition}}
             />
             <Filters::TypeSelect
               @onChange={{this.setTypes}}
