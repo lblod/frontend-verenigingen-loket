@@ -1,10 +1,6 @@
-/* eslint-disable ember/no-mixins */
-import DataTableSerializerMixin from 'ember-data-table/mixins/serializer';
-import JSONAPISerializer from '@ember-data/serializer/json-api';
+import JSONAPIPaginationSerializer from './json-api-pagination';
 
-export default class ApplicationSerializer extends JSONAPISerializer.extend(
-  DataTableSerializerMixin,
-) {
+export default class ApplicationSerializer extends JSONAPIPaginationSerializer {
   serializeAttribute(snapshot, json, key, attributes) {
     if (key !== 'uri')
       super.serializeAttribute(snapshot, json, key, attributes);
