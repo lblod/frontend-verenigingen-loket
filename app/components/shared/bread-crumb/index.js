@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
 
 export default class SharedBreadCrumbComponent extends Component {

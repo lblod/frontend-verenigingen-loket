@@ -1,6 +1,6 @@
 import Route from '@ember/routing/route';
 import { task } from 'ember-concurrency';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import dateFormat from '../../helpers/date-format';
 export default class AssociationGeneralRoute extends Route {
   @service session;
