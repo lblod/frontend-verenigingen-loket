@@ -2,18 +2,19 @@ import Application from '@ember/application';
 import { importSync, isDevelopingApp, macroCondition } from '@embroider/macros';
 import Resolver from 'ember-resolver';
 import loadInitializers from 'ember-load-initializers';
-import ENV from 'frontend-verenigingen-loket/config/environment';
+import config from 'frontend-verenigingen-loket/config/environment';
 import { silenceEmptySyncRelationshipWarnings } from './utils/ember-data';
 
 if (macroCondition(isDevelopingApp())) {
   importSync('./deprecation-workflow');
+  importSync('./ember-inspector-support');
   silenceEmptySyncRelationshipWarnings();
 }
 
 export default class App extends Application {
-  modulePrefix = ENV.modulePrefix;
-  podModulePrefix = ENV.podModulePrefix;
+  modulePrefix = config.modulePrefix;
+  podModulePrefix = config.podModulePrefix;
   Resolver = Resolver;
 }
 
-loadInitializers(App, ENV.modulePrefix);
+loadInitializers(App, config.modulePrefix);

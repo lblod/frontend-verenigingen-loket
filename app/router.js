@@ -1,8 +1,9 @@
 import EmberRouter from '@ember/routing/router';
-import ENV from 'frontend-verenigingen-loket/config/environment';
+import config from 'frontend-verenigingen-loket/config/environment';
+
 export default class Router extends EmberRouter {
-  location = ENV.locationType;
-  rootURL = ENV.rootURL;
+  location = config.locationType;
+  rootURL = config.rootURL;
 }
 
 Router.map(function () {
@@ -11,13 +12,13 @@ Router.map(function () {
     this.route('callback');
     this.route('login');
     this.route('logout');
-    if (ENV.controllerLogin !== 'true') {
+    if (config.controllerLogin !== 'true') {
       this.route('switch');
     }
   });
   this.route('login');
-  if (ENV.controllerLogin !== 'true') {
-    if (ENV.acmidm.clientId === '{{OAUTH_API_KEY}}') {
+  if (config.controllerLogin !== 'true') {
+    if (config.acmidm.clientId === '{{OAUTH_API_KEY}}') {
       this.route('mock-login');
     }
     this.route('switch-login');

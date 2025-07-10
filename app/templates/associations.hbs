@@ -143,15 +143,11 @@
           <TableMessage>
             <p>
               Er werden geen zoekresultaten gevonden. Kijk na op spelfouten, of
-              probeer een andere zoekopdracht. Indien een organisatie ontbreekt,
+              probeer een andere zoekopdracht. Indien een vereniging ontbreekt,
               meldt dit aan
-              <a
-                class="au-c-link"
-                href="mailto:{{config 'contactEmail'}}"
-              >{{config "contactEmail"}}</a>
-              of
-              <AuLink @route="administrative-units.new">maak een organisatie
-                aan.</AuLink>
+              <AuLinkExternal href="mailto:{{config 'contactEmail'}}">
+                {{~config "contactEmail"~}}
+              </AuLinkExternal>.
             </p>
           </TableMessage>
         {{else}}
