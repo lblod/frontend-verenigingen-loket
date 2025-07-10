@@ -2,15 +2,23 @@
   <section class="au-u-flex au-u-flex--between">
     <div>
       <AuHeading @level="1" @skin="1">Algemeen</AuHeading>
-      <AuHeading @level="3" @skin="3">{{this.model.association.name}}</AuHeading>
+      <AuHeading
+        @level="3"
+        @skin="3"
+      >{{this.model.association.name}}</AuHeading>
     </div>
-    <div class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end">
+    <div
+      class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
+    >
       <ReportWrongData @model={{this.model.association}} />
     </div>
   </section>
   <section>
-    <Recognition::GeneralCard @recognition={{this.recognition}} @title="Huidige erkenning"
-      @isLoading={{this.isLoading}} />
+    <Recognition::GeneralCard
+      @recognition={{this.recognition}}
+      @title="Huidige erkenning"
+      @isLoading={{this.isLoading}}
+    />
   </section>
 
   <section>
@@ -20,7 +28,9 @@
           Vereniging (zoals bekend in het Verenigingsregister)
           <div class="au-u-margin-bottom-tiny">
             {{#if this.model.association}}
-            <LastUpdated @lastUpdated={{this.model.association.lastUpdated}} />
+              <LastUpdated
+                @lastUpdated={{this.model.association.lastUpdated}}
+              />
             {{/if}}
           </div>
         </div>
@@ -38,12 +48,14 @@
               <:label>Type</:label>
               <:content>
                 {{#if this.model.association.classification}}
-                <span title="{{this.model.association.classification.prefLabel}}">
-                  {{this.model.association.classification.prefLabel}}
-                  ({{this.model.association.classification.notation}})
-                </span>
+                  <span
+                    title="{{this.model.association.classification.prefLabel}}"
+                  >
+                    {{this.model.association.classification.prefLabel}}
+                    ({{this.model.association.classification.notation}})
+                  </span>
                 {{else}}
-                Niet opgegeven
+                  Niet opgegeven
                 {{/if}}
               </:content>
             </Item>
@@ -51,16 +63,16 @@
               <:label>Hoofdactiviteiten</:label>
               <:content>
                 {{#if this.model.association.activities}}
-                {{#each
-                this.model.association.activities
-                as |activity index|
-                }}
-                {{activity.prefLabel}}{{#unless
-                (last-index index this.model.association.activities)
-                }},{{/unless}}
-                {{/each}}
+                  {{#each
+                    this.model.association.activities
+                    as |activity index|
+                  }}
+                    {{activity.prefLabel}}{{#unless
+                      (last-index index this.model.association.activities)
+                    }},{{/unless}}
+                  {{/each}}
                 {{else}}
-                Niet opgegeven
+                  Niet opgegeven
                 {{/if}}
               </:content>
             </Item>
@@ -69,9 +81,9 @@
               <:label>Beschrijving</:label>
               <:content>
                 {{#if this.model.association.description}}
-                {{this.model.association.description}}
+                  {{this.model.association.description}}
                 {{else}}
-                Niet opgegeven
+                  Niet opgegeven
                 {{/if}}
               </:content>
             </Item>
@@ -80,17 +92,19 @@
             <Item>
               <:label>Status</:label>
               <:content>
-                <OrganizationStatus @id={{this.model.association.organizationStatus.id}}
-                  @label={{this.model.association.organizationStatus.label}} />
+                <OrganizationStatus
+                  @id={{this.model.association.organizationStatus.id}}
+                  @label={{this.model.association.organizationStatus.label}}
+                />
               </:content>
             </Item>
             <Item>
               <:label>Minimum leeftijd</:label>
               <:content>
                 {{#if this.model.association.targetAudience}}
-                {{this.model.association.targetAudience.minimumLeeftijd}}
+                  {{this.model.association.targetAudience.minimumLeeftijd}}
                 {{else}}
-                Niet opgegeven
+                  Niet opgegeven
                 {{/if}}
               </:content>
             </Item>
@@ -98,9 +112,9 @@
               <:label>Maximum leeftijd</:label>
               <:content>
                 {{#if this.model.association.targetAudience}}
-                {{this.model.association.targetAudience.maximumLeeftijd}}
+                  {{this.model.association.targetAudience.maximumLeeftijd}}
                 {{else}}
-                Niet opgegeven
+                  Niet opgegeven
                 {{/if}}
               </:content>
             </Item>
@@ -108,9 +122,9 @@
               <:label>Startdatum</:label>
               <:content>
                 {{#if this.model.association.createdOn}}
-                {{date-format this.model.association.createdOn}}
+                  {{date-format this.model.association.createdOn}}
                 {{else}}
-                Niet opgegeven
+                  Niet opgegeven
                 {{/if}}
               </:content>
             </Item>
@@ -118,13 +132,13 @@
               <:label>vCode</:label>
               <:content>
                 {{#each this.model.association.identifiers as |identifier|}}
-                {{#if (eq identifier.idName "vCode")}}
-                {{#if (get identifier.structuredIdentifier "localId")}}
-                {{get identifier.structuredIdentifier "localId"}}
-                {{else}}
-                Niet opgegeven
-                {{/if}}
-                {{/if}}
+                  {{#if (eq identifier.idName "vCode")}}
+                    {{#if (get identifier.structuredIdentifier "localId")}}
+                      {{get identifier.structuredIdentifier "localId"}}
+                    {{else}}
+                      Niet opgegeven
+                    {{/if}}
+                  {{/if}}
                 {{/each}}
               </:content>
             </Item>
@@ -132,13 +146,13 @@
               <:label>KBO nummer</:label>
               <:content>
                 {{#each this.model.association.identifiers as |identifier|}}
-                {{#if (eq identifier.idName "KBO nummer")}}
-                {{#if (get identifier.structuredIdentifier "localId")}}
-                {{get identifier.structuredIdentifier "localId"}}
-                {{else}}
-                Niet opgegeven
-                {{/if}}
-                {{/if}}
+                  {{#if (eq identifier.idName "KBO nummer")}}
+                    {{#if (get identifier.structuredIdentifier "localId")}}
+                      {{get identifier.structuredIdentifier "localId"}}
+                    {{else}}
+                      Niet opgegeven
+                    {{/if}}
+                  {{/if}}
                 {{/each}}
               </:content>
             </Item>
