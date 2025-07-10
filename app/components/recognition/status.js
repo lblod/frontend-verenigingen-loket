@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { task } from 'ember-concurrency';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 import { STATUS } from 'frontend-verenigingen-loket/models/recognition';
 
 export default class StatusComponent extends Component {
