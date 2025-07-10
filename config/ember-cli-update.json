@@ -12,7 +12,8 @@
           "isBaseBlueprint": true,
           "options": [
             "--no-welcome",
-            "--ci-provider=github"
+            "--embroider",
+            "--ci-provider=none"
           ]
         }
       ]
