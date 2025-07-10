@@ -7,6 +7,7 @@ import { silenceEmptySyncRelationshipWarnings } from './utils/ember-data';
 
 if (macroCondition(isDevelopingApp())) {
   importSync('./deprecation-workflow');
+  importSync('./ember-inspector-support');
   silenceEmptySyncRelationshipWarnings();
 }
 
