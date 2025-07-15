@@ -18,6 +18,11 @@ steps:
     depends_on: install
     commands:
       - npm run lint:css
+  lint-formatting:
+    image: danlynn/ember-cli:5.8.0-node_20.12
+    depends_on: install
+    commands:
+      - npm run lint:format
   dependency-lint:
     image: danlynn/ember-cli:5.8.0-node_20.12
     depends_on: install
