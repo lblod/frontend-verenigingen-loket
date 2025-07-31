@@ -8,7 +8,8 @@ export default class AssociationModel extends Model {
   @hasMany('identifier', { inverse: null, async: true }) identifiers;
   @hasMany('site', { inverse: null, async: true }) sites;
   @belongsTo('site', { inverse: null, async: true }) primarySite;
-  @hasMany('contact-point', { inverse: null, async: true }) contactPoints;
+  @hasMany('contact-point', { inverse: 'organization', async: true })
+  contactPoints;
   @belongsTo('organization-status-code', { inverse: null, async: true })
   organizationStatus;
   @hasMany('activity', { inverse: null, async: true }) activities;

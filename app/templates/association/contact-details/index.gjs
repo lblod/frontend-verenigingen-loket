@@ -5,12 +5,14 @@ import AuDataTable from '@appuniversum/ember-appuniversum/components/au-data-tab
 import ThSortable from '@appuniversum/ember-appuniversum/components/au-data-table/th-sortable';
 import AuBadge from '@appuniversum/ember-appuniversum/components/au-badge';
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
+import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
 import AuLinkExternal from '@appuniversum/ember-appuniversum/components/au-link-external';
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import DataCard from 'frontend-verenigingen-loket/components/data-card';
 import LastUpdated from 'frontend-verenigingen-loket/components/last-updated';
 import ReportWrongData from 'frontend-verenigingen-loket/components/report-wrong-data';
 import telFormat from 'frontend-verenigingen-loket/helpers/tel-format';
+import { isPrimaryContactPoint } from 'frontend-verenigingen-loket/models/contact-point';
 
 export default class ContactDetails extends Component {
   @service currentSession;
@@ -51,12 +53,19 @@ export default class ContactDetails extends Component {
             >{{this.association.name}}</AuHeading>
           </div>
           <div class="au-u-flex au-u-flex--column au-u-flex--vertical-end">
-            <ReportWrongData
-              @model={{this.association}}
-              class="au-u-margin-top-none au-u-margin-bottom-tiny"
-            />
+            {{#if this.currentSession.canEdit}}
+              <AuLink
+                @route="association.contact-details.edit"
+                @skin="button-secondary"
+                @icon="pencil"
+              >
+                Bewerk
+              </AuLink>
+            {{else}}
+              <ReportWrongData @model={{this.association}} />
+            {{/if}}
 
-            <div>
+            <div class="au-u-margin-top-tiny">
               <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
             </div>
           </div>
@@ -205,8 +214,4 @@ function hasPrimaryContactPoints(contactPoints) {
   return contactPoints.some((contactPoint) =>
     isPrimaryContactPoint(contactPoint),
   );
-}
-
-function isPrimaryContactPoint(contactPoint) {
-  return contactPoint.type === 'Primary';
 }
