@@ -53,3 +53,28 @@
 .underline:hover {
   cursor: pointer;
 }
+
+.u-shrink-column {
+  width: 1px !important;
+}
+
+.contact-details-edit-table {
+  td {
+    // Fix alignment issue with the input field and select
+    vertical-align: top; // We use top so everything is still aligned when error messages are displayed
+  }
+
+  // Fix the checkbox alignment
+  .au-c-control--checkbox {
+    align-items: center;
+  }
+
+  .au-c-control__indicator {
+    margin-top: 0;
+    bottom: unset;
+  }
+}
+
+.contact-type-select {
+  width: 300px;
+}

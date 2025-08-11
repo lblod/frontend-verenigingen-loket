@@ -1,4 +1,4 @@
-{{page-title "Vereniging"}}
+{{page-title @model.name}}
 
 <AuMainContainer as |m|>
   <m.sidebar>
@@ -17,7 +17,7 @@
               </AuNavigationLink>
             </li>
             <li class="au-c-list-navigation__item">
-              <AuNavigationLink @route="association.contact-detail">
+              <AuNavigationLink @route="association.contact-details">
                 Contactgegevens
               </AuNavigationLink>
             </li>
