@@ -45,7 +45,11 @@ Router.map(function () {
       this.route('edit');
     });
     this.route('location');
-    this.route('representatives');
+    this.route(
+      'representatives',
+      { path: '/vertegenwoordigers' },
+      function () {},
+    );
     this.route('recognition', { path: 'erkenningen' }, function () {
       this.route('index', { path: '/' });
       this.route('show', { path: '/:recognition_id' });
