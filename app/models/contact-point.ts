@@ -1,5 +1,8 @@
 import Model, { attr, belongsTo } from '@ember-data/model';
 import Joi from 'joi';
+import type { Type } from '@warp-drive/core-types/symbols';
+// @ts-expect-error Association isn't typed yet.
+import type Association from './association';
 
 // The `.name` property is used to determine the type of data that is stored in the contact point.
 // This is different from the `type` property, which is used to mark a contact point as the "primary" of a certain (name) type.
@@ -17,43 +20,31 @@ export const CONTACT_POINT_LABEL = {
   [CONTACT_DATA_TYPE.SOCIAL_MEDIA]: 'Social media',
 };
 
-export default class ContactPointModel extends Model {
-  /** @type {?'Primary'} */
-  @attr type;
-  /** @type {?string} */
-  @attr email;
-  /** @type {?string} */
-  @attr telephone;
-  /** @type {?string} */
-  @attr name;
-  /** @type {?string} */
-  @attr website;
+export default class ContactPoint extends Model {
+  declare [Type]: 'contact-point';
 
-  @belongsTo('association', { async: false, inverse: 'contactPoints' })
-  organization;
+  @attr type?: 'Primary' | null;
+  @attr email?: string;
+  @attr telephone?: string;
+  @attr name?: string;
+  @attr website?: string;
+
+  @belongsTo<Association>('association', {
+    async: false,
+    inverse: 'contactPoints',
+  })
+  organization?: Association;
 }
 
-/**
- * @param {ContactPointModel} contactPoint
- * @returns {boolean}
- */
-export function isPrimaryContactPoint(contactPoint) {
+export function isPrimaryContactPoint(contactPoint: ContactPoint) {
   return contactPoint.type === 'Primary';
 }
 
-/**
- * @param {ContactPointModel} contactPoint
- * @returns {void}
- */
-export function setPrimaryContactPoint(contactPoint) {
+export function setPrimaryContactPoint(contactPoint: ContactPoint) {
   contactPoint.type = 'Primary';
 }
 
-/**
- * @param {ContactPointModel} contactPoint
- * @returns {void}
- */
-export function unsetPrimaryContactPoint(contactPoint) {
+export function unsetPrimaryContactPoint(contactPoint: ContactPoint) {
   contactPoint.type = null;
 }
 
