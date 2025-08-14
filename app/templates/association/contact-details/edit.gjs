@@ -4,10 +4,9 @@ import AuButton from '@appuniversum/ember-appuniversum/components/au-button';
 import AuCheckbox from '@appuniversum/ember-appuniversum/components/au-checkbox';
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text';
-import AuInput from '@appuniversum/ember-appuniversum/components/au-input';
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
-import { fn, uniqueId } from '@ember/helper';
+import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 import Component from '@glimmer/component';
@@ -15,6 +14,9 @@ import { dropTask } from 'ember-concurrency';
 import { pageTitle } from 'ember-page-title';
 import PowerSelect from 'ember-power-select/components/power-select';
 import PhoneInput from 'frontend-verenigingen-loket/components/phone-input';
+import EditTable, {
+  EditCell,
+} from 'frontend-verenigingen-loket/components/edit-table';
 import eventValue from 'frontend-verenigingen-loket/helpers/event-value';
 import {
   CONTACT_DATA_TYPE,
@@ -60,19 +62,9 @@ export default class ContactEdit extends Component {
     event.preventDefault();
 
     const promises = this.contactPoints.map(async (contactPoint) => {
-      const validationResult = await validateRecord(
-        contactPoint,
-        validationSchema,
-      );
-      if (!validationResult.isValid) {
-        Object.entries(validationResult.errors).forEach(
-          ([field, errorMessage]) => {
-            contactPoint.errors.add(field, errorMessage);
-          },
-        );
-      }
+      await validateRecord(contactPoint, validationSchema);
 
-      return validationResult.isValid;
+      return contactPoint.isValid;
     });
 
     const isValid = (await Promise.all(promises)).every((isValid) =>
@@ -198,43 +190,37 @@ export default class ContactEdit extends Component {
 
       <form id="contact-details-edit-form" {{on "submit" this.save.perform}}>
         {{! We don't use the AuDataTable component here because it doesn't rerender when we change the contactPoints array due to its old `computed` usage. }}
-        <div class="contact-details-edit-table au-c-data-table">
-          <div class="au-c-data-table__wrapper">
-            <table class="au-c-data-table__table">
-              <thead>
-                <tr class="au-c-data-table__header">
-                  <th>
-                    Type contactgegeven
-                  </th>
-                  <th>
-                    Waarde
-                  </th>
-                  <th>
-                    {{! favourite }}
-                  </th>
-                  <th class="u-shrink-column">
-                    {{! Delete }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {{#each this.contactPoints as |contactPoint|}}
-                  <TableRow
-                    @contactPoint={{contactPoint}}
-                    @onDelete={{this.deleteContactPoint}}
-                    @onPrimaryChange={{this.handlePrimaryChange}}
-                  />
-                {{else}}
-                  <tr>
-                    <td colspan="4">
-                      <em>Geen contactgegevens toegevoegd</em>
-                    </td>
-                  </tr>
-                {{/each}}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <EditTable>
+          <:columns>
+            <th>
+              Type contactgegeven
+            </th>
+            <th>
+              Waarde
+            </th>
+            <th>
+              {{! favourite }}
+            </th>
+            <th class="u-shrink-column">
+              {{! Delete }}
+            </th>
+          </:columns>
+          <:tbody>
+            {{#each this.contactPoints as |contactPoint|}}
+              <TableRow
+                @contactPoint={{contactPoint}}
+                @onDelete={{this.deleteContactPoint}}
+                @onPrimaryChange={{this.handlePrimaryChange}}
+              />
+            {{else}}
+              <tr>
+                <td colspan="4">
+                  <em>Geen contactgegevens toegevoegd</em>
+                </td>
+              </tr>
+            {{/each}}
+          </:tbody>
+        </EditTable>
 
         <div class="au-o-box au-u-padding-top-small">
           <AuButton
@@ -286,7 +272,6 @@ class TableRow extends Component {
           @hideText={{true}}
           @icon="bin"
           @skin="naked"
-          {{! TODO: delete handler }}
           {{on "click" (fn @onDelete @contactPoint)}}
         >Verwijder contactgegeven</AuButton>
       </td>
@@ -354,6 +339,7 @@ class EmailEdit extends Component {
     >
       <:input as |ContactInput|>
         <ContactInput
+          @width="block"
           value={{@contactPoint.email}}
           {{on "input" (eventValue (fn (mut @contactPoint.email)))}}
         />
@@ -400,6 +386,7 @@ class SocialMediaEdit extends Component {
     >
       <:input as |ContactInput|>
         <ContactInput
+          @width="block"
           value={{@contactPoint.website}}
           {{on "input" (eventValue (fn (mut @contactPoint.website)))}}
         />
@@ -418,6 +405,7 @@ class WebsiteEdit extends Component {
     >
       <:input as |ContactInput|>
         <ContactInput
+          @width="block"
           value={{@contactPoint.website}}
           {{on "input" (eventValue (fn (mut @contactPoint.website)))}}
         />
@@ -428,34 +416,22 @@ class WebsiteEdit extends Component {
 }
 
 class EditColumns extends Component {
-  id = uniqueId();
-
   get label() {
     return CONTACT_POINT_LABEL[this.args.contactPoint.name];
   }
 
   <template>
-    <td>
-      <label class="au-u-hidden-visually" for={{this.id}}>
+    <EditCell
+      @errorMessage={{@errorMessage}}
+      @warningMessage={{@warningMessage}}
+    >
+      <:label>
         {{this.label}}
-      </label>
-      {{yield
-        (component
-          ContactValueInput
-          id=this.id
-          error=@errorMessage
-          warning=@warningMessage
-        )
-        this.id
-        to="input"
-      }}
-
-      {{#if @errorMessage}}
-        <AuHelpText @error={{true}}>{{@errorMessage}}</AuHelpText>
-      {{else if @warningMessage}}
-        <AuHelpText @warning={{true}}>{{@warningMessage}}</AuHelpText>
-      {{/if}}
-    </td>
+      </:label>
+      <:input as |CellInput id|>
+        {{yield CellInput id to="input"}}
+      </:input>
+    </EditCell>
     <td>
       <div class="au-u-margin-top-tiny">
         <AuCheckbox
@@ -468,16 +444,6 @@ class EditColumns extends Component {
     </td>
   </template>
 }
-
-const ContactValueInput = <template>
-  <AuInput
-    @width="block"
-    @error={{@error}}
-    @warning={{@warning}}
-    id={{@id}}
-    ...attributes
-  />
-</template>;
 
 const NoContactType = <template>
   <td>

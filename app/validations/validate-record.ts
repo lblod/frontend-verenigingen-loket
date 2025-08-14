@@ -7,12 +7,12 @@ import type { Schema } from 'joi';
 
 type ModelSchema = typeof Model;
 
-type ValidationResult = {
+export type ValidationResult = {
   isValid: boolean;
   errors?: ValidationErrorDetails;
 };
 
-interface ValidationErrorDetails {
+export interface ValidationErrorDetails {
   [key: string]: string;
 }
 
@@ -37,6 +37,8 @@ export async function validateRecord(
         }
         return acc;
       }, {} as ValidationErrorDetails);
+
+      addErrorsToRecord(record, errors);
 
       return { isValid: false, errors };
     }
@@ -92,4 +94,10 @@ function serializeRecordWithDepthControl(
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Object.fromEntries(entries);
+}
+
+function addErrorsToRecord(record: Model, errors: ValidationErrorDetails) {
+  Object.entries(errors).forEach(([field, errorMessage]) => {
+    record.errors.add(field, errorMessage);
+  });
 }

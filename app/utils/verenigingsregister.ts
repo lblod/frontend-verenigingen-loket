@@ -1,10 +1,11 @@
-import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point';
-import { associationVCode } from 'frontend-verenigingen-loket/models/association';
-import type Association from 'frontend-verenigingen-loket/models/association';
-import type { ChangedAttributesHash } from '@warp-drive/core-types/cache';
 import { assert } from '@ember/debug';
 import RequestManager from '@ember-data/request';
 import Fetch from '@ember-data/request/fetch';
+import { associationVCode } from 'frontend-verenigingen-loket/models/association';
+import type Association from 'frontend-verenigingen-loket/models/association';
+import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point';
+import type { ChangedAttributesHash } from '@warp-drive/core-types/cache';
+import type Membership from 'frontend-verenigingen-loket/models/membership';
 
 const manager = new RequestManager().use([Fetch]);
 
@@ -36,15 +37,89 @@ export async function removeContactDetail(contactPoint: ContactPoint) {
   });
 }
 
+export async function updateRepresentative(
+  representative: Membership,
+  association: Association,
+) {
+  const url = await buildRepresentativeUrl(representative, association);
+  const method = representative.isNew ? 'POST' : 'PATCH';
+
+  const person = await representative.person;
+  const contactPoints = await person.contactPoints;
+  const contactPoint = contactPoints.at(0);
+
+  assert('representatives are expected to have a contact point', contactPoint);
+
+  if (
+    !representative.hasDirtyAttributes &&
+    !person.hasDirtyAttributes &&
+    !contactPoint.hasDirtyAttributes
+  ) {
+    return;
+  }
+
+  const requestData = {
+    ...mapRecordAttributesToAPIFields(
+      representative.changedAttributes(),
+      REPRESENTATIVE_ATTRIBUTE_MAP,
+    ),
+    ...mapRecordAttributesToAPIFields(
+      person.changedAttributes(),
+      REPRESENTATIVE_ATTRIBUTE_MAP,
+    ),
+    ...mapRecordAttributesToAPIFields(
+      contactPoint.changedAttributes(),
+      REPRESENTATIVE_ATTRIBUTE_MAP,
+    ),
+  };
+
+  await manager.request({
+    url,
+    method,
+    headers: new Headers({
+      'Content-Type': 'application/json',
+    }),
+    body: JSON.stringify({
+      vertegenwoordiger: requestData,
+    }),
+  });
+}
+
 async function buildContactDetailUrl(contactPoint: ContactPoint) {
   const association = contactPoint.organization;
-  const internalId = contactPoint.internalId;
+
+  assert(
+    'association contact points are expected to have an association relationship',
+    association,
+  );
 
   const url = (await buildVerenigingUrl(association)) + '/contactgegevens';
 
   if (!contactPoint.isNew) {
+    const internalId = contactPoint.internalId;
     assert(
       'existing contact points are expected to have an internal id',
+      internalId,
+    );
+
+    if (internalId) {
+      return url + '/' + internalId;
+    }
+  }
+
+  return url;
+}
+
+async function buildRepresentativeUrl(
+  representative: Membership,
+  association: Association,
+) {
+  const url = (await buildVerenigingUrl(association)) + '/vertegenwoordigers';
+
+  if (!representative.isNew) {
+    const internalId = representative.internalId;
+    assert(
+      'existing representatives are expected to have an internal id',
       internalId,
     );
 
@@ -72,6 +147,15 @@ const CONTACT_DETAILS_ATTRIBUTE_MAP = {
   ) {
     mappedAttributes['isPrimair'] = typeValue === 'Primary';
   },
+};
+
+const REPRESENTATIVE_ATTRIBUTE_MAP = {
+  givenName: 'voornaam',
+  familyName: 'achternaam',
+  email: 'e-mail',
+  telephone: 'telefoon',
+  website: 'socialMedia',
+  isPrimary: 'isPrimair',
 };
 
 /**
