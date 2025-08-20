@@ -28,6 +28,7 @@ export default class AssociationContactDetailsEditRoute extends Route {
 
     const contactPoints = await this.store.query('contact-point', {
       'filter[organization][:id:]': id,
+      include: 'organization',
       page: { size: 100, number: 0 },
       sort: 'name',
     });

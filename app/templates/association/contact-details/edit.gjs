@@ -25,6 +25,10 @@ import {
   validationSchema,
 } from 'frontend-verenigingen-loket/models/contact-point';
 import { removeItem } from 'frontend-verenigingen-loket/utils/array';
+import {
+  createOrUpdateContactDetail,
+  removeContactDetail,
+} from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
 
 export default class ContactEdit extends Component {
@@ -78,7 +82,7 @@ export default class ContactEdit extends Component {
     if (isValid) {
       await Promise.all(
         this.contactPointsToRemove.map((contactPoint) => {
-          return contactPoint.destroyRecord();
+          return removeContactDetail(contactPoint);
         }),
       );
       this.contactPointsToRemove = [];
@@ -86,7 +90,7 @@ export default class ContactEdit extends Component {
       const savePromises = this.contactPoints
         .filter((contactPoint) => contactPoint.hasDirtyAttributes)
         .map((contactPoint) => {
-          return contactPoint.save();
+          return createOrUpdateContactDetail(contactPoint);
         });
 
       await Promise.all(savePromises);
