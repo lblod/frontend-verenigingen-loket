@@ -85,6 +85,18 @@ export async function updateRepresentative(
   });
 }
 
+export async function removeRepresentative(
+  representative: Membership,
+  association: Association,
+) {
+  const url = await buildRepresentativeUrl(representative, association);
+
+  await manager.request({
+    url,
+    method: 'DELETE',
+  });
+}
+
 async function buildContactDetailUrl(contactPoint: ContactPoint) {
   const association = contactPoint.organization;
 
