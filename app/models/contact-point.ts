@@ -22,18 +22,18 @@ export const CONTACT_POINT_LABEL = {
 export default class ContactPoint extends Model {
   declare [Type]: 'contact-point';
 
-  @attr type?: 'Primary' | null;
-  @attr email?: string;
-  @attr telephone?: string;
-  @attr name?: string;
-  @attr website?: string;
-  @attr internalId?: string;
+  @attr declare type?: 'Primary' | null;
+  @attr declare email?: string;
+  @attr declare telephone?: string;
+  @attr declare name?: string;
+  @attr declare website?: string;
+  @attr declare internalId?: string;
 
   @belongsTo<Association>('association', {
     async: false,
     inverse: 'contactPoints',
   })
-  declare organization: Association;
+  declare organization?: Association;
 }
 
 export function isPrimaryContactPoint(contactPoint: ContactPoint) {
@@ -84,6 +84,28 @@ export const validationSchema = Joi.object({
       ],
       otherwise: Joi.optional(),
     })
+    .messages({ 'string.uri': 'Geef een geldig internetadres in.' }),
+}).messages({
+  'any.required': 'Dit veld is verplicht.',
+});
+
+// We use the ContactPoint records in different ways depending on the context
+// so it's easier to use separate validation schemas to cover both cases.
+export const representativeContactPointValidationSchema = Joi.object({
+  email: Joi.string().empty('').email({ tlds: false }).required().messages({
+    'string.email': 'Geef een geldig e-mailadres in.',
+  }),
+  telephone: Joi.string()
+    .empty('')
+    .regex(/^(tel:)?\+?[0-9]*$/)
+    .optional()
+    .messages({
+      'string.pattern.base': 'Enkel een plusteken en cijfers zijn toegelaten.',
+    }),
+  website: Joi.string()
+    .empty('')
+    .uri()
+    .optional()
     .messages({ 'string.uri': 'Geef een geldig internetadres in.' }),
 }).messages({
   'any.required': 'Dit veld is verplicht.',

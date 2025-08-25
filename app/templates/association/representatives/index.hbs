@@ -1,4 +1,5 @@
 {{page-title "Vertegenwoordigers"}}
+
 <AuDataTable
   @content={{this.members}}
   @noDataMessage="Geen vertegenwoordigers beschikbaar"
@@ -17,21 +18,24 @@
         class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
       >
         {{#if this.association}}
-          <ReportWrongData @model={{this.association}} />
+          {{#if this.currentSession.canEdit}}
+            <AuLink
+              @route="association.representatives.edit"
+              @skin="button-secondary"
+              @icon="pencil"
+            >
+              Bewerk
+            </AuLink>
+          {{else}}
+            <ReportWrongData @model={{this.association}} />
+          {{/if}}
+          <span class="au-u-margin-top-tiny">
+            <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
+          </span>
         {{/if}}
       </div>
     </section>
     <section class="au-u-padding-left au-u-padding-right au-u-padding-top">
-      <h3
-        class="au-c-heading au-c-heading--5 au-u-margin-bottom-tiny au-u-flex au-u-flex--between au-u-flex--vertical-end"
-      >
-        Vertegenwoordigers (zoals bekend in het Verenigingsregister)
-        <span class="au-u-margin-bottom-tiny">
-          {{#if this.association}}
-            <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
-          {{/if}}
-        </span>
-      </h3>
       {{#if this.model.kboNumber}}
         <h3
           class="au-c-heading au-c-heading--5 au-u-margin-bottom-small au-u-flex au-u-flex--between au-u-flex--vertical-end"

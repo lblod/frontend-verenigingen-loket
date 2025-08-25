@@ -1,0 +1,20 @@
+.c-edit-table {
+  td {
+    // Fix alignment issue with the input fields and selects
+    vertical-align: top; // We use top so everything is still aligned when error messages are displayed
+  }
+
+  // Fix the checkbox alignment
+  .au-c-control--checkbox {
+    align-items: center;
+  }
+
+  .au-c-control__indicator {
+    margin-top: 0;
+    bottom: unset;
+  }
+}
+.c-edit-table__cell {
+}
+.c-edit-table__cell-input {
+}

@@ -42,10 +42,12 @@ Router.map(function () {
     this.route('general', { path: '/' });
     this.route('general', { path: '/algemeen' });
     this.route('contact-details', { path: '/contactgegevens' }, function () {
-      this.route('edit');
+      this.route('edit', { path: '/bewerk' });
     });
     this.route('location');
-    this.route('representatives');
+    this.route('representatives', { path: '/vertegenwoordigers' }, function () {
+      this.route('edit', { path: '/bewerk' });
+    });
     this.route('recognition', { path: 'erkenningen' }, function () {
       this.route('index', { path: '/' });
       this.route('show', { path: '/:recognition_id' });

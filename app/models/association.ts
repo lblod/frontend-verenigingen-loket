@@ -4,7 +4,6 @@ import { Type } from '@warp-drive/core-types/symbols';
 // @ts-expect-error Class isn't typed yet.
 import type Activity from './activity';
 import type Identifier from './identifier';
-// @ts-expect-error Class isn't typed yet.
 import type Membership from './membership';
 // @ts-expect-error Class isn't typed yet.
 import type Site from './site';
