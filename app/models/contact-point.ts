@@ -1,7 +1,6 @@
 import Model, { attr, belongsTo } from '@ember-data/model';
 import Joi from 'joi';
 import type { Type } from '@warp-drive/core-types/symbols';
-// @ts-expect-error Association isn't typed yet.
 import type Association from './association';
 
 // The `.name` property is used to determine the type of data that is stored in the contact point.
@@ -28,12 +27,13 @@ export default class ContactPoint extends Model {
   @attr telephone?: string;
   @attr name?: string;
   @attr website?: string;
+  @attr internalId?: string;
 
   @belongsTo<Association>('association', {
     async: false,
     inverse: 'contactPoints',
   })
-  organization?: Association;
+  declare organization: Association;
 }
 
 export function isPrimaryContactPoint(contactPoint: ContactPoint) {
