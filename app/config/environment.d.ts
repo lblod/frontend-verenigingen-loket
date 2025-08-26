@@ -26,6 +26,10 @@ declare const config: {
     switchRedirectUrl: string;
   };
   announcementMessage: string;
+  plausible: {
+    domain: string;
+    apiHost: string;
+  };
 };
 
 export default config;
