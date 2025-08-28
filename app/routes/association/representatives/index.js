@@ -28,7 +28,16 @@ export default class AssociationRepresentativesRoute extends Route {
       });
       return memberWithPerson;
     });
-    return await Promise.all(memberPromises);
+    await Promise.all(memberPromises);
+    // A Person can have many contact points. As long as one of the contact
+    // points is marked as primary, the whole membership is primary.
+    for (const member of members) {
+      member.isPrimary = false;
+      const contacts = await member.person.get('contactPoints');
+      for (const contact of contacts)
+        if (contact.type === 'Primary') member.isPrimary = true;
+    }
+    return members;
   });
 
   loadKboNumber = task({ drop: true }, async (association) => {
