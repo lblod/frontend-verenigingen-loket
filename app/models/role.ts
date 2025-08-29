@@ -9,7 +9,9 @@ export const ROLES = {
 };
 
 export default class RoleModel extends ConceptModel {
-  @attr uri;
+  //declare [Type]: 'role';
+
+  @attr declare uri?: string;
 
   get isPrimary() {
     return this.uri === ROLES.PRIMARY;

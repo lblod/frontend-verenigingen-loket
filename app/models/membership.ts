@@ -11,6 +11,6 @@ export default class Membership extends Model {
   @belongsTo<Person>('person', { inverse: null, async: true })
   declare person: Promise<Person>;
 
-  @belongsTo<Role>('role', { inverse: null, async: true })
+  @belongsTo<Role>('concept', { inverse: null, async: true })
   declare role: Promise<Role>;
 }
