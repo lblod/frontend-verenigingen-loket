@@ -24,20 +24,11 @@ export default class AssociationRepresentativesRoute extends Route {
     const members = await association.get('members');
     const memberPromises = members.map(async (member) => {
       const memberWithPerson = await member.reload({
-        include: 'person.contact-points',
+        include: 'person.contact-points,role',
       });
       return memberWithPerson;
     });
-    await Promise.all(memberPromises);
-    // A Person can have many contact points. As long as one of the contact
-    // points is marked as primary, the whole membership is primary.
-    for (const member of members) {
-      member.isPrimary = false;
-      const contacts = await member.person.get('contactPoints');
-      for (const contact of contacts)
-        if (contact.type === 'Primary') member.isPrimary = true;
-    }
-    return members;
+    return Promise.all(memberPromises);
   });
 
   loadKboNumber = task({ drop: true }, async (association) => {
