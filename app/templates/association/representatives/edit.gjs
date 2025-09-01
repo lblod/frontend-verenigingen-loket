@@ -23,13 +23,16 @@ import fieldError from 'frontend-verenigingen-loket/helpers/field-error';
 import { representativeContactPointValidationSchema as contactPointValidationSchema } from 'frontend-verenigingen-loket/models/contact-point';
 import { validationSchema as personValidationSchema } from 'frontend-verenigingen-loket/models/person';
 import { removeItem } from 'frontend-verenigingen-loket/utils/array';
-import { updateRepresentative } from 'frontend-verenigingen-loket/utils/verenigingsregister';
+import {
+  updateRepresentative,
+  removeRepresentative,
+} from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
 
 export default class RepresentativesEdit extends Component {
   @service router;
   @service store;
-  recordsToRemove = [];
+  representativesToRemove = [];
 
   get isLoading() {
     // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
@@ -75,10 +78,10 @@ export default class RepresentativesEdit extends Component {
 
     if (!representative.isNew) {
       // If the representative is not new, we need to mark the records for deletion on the server
-      this.recordsToRemove.push(...recordsToRemove);
+      this.representativesToRemove.push(representative);
     }
 
-    // We (also) mark the records for deletion, which also removes any newly created ones
+    // We (also) mark the records for deletion in the store, which also removes any newly created ones
     recordsToRemove.forEach((record) => record.deleteRecord());
   };
 
@@ -120,13 +123,24 @@ export default class RepresentativesEdit extends Component {
         await updateRepresentative(representative, this.association);
       }
 
+      for (const representative of this.representativesToRemove) {
+        await removeRepresentative(representative, this.association);
+      }
+
       this.router.transitionTo('association.representatives');
     }
   });
 
   async reset() {
-    const recordsToRollBack = [...this.recordsToRemove];
-    for (const representative of this.representatives) {
+    const recordsToRollBack = [];
+    const representativesToRollBack = [
+      ...this.representatives,
+      ...this.representativesToRemove,
+    ];
+
+    this.representativesToRemove = [];
+
+    for (const representative of representativesToRollBack) {
       const person = await representative.person;
       const contactPoints = await person.contactPoints;
       recordsToRollBack.push(representative, person, ...contactPoints);
@@ -208,10 +222,9 @@ export default class RepresentativesEdit extends Component {
             <th>
               {{! favourite }}
             </th>
-            {{!-- TODO as part of CLBV-592
             <th class="u-shrink-column">
               {{! Delete }}
-            </th> --}}
+            </th>
           </:columns>
           <:tbody>
             {{#each this.representatives as |representative|}}
@@ -222,7 +235,7 @@ export default class RepresentativesEdit extends Component {
               />
             {{else}}
               <tr>
-                <td colspan="5">
+                <td colspan="7">
                   <em>Geen vertegenwoordigers toegevoegd</em>
                 </td>
               </tr>
@@ -363,7 +376,7 @@ class EditRow extends Component {
           </AuCheckbox>
         </div>
       </td>
-      {{!-- <td class="au-u-text-right">
+      <td class="au-u-text-right">
         <AuButton
           @alert={{true}}
           @hideText={{true}}
@@ -371,7 +384,7 @@ class EditRow extends Component {
           @skin="naked"
           {{on "click" (fn @onDelete @representative)}}
         >Verwijder vertegenwoordiger</AuButton>
-      </td> --}}
+      </td>
     </tr>
   </template>
 }
