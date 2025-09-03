@@ -37,7 +37,7 @@ export async function removeContactDetail(contactPoint: ContactPoint) {
   });
 }
 
-export async function updateRepresentative(
+export async function createOrUpdateRepresentative(
   representative: Membership,
   association: Association,
 ) {
@@ -168,6 +168,7 @@ const REPRESENTATIVE_ATTRIBUTE_MAP = {
   telephone: 'telefoon',
   website: 'socialMedia',
   isPrimary: 'isPrimair',
+  ssn: 'insz',
 };
 
 /**

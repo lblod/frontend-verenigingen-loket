@@ -1,7 +1,7 @@
 import { assert } from '@ember/debug';
 import type Model from '@ember-data/model';
 import { ValidationError } from 'joi';
-import type { Schema } from 'joi';
+import type { Schema, ValidationOptions } from 'joi';
 
 // Based on the class version in MOW: https://github.com/lblod/frontend-mow-registry/blob/31ac4078df0e77506919fa814cc6f7b071c5b56f/app/models/abstract-validation-model.ts
 
@@ -19,6 +19,7 @@ export interface ValidationErrorDetails {
 export async function validateRecord(
   record: Model,
   schema: Schema,
+  validationOptions: ValidationOptions = {},
 ): Promise<ValidationResult> {
   // Joi creates a copy of the record when validating, which EmberData does not like.
   // We convert the record to a pojo and pass that to Joi to bypass that problem.
@@ -28,6 +29,7 @@ export async function validateRecord(
     await schema.validateAsync(serializedRecord, {
       abortEarly: false,
       allowUnknown: true,
+      ...validationOptions,
     });
   } catch (error: unknown) {
     if (error instanceof ValidationError) {
