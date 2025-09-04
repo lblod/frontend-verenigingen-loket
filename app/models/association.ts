@@ -5,7 +5,6 @@ import { Type } from '@warp-drive/core-types/symbols';
 import type Activity from './activity';
 import type Identifier from './identifier';
 import type Membership from './membership';
-// @ts-expect-error Class isn't typed yet.
 import type Site from './site';
 import type ContactPoint from './contact-point';
 // @ts-expect-error Class isn't typed yet.
@@ -22,10 +21,10 @@ import type Recognition from './recognition';
 export default class Association extends Model {
   declare [Type]: 'association';
 
-  @attr name?: string;
-  @attr description?: string;
-  @attr lastUpdated?: string;
-  @attr createdOn?: string;
+  @attr declare name?: string;
+  @attr declare description?: string;
+  @attr declare lastUpdated?: string;
+  @attr declare createdOn?: string;
 
   @hasMany<Identifier>('identifier', { inverse: null, async: true })
   declare identifiers: Promise<Identifier[]>;

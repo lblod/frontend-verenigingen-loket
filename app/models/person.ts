@@ -2,7 +2,6 @@ import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { Type } from '@warp-drive/core-types/symbols';
 import Joi from 'joi';
 import type ContactPoint from './contact-point';
-// @ts-expect-error Class isn't typed yet.
 import type Site from './site';
 import { isValidRijksregisternummer } from '../utils/rijksregisternummer';
 
