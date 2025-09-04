@@ -53,12 +53,14 @@ export default class AddressSearch extends Component {
     this.updateAddressAttributes(address);
   };
 
-  updateAddressAttributes(address, source) {
-    this.args.address.setProperties({
+  updateAddressAttributes(newAddressValues, source) {
+    const address = nullToUndefined(newAddressValues);
+    Object.assign(this.args.address, {
       street: address.street,
       number: address.housenumber,
       boxNumber: address.busNumber,
       postcode: address.zipCode,
+      fullAddress: address.fullAddress,
       source,
       municipality: address.municipality,
       country: address.country,
@@ -67,15 +69,16 @@ export default class AddressSearch extends Component {
   }
 
   resetAddressAttributes() {
-    this.args.address.setProperties({
-      street: null,
-      number: null,
-      boxNumber: null,
-      postcode: null,
-      source: null,
-      municipality: null,
-      country: null,
-      addressRegisterUri: null,
+    Object.assign(this.args.address, {
+      street: undefined,
+      number: undefined,
+      boxNumber: undefined,
+      postcode: undefined,
+      fullAddress: undefined,
+      source: undefined,
+      municipality: undefined,
+      country: undefined,
+      addressRegisterUri: undefined,
     });
   }
 
@@ -202,3 +205,13 @@ const AddressRegisterBusNumberSelector = <template>
     {{/if}}
   </PowerSelect>
 </template>;
+
+// Converts properties set to null to undefined instead, which simplifies the validations
+function nullToUndefined(object) {
+  return Object.fromEntries(
+    Object.entries(object).map(([key, value]) => [
+      key,
+      value === null ? undefined : value,
+    ]),
+  );
+}

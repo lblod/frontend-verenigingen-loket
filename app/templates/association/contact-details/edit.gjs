@@ -4,30 +4,40 @@ import AuButton from '@appuniversum/ember-appuniversum/components/au-button';
 import AuCheckbox from '@appuniversum/ember-appuniversum/components/au-checkbox';
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text';
+import AuInput from '@appuniversum/ember-appuniversum/components/au-input';
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { dropTask } from 'ember-concurrency';
 import { pageTitle } from 'ember-page-title';
 import PowerSelect from 'ember-power-select/components/power-select';
 import AddressSearch from 'frontend-verenigingen-loket/components/address-search';
+import CountrySelect from 'frontend-verenigingen-loket/components/address/country-select';
+import MunicipalitySelectByName from 'frontend-verenigingen-loket/components/address/municipality-select-by-name';
 import EditCard from 'frontend-verenigingen-loket/components/edit-card';
 import PhoneInput from 'frontend-verenigingen-loket/components/phone-input';
 import EditTable, {
   EditCell,
 } from 'frontend-verenigingen-loket/components/edit-table';
 import eventValue from 'frontend-verenigingen-loket/helpers/event-value';
-import { isEmptyAddress } from 'frontend-verenigingen-loket/models/address';
+import {
+  BELGIUM,
+  clearAddress,
+  isPostcodeInFlanders,
+  isEmptyAddress,
+  validationSchema as addressValidationSchema,
+} from 'frontend-verenigingen-loket/models/address';
 import {
   CONTACT_DATA_TYPE,
   CONTACT_POINT_LABEL,
   isPrimaryContactPoint,
   setPrimaryContactPoint,
   unsetPrimaryContactPoint,
-  validationSchema,
+  validationSchema as contactPointValidationSchema,
 } from 'frontend-verenigingen-loket/models/contact-point';
 import { removeItem } from 'frontend-verenigingen-loket/utils/array';
 import {
@@ -75,7 +85,7 @@ export default class ContactEdit extends Component {
     event.preventDefault();
 
     const promises = this.contactPoints.map(async (contactPoint) => {
-      await validateRecord(contactPoint, validationSchema);
+      await validateRecord(contactPoint, contactPointValidationSchema);
 
       return contactPoint.isValid;
     });
@@ -84,39 +94,52 @@ export default class ContactEdit extends Component {
       Boolean(isValid),
     );
 
-    if (isValid) {
-      await Promise.all(
-        this.contactPointsToRemove.map((contactPoint) => {
-          return removeContactDetail(contactPoint);
-        }),
-      );
-      this.contactPointsToRemove = [];
-
-      const savePromises = this.contactPoints
-        .filter((contactPoint) => contactPoint.hasDirtyAttributes)
-        .map((contactPoint) => {
-          return createOrUpdateContactDetail(contactPoint);
-        });
-
-      await Promise.all(savePromises);
-
-      const association = this.association;
-      const site = this.correspondenceAddressSite;
-      const address = this.correspondenceAddress;
-
-      // We only check the address for changes, since site details can't be changed on this page
-      if (address.hasDirtyAttributes) {
-        if (isEmptyAddress(address)) {
-          if (!site.isNew) {
-            await removeCorrespondenceSite(site, association);
-          }
-        } else {
-          await createOrUpdateCorrespondenceSite(site, association);
-        }
-      }
-
-      this.router.transitionTo('association.contact-details');
+    if (!isValid) {
+      return;
     }
+
+    const address = this.correspondenceAddress;
+    const shouldValidateAddress =
+      !isEmptyAddress(address) && !address.addressRegisterUri;
+
+    if (shouldValidateAddress) {
+      await validateRecord(address, addressValidationSchema);
+
+      if (!address.isValid) {
+        return;
+      }
+    }
+
+    await Promise.all(
+      this.contactPointsToRemove.map((contactPoint) => {
+        return removeContactDetail(contactPoint);
+      }),
+    );
+    this.contactPointsToRemove = [];
+
+    const savePromises = this.contactPoints
+      .filter((contactPoint) => contactPoint.hasDirtyAttributes)
+      .map((contactPoint) => {
+        return createOrUpdateContactDetail(contactPoint);
+      });
+
+    await Promise.all(savePromises);
+
+    const association = this.association;
+    const site = this.correspondenceAddressSite;
+
+    // We only check the address for changes, since site details can't be changed on this page
+    if (address.hasDirtyAttributes) {
+      if (isEmptyAddress(address)) {
+        if (!site.isNew) {
+          await removeCorrespondenceSite(site, association);
+        }
+      } else {
+        await createOrUpdateCorrespondenceSite(site, association);
+      }
+    }
+
+    this.router.transitionTo('association.contact-details');
   });
 
   handlePrimaryChange = (contactPoint) => {
@@ -218,40 +241,7 @@ export default class ContactEdit extends Component {
           </div>
         </section>
 
-        <section>
-          <EditCard>
-            <:title>
-              Correspondentieadres
-            </:title>
-            <:card as |Card|>
-              <AddressSearch
-                @address={{this.correspondenceAddress}}
-                as |address|
-              >
-                <Card.Columns>
-                  <:left as |Item|>
-                    <Item>
-                      <:label>Adres</:label>
-                      <:content>
-                        <address.Search />
-                      </:content>
-                    </Item>
-                  </:left>
-                  <:right as |Item|>
-                    {{#if address.shouldSelectBusNumber}}
-                      <Item>
-                        <:label>Bus</:label>
-                        <:content>
-                          <address.BusNumber />
-                        </:content>
-                      </Item>
-                    {{/if}}
-                  </:right>
-                </Card.Columns>
-              </AddressSearch>
-            </:card>
-          </EditCard>
-        </section>
+        <AddressEdit @address={{this.correspondenceAddress}} />
       </div>
 
       <form id="contact-details-edit-form" {{on "submit" this.save.perform}}>
@@ -302,6 +292,202 @@ export default class ContactEdit extends Component {
     {{/if}}
   </template>
 }
+
+class AddressEdit extends Component {
+  @tracked isSearchMode;
+
+  constructor() {
+    super(...arguments);
+
+    this.determineInitialInputMode();
+  }
+
+  get isManualInputMode() {
+    return !this.isSearchMode;
+  }
+
+  determineInitialInputMode() {
+    const address = this.args.address;
+
+    if (!address.isNew && !address.addressRegisterUri) {
+      this.isSearchMode = false;
+    } else {
+      this.isSearchMode = true;
+    }
+  }
+
+  switchToSearchMode = () => {
+    this.isSearchMode = true;
+    clearAddress(this.args.address);
+  };
+
+  switchToManualInputMode = () => {
+    this.isSearchMode = false;
+
+    const address = this.args.address;
+    address.addressRegisterUri = undefined;
+    if (!address.country) {
+      address.country = BELGIUM;
+    }
+  };
+
+  setPostcode = (postcode) => {
+    this.args.address.postcode = postcode;
+    this.args.address.municipality = undefined;
+  };
+
+  setCountry = (country) => {
+    this.args.address.country = country;
+    this.args.address.municipality = undefined;
+  };
+
+  <template>
+    <section>
+      <EditCard @containsRequiredFields={{this.isManualInputMode}}>
+        <:title>
+          Correspondentieadres
+        </:title>
+        <:card as |Card|>
+          {{#if this.isSearchMode}}
+            <AddressSearch @address={{@address}} as |address|>
+              <Card.Columns>
+                <:left as |Item|>
+                  <Item>
+                    <:label>Adres</:label>
+                    <:content>
+                      <address.Search />
+                      <AuButton
+                        @skin="link"
+                        {{on "click" this.switchToManualInputMode}}
+                      >
+                        Vul adres manueel in
+                      </AuButton>
+                    </:content>
+                  </Item>
+                </:left>
+                <:right as |Item|>
+                  {{#if address.shouldSelectBusNumber}}
+                    <Item>
+                      <:label>Bus</:label>
+                      <:content>
+                        <address.BusNumber />
+                      </:content>
+                    </Item>
+                  {{/if}}
+                </:right>
+              </Card.Columns>
+            </AddressSearch>
+          {{else}}
+            <Card.Columns>
+              <:left as |Item|>
+                <Item @labelFor="address-street" @required={{true}}>
+                  <:label>Straat</:label>
+                  <:content>
+                    <AddressInput
+                      @value={{@address.street}}
+                      @onChange={{fn (mut @address.street)}}
+                      @errorMessage={{fieldError @address.errors.street}}
+                      id="address-street"
+                    />
+                    <div>
+                      <AuButton
+                        @skin="link"
+                        {{on "click" this.switchToSearchMode}}
+                      >
+                        Vind adres in lijst
+                      </AuButton>
+                    </div>
+                  </:content>
+                </Item>
+                <Item @labelFor="address-number" @required={{true}}>
+                  <:label>Huisnummer</:label>
+                  <:content>
+                    <AddressInput
+                      @value={{@address.number}}
+                      @onChange={{fn (mut @address.number)}}
+                      @errorMessage={{fieldError @address.errors.number}}
+                      id="address-number"
+                    />
+                  </:content>
+                </Item>
+                <Item @labelFor="address-box-number">
+                  <:label>Busnummer</:label>
+                  <:content>
+                    <AddressInput
+                      @value={{@address.boxNumber}}
+                      @onChange={{fn (mut @address.boxNumber)}}
+                      @errorMessage={{fieldError @address.errors.boxNumber}}
+                      id="address-box-number"
+                    />
+                  </:content>
+                </Item>
+              </:left>
+              <:right as |Item|>
+                <Item @labelFor="address-postcode" @required={{true}}>
+                  <:label>Postcode</:label>
+                  <:content>
+                    <AddressInput
+                      @value={{@address.postcode}}
+                      @onChange={{this.setPostcode}}
+                      @errorMessage={{fieldError @address.errors.postcode}}
+                      id="address-postcode"
+                    />
+                  </:content>
+                </Item>
+                <Item @labelFor="address-municipality" @required={{true}}>
+                  <:label>Gemeente</:label>
+                  <:content>
+                    {{#if (isPostcodeInFlanders @address)}}
+                      <MunicipalitySelectByName
+                        @selected={{@address.municipality}}
+                        @onChange={{fn (mut @address.municipality)}}
+                        @error={{fieldError @address.errors.municipality}}
+                        @id="address-municipality"
+                      />
+                    {{else}}
+                      <AddressInput
+                        @value={{@address.municipality}}
+                        @onChange={{fn (mut @address.municipality)}}
+                        @errorMessage={{fieldError
+                          @address.errors.municipality
+                        }}
+                        id="address-municipality"
+                      />
+                    {{/if}}
+                  </:content>
+                </Item>
+                <Item @labelFor="address-country" @required={{true}}>
+                  <:label>Land</:label>
+                  <:content>
+                    <CountrySelect
+                      @selected={{@address.country}}
+                      @onChange={{this.setCountry}}
+                      @error={{fieldError @address.errors.country}}
+                      @id="address-country"
+                    />
+                  </:content>
+                </Item>
+              </:right>
+            </Card.Columns>
+          {{/if}}
+        </:card>
+      </EditCard>
+    </section>
+  </template>
+}
+
+const AddressInput = <template>
+  <AuInput
+    @width="block"
+    @error={{@errorMessage}}
+    value={{@value}}
+    {{on "blur" (eventValue @onChange trim=true)}}
+    ...attributes
+  />
+  {{#if @errorMessage}}
+    <AuHelpText @error={{true}}>{{@errorMessage}}</AuHelpText>
+  {{/if}}
+</template>;
 
 class TableRow extends Component {
   get editComponent() {

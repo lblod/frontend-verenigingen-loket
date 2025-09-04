@@ -1,5 +1,6 @@
 import Model, { attr } from '@ember-data/model';
 import type { Type } from '@warp-drive/core-types/symbols';
+import Joi from 'joi';
 
 export default class Address extends Model {
   declare [Type]: 'address';
@@ -14,6 +15,17 @@ export default class Address extends Model {
   @attr declare fullAddress?: string;
 }
 
+export const validationSchema = Joi.object({
+  street: Joi.string().empty('').required(),
+  number: Joi.string().empty('').required(),
+  boxNumber: Joi.string().empty(''),
+  postcode: Joi.string().empty('').required(),
+  municipality: Joi.string().empty('').required(),
+  country: Joi.string().empty('').required(),
+}).messages({
+  'any.required': 'Dit veld is verplicht.',
+});
+
 export function isEmptyAddress(address: Address) {
   return (
     !address.number &&
@@ -25,4 +37,41 @@ export function isEmptyAddress(address: Address) {
     !address.fullAddress &&
     !address.addressRegisterUri
   );
+}
+
+export function clearAddress(address: Address) {
+  Object.assign(address, {
+    street: undefined,
+    number: undefined,
+    boxNumber: undefined,
+    postcode: undefined,
+    municipality: undefined,
+    addressRegisterUri: undefined,
+    country: undefined,
+    fullAddress: undefined,
+  });
+}
+
+export const BELGIUM = 'België';
+export function isAddressInBelgium(address: Address) {
+  return address.country === BELGIUM;
+}
+
+export function isPostcodeInFlanders(address: Address) {
+  if (address.country && address.postcode) {
+    const isPostcodeFourDigits = address.postcode.match(/^\d{4}$/);
+
+    const postcode = Number(address.postcode);
+    const isPostcodeWithinFlanders =
+      (postcode >= 1500 && postcode <= 3999) ||
+      (postcode >= 8000 && postcode <= 9999);
+
+    return (
+      isAddressInBelgium(address) &&
+      isPostcodeFourDigits &&
+      isPostcodeWithinFlanders
+    );
+  }
+
+  return false;
 }
