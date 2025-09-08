@@ -13,11 +13,14 @@ import Component from '@glimmer/component';
 import { dropTask } from 'ember-concurrency';
 import { pageTitle } from 'ember-page-title';
 import PowerSelect from 'ember-power-select/components/power-select';
+import AddressSearch from 'frontend-verenigingen-loket/components/address-search';
+import EditCard from 'frontend-verenigingen-loket/components/edit-card';
 import PhoneInput from 'frontend-verenigingen-loket/components/phone-input';
 import EditTable, {
   EditCell,
 } from 'frontend-verenigingen-loket/components/edit-table';
 import eventValue from 'frontend-verenigingen-loket/helpers/event-value';
+import { isEmptyAddress } from 'frontend-verenigingen-loket/models/address';
 import {
   CONTACT_DATA_TYPE,
   CONTACT_POINT_LABEL,
@@ -30,6 +33,8 @@ import { removeItem } from 'frontend-verenigingen-loket/utils/array';
 import {
   createOrUpdateContactDetail,
   removeContactDetail,
+  createOrUpdateCorrespondenceSite,
+  removeCorrespondenceSite,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
 
@@ -56,6 +61,14 @@ export default class ContactEdit extends Component {
 
   get contactPoints() {
     return this.taskData?.contactPoints;
+  }
+
+  get correspondenceAddressSite() {
+    return this.taskData?.correspondenceAddressSite;
+  }
+
+  get correspondenceAddress() {
+    return this.taskData?.correspondenceAddress;
   }
 
   save = dropTask(async (event) => {
@@ -86,6 +99,21 @@ export default class ContactEdit extends Component {
         });
 
       await Promise.all(savePromises);
+
+      const association = this.association;
+      const site = this.correspondenceAddressSite;
+      const address = this.correspondenceAddress;
+
+      // We only check the address for changes, since site details can't be changed on this page
+      if (address.hasDirtyAttributes) {
+        if (isEmptyAddress(address)) {
+          if (!site.isNew) {
+            await removeCorrespondenceSite(site, association);
+          }
+        } else {
+          await createOrUpdateCorrespondenceSite(site, association);
+        }
+      }
 
       this.router.transitionTo('association.contact-details');
     }
@@ -137,6 +165,9 @@ export default class ContactEdit extends Component {
     this.contactPoints.forEach((contactPoint) => {
       contactPoint.rollbackAttributes();
     });
+
+    this.correspondenceAddressSite.rollbackAttributes();
+    this.correspondenceAddress.rollbackAttributes();
   }
 
   willDestroy() {
@@ -185,6 +216,41 @@ export default class ContactEdit extends Component {
               </AuButton>
             </AuButtonGroup>
           </div>
+        </section>
+
+        <section>
+          <EditCard>
+            <:title>
+              Correspondentieadres
+            </:title>
+            <:card as |Card|>
+              <AddressSearch
+                @address={{this.correspondenceAddress}}
+                as |address|
+              >
+                <Card.Columns>
+                  <:left as |Item|>
+                    <Item>
+                      <:label>Adres</:label>
+                      <:content>
+                        <address.Search />
+                      </:content>
+                    </Item>
+                  </:left>
+                  <:right as |Item|>
+                    {{#if address.shouldSelectBusNumber}}
+                      <Item>
+                        <:label>Bus</:label>
+                        <:content>
+                          <address.BusNumber />
+                        </:content>
+                      </Item>
+                    {{/if}}
+                  </:right>
+                </Card.Columns>
+              </AddressSearch>
+            </:card>
+          </EditCard>
         </section>
       </div>
 
