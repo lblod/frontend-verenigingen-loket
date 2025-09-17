@@ -5,6 +5,7 @@ const ORGANIZATION_STATUS_SKINS = {
   [ORGANIZATION_STATUS.ACTIVE]: 'success',
   [ORGANIZATION_STATUS.IN_FORMATION]: 'warning',
   [ORGANIZATION_STATUS.INACTIVE]: 'error',
+  [ORGANIZATION_STATUS.STOPPED]: 'error',
 };
 
 export default class OrganizationStatusComponent extends Component {
