@@ -29,8 +29,8 @@ export default class ContactDetails extends Component {
     return this.args.model.task.value.contactPoints;
   }
 
-  get correspondenceAddress() {
-    return this.args.model.task.value.correspondenceAddress;
+  get correspondenceAddressSite() {
+    return this.args.model.task.value.correspondenceAddressSite;
   }
 
   <template>
@@ -81,8 +81,8 @@ export default class ContactDetails extends Component {
                   <Item>
                     <:label>Adres</:label>
                     <:content>
-                      {{#if this.correspondenceAddress}}
-                        {{this.correspondenceAddress.address.fullAddress}}
+                      {{#if this.correspondenceAddressSite}}
+                        {{this.correspondenceAddressSite.address.fullAddress}}
                       {{else}}
                         Niet opgegeven
                       {{/if}}

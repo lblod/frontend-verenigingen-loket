@@ -2,10 +2,10 @@ import Route from '@ember/routing/route';
 import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
 import { TrackedArray } from 'tracked-built-ins';
+import { findCorrespondenceAddressSite } from 'frontend-verenigingen-loket/utils/association';
 
 export default class AssociationContactDetailsEditRoute extends Route {
   @service currentSession;
-  @service contactPoints;
   @service router;
   @service store;
 
@@ -33,9 +33,20 @@ export default class AssociationContactDetailsEditRoute extends Route {
       sort: 'name',
     });
 
+    let site = await findCorrespondenceAddressSite(this.store, association);
+
+    if (!site) {
+      const address = this.store.createRecord('address');
+      site = this.store.createRecord('site', {
+        address,
+      });
+    }
+
     return {
       association,
       contactPoints: new TrackedArray(contactPoints),
+      correspondenceAddressSite: site,
+      correspondenceAddress: await site.address,
     };
   });
 }

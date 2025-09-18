@@ -1,6 +1,7 @@
 import Route from '@ember/routing/route';
 import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
+import { findCorrespondenceAddressSite } from 'frontend-verenigingen-loket/utils/association';
 
 export default class AssociationContactDetailsIndexRoute extends Route {
   @service store;
@@ -30,30 +31,10 @@ export default class AssociationContactDetailsIndexRoute extends Route {
         page: { size, number: page },
         sort,
       }),
-      correspondenceAddress: await this.findCorrespondenceAddress(association),
+      correspondenceAddressSite: await findCorrespondenceAddressSite(
+        this.store,
+        association,
+      ),
     };
   });
-
-  async findCorrespondenceAddress(association) {
-    // We have to check both the `primarySite` and `sites` relationships because primarySite records
-    // aren't included in the `sites` relationship, but they could still be the correspondence address.
-    const primarySite = await association.primarySite;
-    const siteType = await primarySite.siteType;
-
-    if (
-      siteType?.uri ===
-      'http://lblod.data.gift/concepts/9dd5b10d-719f-5207-bf39-ba09441fd590'
-    ) {
-      return primarySite;
-    } else {
-      return (
-        await this.store.query('site', {
-          'filter[associations][:id:]': association.id,
-          'filter[site-type][:uri:]':
-            'http://lblod.data.gift/concepts/9dd5b10d-719f-5207-bf39-ba09441fd590',
-          page: { size: 1, number: 0 },
-        })
-      ).at(0);
-    }
-  }
 }

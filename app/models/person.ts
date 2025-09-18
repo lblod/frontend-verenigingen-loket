@@ -2,8 +2,8 @@ import Model, { attr, belongsTo, hasMany } from '@ember-data/model';
 import { Type } from '@warp-drive/core-types/symbols';
 import Joi from 'joi';
 import type ContactPoint from './contact-point';
-// @ts-expect-error Class isn't typed yet.
 import type Site from './site';
+import { isValidRijksregisternummer } from '../utils/rijksregisternummer';
 
 export default class PersonModel extends Model {
   declare [Type]: 'person';
@@ -24,11 +24,21 @@ export default class PersonModel extends Model {
 export const validationSchema = Joi.object({
   givenName: Joi.string().empty('').required(),
   familyName: Joi.string().empty('').required(),
-  // TODO; only required when creating a new one
-  // ssn: Joi.string()
-  //   .empty('')
-  //   // Should we verify the actual rrn value? We do have code for that in Loket
-  //   .required(),
+  ssn: Joi.string()
+    .empty('')
+    .when('$isNew', {
+      is: true,
+      then: Joi.required(),
+      otherwise: Joi.optional(),
+    })
+    .custom((value: string, helpers: Joi.CustomHelpers<string>) => {
+      if (!isValidRijksregisternummer(value)) {
+        return helpers.error('string.invalid-ssn');
+      }
+
+      return value;
+    }),
 }).messages({
   'any.required': 'Dit veld is verplicht.',
+  'string.invalid-ssn': 'Geen geldig rijksregisternummer.',
 });

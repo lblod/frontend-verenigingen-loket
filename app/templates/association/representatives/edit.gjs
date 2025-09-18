@@ -4,9 +4,9 @@ import AuCheckbox from '@appuniversum/ember-appuniversum/components/au-checkbox'
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
-// import auInputmask from '@appuniversum/ember-appuniversum/modifiers/au-inputmask';
+import auInputmask from '@appuniversum/ember-appuniversum/modifiers/au-inputmask';
 import { getPromiseState } from '@warp-drive/ember';
-import { fn } from '@ember/helper';
+import { fn, hash } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 import Component from '@glimmer/component';
@@ -23,13 +23,16 @@ import fieldError from 'frontend-verenigingen-loket/helpers/field-error';
 import { representativeContactPointValidationSchema as contactPointValidationSchema } from 'frontend-verenigingen-loket/models/contact-point';
 import { validationSchema as personValidationSchema } from 'frontend-verenigingen-loket/models/person';
 import { removeItem } from 'frontend-verenigingen-loket/utils/array';
-import { updateRepresentative } from 'frontend-verenigingen-loket/utils/verenigingsregister';
+import {
+  createOrUpdateRepresentative,
+  removeRepresentative,
+} from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
 
 export default class RepresentativesEdit extends Component {
   @service router;
   @service store;
-  recordsToRemove = [];
+  representativesToRemove = [];
 
   get isLoading() {
     // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
@@ -75,10 +78,10 @@ export default class RepresentativesEdit extends Component {
 
     if (!representative.isNew) {
       // If the representative is not new, we need to mark the records for deletion on the server
-      this.recordsToRemove.push(...recordsToRemove);
+      this.representativesToRemove.push(representative);
     }
 
-    // We (also) mark the records for deletion, which also removes any newly created ones
+    // We (also) mark the records for deletion in the store, which also removes any newly created ones
     recordsToRemove.forEach((record) => record.deleteRecord());
   };
 
@@ -87,11 +90,11 @@ export default class RepresentativesEdit extends Component {
     const person = this.store.createRecord('person', {
       contactPoints: [contactPoint],
     });
-    const membership = this.store.createRecord('membership', {
+    const representative = this.store.createRecord('membership', {
       person,
     });
 
-    this.representatives.push(membership);
+    this.representatives.push(representative);
   };
 
   save = dropTask(async (event) => {
@@ -100,7 +103,11 @@ export default class RepresentativesEdit extends Component {
     const promises = this.representatives.map(async (representative) => {
       const person = await representative.person;
 
-      await validateRecord(person, personValidationSchema);
+      await validateRecord(person, personValidationSchema, {
+        context: {
+          isNew: person.isNew,
+        },
+      });
 
       const contactPoints = await person.contactPoints;
       // We assume a representative only has a single contact point which can contain all the data we allow users to edit.
@@ -117,7 +124,11 @@ export default class RepresentativesEdit extends Component {
 
     if (isValid) {
       for (const representative of this.representatives) {
-        await updateRepresentative(representative, this.association);
+        await createOrUpdateRepresentative(representative, this.association);
+      }
+
+      for (const representative of this.representativesToRemove) {
+        await removeRepresentative(representative, this.association);
       }
 
       this.router.transitionTo('association.representatives');
@@ -125,8 +136,15 @@ export default class RepresentativesEdit extends Component {
   });
 
   async reset() {
-    const recordsToRollBack = [...this.recordsToRemove];
-    for (const representative of this.representatives) {
+    const recordsToRollBack = [];
+    const representativesToRollBack = [
+      ...this.representatives,
+      ...this.representativesToRemove,
+    ];
+
+    this.representativesToRemove = [];
+
+    for (const representative of representativesToRollBack) {
       const person = await representative.person;
       const contactPoints = await person.contactPoints;
       recordsToRollBack.push(representative, person, ...contactPoints);
@@ -187,15 +205,15 @@ export default class RepresentativesEdit extends Component {
         {{! We don't use the AuDataTable component here because it doesn't rerender when we change the representatives array due to its old `computed` usage. }}
         <EditTable>
           <:columns>
-            <th>
+            <RequiredColumn>
               Voornaam
-            </th>
-            <th>
+            </RequiredColumn>
+            <RequiredColumn>
               Achternaam
-            </th>
-            {{! <RequiredColumn>
+            </RequiredColumn>
+            <RequiredColumn>
               Rijksregisternummer
-            </RequiredColumn> }}
+            </RequiredColumn>
             <RequiredColumn>
               E-mail
             </RequiredColumn>
@@ -208,10 +226,9 @@ export default class RepresentativesEdit extends Component {
             <th>
               {{! favourite }}
             </th>
-            {{!-- TODO as part of CLBV-592
             <th class="u-shrink-column">
               {{! Delete }}
-            </th> --}}
+            </th>
           </:columns>
           <:tbody>
             {{#each this.representatives as |representative|}}
@@ -222,14 +239,13 @@ export default class RepresentativesEdit extends Component {
               />
             {{else}}
               <tr>
-                <td colspan="5">
+                <td colspan="8">
                   <em>Geen vertegenwoordigers toegevoegd</em>
                 </td>
               </tr>
             {{/each}}
           </:tbody>
         </EditTable>
-        {{!-- TODO as part of CLBV-591
         <div class="au-o-box au-u-padding-top-small">
           <AuButton
             @icon="plus"
@@ -239,7 +255,7 @@ export default class RepresentativesEdit extends Component {
           >
             Voeg vertegenwoordiger toe
           </AuButton>
-        </div> --}}
+        </div>
       </form>
     {{/if}}
   </template>
@@ -291,18 +307,9 @@ class EditRow extends Component {
             />
           </:input>
         </EditCell>
-      {{else}}
-        <td>
-          {{this.person.givenName}}
-        </td>
-        <td>
-          {{this.person.familyName}}
-        </td>
-      {{/if}}
-      {{!-- <EditCell @errorMessage={{fieldError this.person.errors.ssn}}>
-        <:label>Rijksregisternummer</:label>
-        <:input as |CellInput|>
-          {{#if this.person.isNew}}
+        <EditCell @errorMessage={{fieldError this.person.errors.ssn}}>
+          <:label>Rijksregisternummer</:label>
+          <:input as |CellInput|>
             <CellInput
               value={{this.person.ssn}}
               {{auInputmask
@@ -313,11 +320,19 @@ class EditRow extends Component {
               {{on "input" (eventValue (fn (mut this.person.ssn)))}}
               placeholder="00.00.00-000.00"
             />
-          {{else}}
-            -
-          {{/if}}
-        </:input>
-      </EditCell> --}}
+          </:input>
+        </EditCell>
+      {{else}}
+        <td>
+          {{this.person.givenName}}
+        </td>
+        <td>
+          {{this.person.familyName}}
+        </td>
+        <td>
+          -
+        </td>
+      {{/if}}
       <EditCell @errorMessage={{fieldError this.contactPoint.errors.email}}>
         <:label>E-mail</:label>
         <:input as |CellInput|>
@@ -363,7 +378,7 @@ class EditRow extends Component {
           </AuCheckbox>
         </div>
       </td>
-      {{!-- <td class="au-u-text-right">
+      <td class="au-u-text-right">
         <AuButton
           @alert={{true}}
           @hideText={{true}}
@@ -371,7 +386,7 @@ class EditRow extends Component {
           @skin="naked"
           {{on "click" (fn @onDelete @representative)}}
         >Verwijder vertegenwoordiger</AuButton>
-      </td> --}}
+      </td>
     </tr>
   </template>
 }

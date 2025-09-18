@@ -6,6 +6,8 @@ import type Association from 'frontend-verenigingen-loket/models/association';
 import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point';
 import type { ChangedAttributesHash } from '@warp-drive/core-types/cache';
 import type Membership from 'frontend-verenigingen-loket/models/membership';
+import type Site from 'frontend-verenigingen-loket/models/site';
+import type Address from 'frontend-verenigingen-loket/models/address';
 
 const manager = new RequestManager().use([Fetch]);
 
@@ -37,7 +39,57 @@ export async function removeContactDetail(contactPoint: ContactPoint) {
   });
 }
 
-export async function updateRepresentative(
+export async function createOrUpdateCorrespondenceSite(
+  site: Site,
+  association: Association,
+) {
+  const url = await buildSiteUrl(site, association);
+  const method = site.isNew ? 'POST' : 'PATCH';
+  const address = await site.address;
+  const locationBody: Record<string, unknown> = {};
+
+  if (site.isNew) {
+    locationBody['locatietype'] = 'Correspondentie';
+  }
+
+  // "adresId" and "adres" are mutually exclusive.
+  // The verenigingsregister API will automatically fetch the address information when we provide the address register URI.
+  if (address.addressRegisterUri) {
+    locationBody['adresId'] = {
+      broncode: 'AR',
+      bronwaarde: address.addressRegisterUri,
+    };
+  } else {
+    locationBody['adres'] = mapRecordAttributesToAPIFields<Address>(
+      address.changedAttributes(),
+      SITE_ADDRESS_ATTRIBUTE_MAP,
+      ['addressRegisterUri'],
+    );
+  }
+
+  await manager.request({
+    url,
+    method,
+    headers: new Headers({
+      'Content-Type': 'application/json',
+    }),
+    body: JSON.stringify({ locatie: locationBody }),
+  });
+}
+
+export async function removeCorrespondenceSite(
+  site: Site,
+  association: Association,
+) {
+  const url = await buildSiteUrl(site, association);
+
+  await manager.request({
+    url,
+    method: 'DELETE',
+  });
+}
+
+export async function createOrUpdateRepresentative(
   representative: Membership,
   association: Association,
 ) {
@@ -85,6 +137,18 @@ export async function updateRepresentative(
   });
 }
 
+export async function removeRepresentative(
+  representative: Membership,
+  association: Association,
+) {
+  const url = await buildRepresentativeUrl(representative, association);
+
+  await manager.request({
+    url,
+    method: 'DELETE',
+  });
+}
+
 async function buildContactDetailUrl(contactPoint: ContactPoint) {
   const association = contactPoint.organization;
 
@@ -101,6 +165,21 @@ async function buildContactDetailUrl(contactPoint: ContactPoint) {
       'existing contact points are expected to have an internal id',
       internalId,
     );
+
+    if (internalId) {
+      return url + '/' + internalId;
+    }
+  }
+
+  return url;
+}
+
+async function buildSiteUrl(site: Site, association: Association) {
+  const url = (await buildVerenigingUrl(association)) + '/locaties';
+
+  if (!site.isNew) {
+    const internalId = site.internalId;
+    assert('existing sites are expected to have an internal id', internalId);
 
     if (internalId) {
       return url + '/' + internalId;
@@ -149,6 +228,15 @@ const CONTACT_DETAILS_ATTRIBUTE_MAP = {
   },
 };
 
+const SITE_ADDRESS_ATTRIBUTE_MAP = {
+  street: 'straatnaam',
+  number: 'huisnummer',
+  boxNumber: 'busnummer',
+  postcode: 'postcode',
+  municipality: 'gemeente',
+  country: 'land',
+};
+
 const REPRESENTATIVE_ATTRIBUTE_MAP = {
   givenName: 'voornaam',
   familyName: 'achternaam',
@@ -156,6 +244,7 @@ const REPRESENTATIVE_ATTRIBUTE_MAP = {
   telephone: 'telefoon',
   website: 'socialMedia',
   isPrimary: 'isPrimair',
+  ssn: 'insz',
 };
 
 /**
@@ -167,12 +256,21 @@ const REPRESENTATIVE_ATTRIBUTE_MAP = {
 function mapRecordAttributesToAPIFields<T>(
   attributes: ChangedAttributesHash,
   attributeMap: AttributeMap<T>,
+  ignoredAttributes?: (keyof T)[],
 ): Record<string, unknown> {
   const mappedAttributes: Record<string, unknown> = {};
 
   Object.keys(attributes).forEach((attribute) => {
     // TODO: there might be a way to type this properly without the type assertion?
     const mappedAttributeOrHandler = attributeMap[attribute as keyof T];
+
+    if (
+      Array.isArray(ignoredAttributes) &&
+      ignoredAttributes.includes(attribute as keyof T)
+    ) {
+      return;
+    }
+
     assert(
       `Map is missing for attribute "${attribute}"`,
       mappedAttributeOrHandler,
