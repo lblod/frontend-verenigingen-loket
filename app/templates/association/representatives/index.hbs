@@ -48,6 +48,10 @@
         </h3>
       {{/if}}
     </section>
+    <Verenigingsregister::OutOfDateMessage
+      @association={{this.association}}
+      class="au-u-margin-left au-u-margin-right au-u-margin-top au-u-margin-bottom"
+    />
   </t.menu>
   <t.content class="au-c-data-table__table--small" as |c|>
     <c.header>

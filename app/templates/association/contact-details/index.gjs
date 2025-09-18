@@ -10,6 +10,7 @@ import AuLinkExternal from '@appuniversum/ember-appuniversum/components/au-link-
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import DataCard from 'frontend-verenigingen-loket/components/data-card';
 import LastUpdated from 'frontend-verenigingen-loket/components/last-updated';
+import OutOfDateMessage from 'frontend-verenigingen-loket/components/verenigingsregister/out-of-date-message';
 import ReportWrongData from 'frontend-verenigingen-loket/components/report-wrong-data';
 import telFormat from 'frontend-verenigingen-loket/helpers/tel-format';
 import { isPrimaryContactPoint } from 'frontend-verenigingen-loket/models/contact-point';
@@ -70,6 +71,12 @@ export default class ContactDetails extends Component {
             </div>
           </div>
         </section>
+
+        <OutOfDateMessage
+          @association={{this.association}}
+          class="au-u-margin-bottom"
+        />
+
         <section>
           <DataCard>
             <:title>
