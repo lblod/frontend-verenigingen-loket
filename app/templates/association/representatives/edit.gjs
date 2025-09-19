@@ -29,7 +29,10 @@ import {
   removeRepresentative,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
-import { getPrimaryRole, getSecondaryRole } from 'frontend-verenigingen-loket/utils/roles';
+import {
+  getPrimaryRole,
+  getSecondaryRole,
+} from 'frontend-verenigingen-loket/utils/roles';
 
 export default class RepresentativesEdit extends Component {
   @service router;
@@ -38,8 +41,10 @@ export default class RepresentativesEdit extends Component {
 
   get isLoading() {
     // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    return this.args.controller.model.task.isRunning
-      || this.args.controller.model.roletask.isRunning;
+    return (
+      this.args.controller.model.task.isRunning ||
+      this.args.controller.model.roletask.isRunning
+    );
   }
 
   get representatives() {
@@ -61,7 +66,7 @@ export default class RepresentativesEdit extends Component {
     return this.args.controller.model.association;
   }
 
-  changePrimaryRepresentative = async (changingRepresentative, value) => {
+  changePrimaryRepresentative = async (changingRepresentative) => {
     const currentRole = await changingRepresentative.role;
     const isCurrentPrimary = isPrimaryRole(currentRole);
 

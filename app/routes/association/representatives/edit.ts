@@ -3,7 +3,6 @@ import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
 import type Store from '@ember-data/store';
 import type Association from 'frontend-verenigingen-loket/models/association';
-import isPrimaryRole from 'frontend-verenigingen-loket/helpers/isPrimaryRole';
 import { TrackedArray } from 'tracked-built-ins';
 
 export default class AssociationRepresentativesEditRoute extends Route {
@@ -36,5 +35,7 @@ export default class AssociationRepresentativesEditRoute extends Route {
     return new TrackedArray(members);
   });
 
-  loadRoles = task(async () => { return this.store.findAll('role') });
+  loadRoles = task(async () => {
+    return this.store.findAll('role');
+  });
 }
