@@ -88,7 +88,7 @@
     {{else}}
       <c.body as |member|>
         <td>
-          {{#if member.person.isPrimary}}
+          {{#if (isPrimaryRole member.role)}}
             <AuBadge @icon="vote-star-filled" class="star-icon" />
           {{/if}}
         </td>

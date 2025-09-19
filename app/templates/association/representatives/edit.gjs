@@ -20,6 +20,7 @@ import EditTable, {
 import RequiredPill from 'frontend-verenigingen-loket/components/required-pill';
 import eventValue from 'frontend-verenigingen-loket/helpers/event-value';
 import fieldError from 'frontend-verenigingen-loket/helpers/field-error';
+import isPrimaryRole from 'frontend-verenigingen-loket/helpers/isPrimaryRole';
 import { representativeContactPointValidationSchema as contactPointValidationSchema } from 'frontend-verenigingen-loket/models/contact-point';
 import { validationSchema as personValidationSchema } from 'frontend-verenigingen-loket/models/person';
 import { removeItem } from 'frontend-verenigingen-loket/utils/array';
@@ -28,6 +29,10 @@ import {
   removeRepresentative,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
+import {
+  getPrimaryRole,
+  getSecondaryRole,
+} from 'frontend-verenigingen-loket/utils/roles';
 
 export default class RepresentativesEdit extends Component {
   @service router;
@@ -36,7 +41,10 @@ export default class RepresentativesEdit extends Component {
 
   get isLoading() {
     // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    return this.args.controller.model.task.isRunning;
+    return (
+      this.args.controller.model.task.isRunning ||
+      this.args.controller.model.roletask.isRunning
+    );
   }
 
   get representatives() {
@@ -46,26 +54,38 @@ export default class RepresentativesEdit extends Component {
       : [];
   }
 
+  get roles() {
+    // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
+    return this.args.controller.model.roletask.isFinished
+      ? this.args.controller.model.roletask.value
+      : [];
+  }
+
   get association() {
     // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
     return this.args.controller.model.association;
   }
 
-  changePrimaryRepresentative = (changedRepresentative) => {
-    const isCurrentPrimary = changedRepresentative.isPrimary;
+  changePrimaryRepresentative = async (changingRepresentative) => {
+    const currentRole = await changingRepresentative.role;
+    const isCurrentPrimary = isPrimaryRole(currentRole);
 
     if (isCurrentPrimary) {
-      changedRepresentative.isPrimary = false;
+      changingRepresentative.role = getSecondaryRole(this.roles);
+      changingRepresentative.isPrimary = false;
     } else {
       // This representative isn't the primary yet, but there can only be one primary.
       // We need to find the previous primary and unset it.
-      this.representatives.some((representative) => {
-        if (representative.isPrimary) {
+      for (const representative of this.representatives) {
+        const role = await representative.role;
+        if (isPrimaryRole(role)) {
+          representative.role = getSecondaryRole(this.roles);
           representative.isPrimary = false;
-          return true;
+          break;
         }
-      });
-      changedRepresentative.isPrimary = true;
+      }
+      changingRepresentative.role = getPrimaryRole(this.roles);
+      changingRepresentative.isPrimary = true;
     }
   };
 
@@ -93,6 +113,8 @@ export default class RepresentativesEdit extends Component {
     const representative = this.store.createRecord('membership', {
       person,
     });
+    representative.role = getSecondaryRole(this.roles);
+    representative.isPrimary = false;
 
     this.representatives.push(representative);
   };
@@ -371,7 +393,7 @@ class EditRow extends Component {
       <td>
         <div class="au-u-margin-top-tiny">
           <AuCheckbox
-            @checked={{@representative.isPrimary}}
+            @checked={{isPrimaryRole @representative.role}}
             @onChange={{fn @onPrimaryChange @representative}}
           >
             Primair

@@ -24,11 +24,11 @@ export default class AssociationRepresentativesRoute extends Route {
     const members = await association.get('members');
     const memberPromises = members.map(async (member) => {
       const memberWithPerson = await member.reload({
-        include: 'person.contact-points',
+        include: 'person.contact-points,role',
       });
       return memberWithPerson;
     });
-    return await Promise.all(memberPromises);
+    return Promise.all(memberPromises);
   });
 
   loadKboNumber = task({ drop: true }, async (association) => {

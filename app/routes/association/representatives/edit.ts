@@ -15,6 +15,7 @@ export default class AssociationRepresentativesEditRoute extends Route {
     return {
       association,
       task: this.loadMembers.perform(association),
+      roletask: this.loadRoles.perform(),
     };
   }
 
@@ -24,7 +25,7 @@ export default class AssociationRepresentativesEditRoute extends Route {
     const members = await association.members;
     const memberPromises = members.map(async (member) => {
       const memberWithPerson = await member.reload({
-        include: 'person.contact-points',
+        include: 'person.contact-points,role',
       });
       return memberWithPerson;
     });
@@ -32,5 +33,9 @@ export default class AssociationRepresentativesEditRoute extends Route {
     await Promise.all(memberPromises);
 
     return new TrackedArray(members);
+  });
+
+  loadRoles = task(async () => {
+    return this.store.findAll('role');
   });
 }

@@ -11,7 +11,6 @@ import type ContactPoint from './contact-point';
 import type OrganizationStatusCode from './organization-status-code';
 // @ts-expect-error Class isn't typed yet.
 import type ChangeEvent from './change-event';
-// @ts-expect-error Class isn't typed yet.
 import type Concept from './concept';
 // @ts-expect-error Class isn't typed yet.
 import type TargetAudience from './target-audience';
