@@ -7,6 +7,7 @@ export default class Membership extends Model {
   declare [Type]: 'membership';
   @attr declare isPrimary?: boolean;
   @attr declare internalId?: number;
+  @attr declare isPrimary?: boolean;
 
   @belongsTo<Person>('person', { inverse: null, async: true })
   declare person: Promise<Person>;
