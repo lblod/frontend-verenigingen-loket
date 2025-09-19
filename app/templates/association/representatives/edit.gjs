@@ -145,7 +145,11 @@ export default class RepresentativesEdit extends Component {
     );
 
     if (isValid) {
-      for (const representative of this.representatives) {
+      const sortedRepresentatives = [
+        ...this.representatives.filter((rep) => !rep.isPrimary),
+        ...this.representatives.filter((rep) => rep.isPrimary),
+      ];
+      for (const representative of sortedRepresentatives) {
         await createOrUpdateRepresentative(representative, this.association);
       }
 
