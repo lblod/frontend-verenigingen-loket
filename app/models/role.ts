@@ -1,5 +1,6 @@
 import { attr } from '@ember-data/model';
 import ConceptModel from './concept';
+import type { Type } from '@warp-drive/core-types/symbols';
 
 export const ROLES = {
   PRIMARY:
@@ -9,5 +10,8 @@ export const ROLES = {
 };
 
 export default class RoleModel extends ConceptModel {
+  //@ts-expect-error TS doesn't allow subclasses to redefine concrete types. We should try to remove the inheritance chain.
+  declare [Type]: 'role';
+
   @attr declare uri?: string;
 }
