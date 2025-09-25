@@ -17,7 +17,6 @@ import PhoneInput from 'frontend-verenigingen-loket/components/phone-input';
 import EditTable, {
   EditCell,
 } from 'frontend-verenigingen-loket/components/edit-table';
-import OutOfDateMessage from 'frontend-verenigingen-loket/components/verenigingsregister/out-of-date-message';
 import RequiredPill from 'frontend-verenigingen-loket/components/required-pill';
 import eventValue from 'frontend-verenigingen-loket/helpers/event-value';
 import fieldError from 'frontend-verenigingen-loket/helpers/field-error';
@@ -226,8 +225,6 @@ export default class RepresentativesEdit extends Component {
             </AuButtonGroup>
           </div>
         </section>
-
-        <OutOfDateMessage @association={{this.association}} />
       </div>
 
       <form id="representatives-edit-form" {{on "submit" this.save.perform}}>

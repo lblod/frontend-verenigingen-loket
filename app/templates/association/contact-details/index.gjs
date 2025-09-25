@@ -4,6 +4,7 @@ import { service } from '@ember/service';
 import AuDataTable from '@appuniversum/ember-appuniversum/components/au-data-table';
 import ThSortable from '@appuniversum/ember-appuniversum/components/au-data-table/th-sortable';
 import AuBadge from '@appuniversum/ember-appuniversum/components/au-badge';
+import AuButton from '@appuniversum/ember-appuniversum/components/au-button';
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
 import AuLinkExternal from '@appuniversum/ember-appuniversum/components/au-link-external';
@@ -34,6 +35,10 @@ export default class ContactDetails extends Component {
     return this.args.model.task.value.correspondenceAddressSite;
   }
 
+  get isOutOfDate() {
+    return this.args.model.task.value.isOutOfDate;
+  }
+
   <template>
     {{pageTitle "Contactgegevens"}}
 
@@ -55,13 +60,20 @@ export default class ContactDetails extends Component {
           </div>
           <div class="au-u-flex au-u-flex--column au-u-flex--vertical-end">
             {{#if this.currentSession.canEdit}}
-              <AuLink
-                @route="association.contact-details.edit"
-                @skin="button-secondary"
-                @icon="pencil"
-              >
-                Bewerk
-              </AuLink>
+              {{#if this.isOutOfDate}}
+                <AuButton @skin="secondary" @icon="pencil" @disabled={{true}}>
+                  Bewerk
+                </AuButton>
+              {{else}}
+                <AuLink
+                  @route="association.contact-details.edit"
+                  @skin="button-secondary"
+                  @icon="pencil"
+                  @disabled={{true}}
+                >
+                  Bewerk
+                </AuLink>
+              {{/if}}
             {{else}}
               <ReportWrongData @model={{this.association}} />
             {{/if}}
@@ -72,10 +84,12 @@ export default class ContactDetails extends Component {
           </div>
         </section>
 
-        <OutOfDateMessage
-          @association={{this.association}}
-          class="au-u-margin-bottom"
-        />
+        {{#if this.isOutOfDate}}
+          <OutOfDateMessage
+            @association={{this.association}}
+            class="au-u-margin-bottom"
+          />
+        {{/if}}
 
         <section>
           <DataCard>

@@ -1,6 +1,7 @@
 import Route from '@ember/routing/route';
 import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
+import { isOutOfDate } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 
 export default class AssociationRepresentativesRoute extends Route {
   @service store;
@@ -17,6 +18,7 @@ export default class AssociationRepresentativesRoute extends Route {
       association,
       members: this.loadMembers.perform(association),
       kboNumber,
+      isOutOfDate: await isOutOfDate(association),
     };
   }
 

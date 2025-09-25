@@ -23,7 +23,6 @@ import PhoneInput from 'frontend-verenigingen-loket/components/phone-input';
 import EditTable, {
   EditCell,
 } from 'frontend-verenigingen-loket/components/edit-table';
-import OutOfDateMessage from 'frontend-verenigingen-loket/components/verenigingsregister/out-of-date-message';
 import eventValue from 'frontend-verenigingen-loket/helpers/event-value';
 import {
   BELGIUM,
@@ -241,11 +240,6 @@ export default class ContactEdit extends Component {
             </AuButtonGroup>
           </div>
         </section>
-
-        <OutOfDateMessage
-          @association={{this.association}}
-          class="au-u-margin-bottom"
-        />
 
         <AddressEdit @address={{this.correspondenceAddress}} />
       </div>
