@@ -27,6 +27,7 @@ import { removeItem } from 'frontend-verenigingen-loket/utils/array';
 import {
   createOrUpdateRepresentative,
   removeRepresentative,
+  handleError,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
 import {
@@ -37,6 +38,7 @@ import {
 export default class RepresentativesEdit extends Component {
   @service router;
   @service store;
+  @service toaster;
   representativesToRemove = [];
 
   get isLoading() {
@@ -145,19 +147,23 @@ export default class RepresentativesEdit extends Component {
     );
 
     if (isValid) {
-      const sortedRepresentatives = [
-        ...this.representatives.filter((rep) => !rep.isPrimary),
-        ...this.representatives.filter((rep) => rep.isPrimary),
-      ];
-      for (const representative of sortedRepresentatives) {
-        await createOrUpdateRepresentative(representative, this.association);
-      }
+      try {
+        const sortedRepresentatives = [
+          ...this.representatives.filter((rep) => !rep.isPrimary),
+          ...this.representatives.filter((rep) => rep.isPrimary),
+        ];
+        for (const representative of sortedRepresentatives) {
+          await createOrUpdateRepresentative(representative, this.association);
+        }
 
-      for (const representative of this.representativesToRemove) {
-        await removeRepresentative(representative, this.association);
-      }
+        for (const representative of this.representativesToRemove) {
+          await removeRepresentative(representative, this.association);
+        }
 
-      this.router.transitionTo('association.representatives');
+        this.router.transitionTo('association.representatives');
+      } catch (error) {
+        handleError(this.toaster, error);
+      }
     }
   });
 

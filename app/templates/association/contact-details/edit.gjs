@@ -45,12 +45,14 @@ import {
   removeContactDetail,
   createOrUpdateCorrespondenceSite,
   removeCorrespondenceSite,
+  handleError,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
 
 export default class ContactEdit extends Component {
   @service router;
   @service store;
+  @service toaster;
   contactPointsToRemove = [];
 
   get isLoading() {
@@ -110,36 +112,40 @@ export default class ContactEdit extends Component {
       }
     }
 
-    await Promise.all(
-      this.contactPointsToRemove.map((contactPoint) => {
-        return removeContactDetail(contactPoint);
-      }),
-    );
-    this.contactPointsToRemove = [];
+    try {
+      await Promise.all(
+        this.contactPointsToRemove.map((contactPoint) => {
+          return removeContactDetail(contactPoint);
+        }),
+      );
+      this.contactPointsToRemove = [];
 
-    const savePromises = this.contactPoints
-      .filter((contactPoint) => contactPoint.hasDirtyAttributes)
-      .map((contactPoint) => {
-        return createOrUpdateContactDetail(contactPoint);
-      });
+      const savePromises = this.contactPoints
+        .filter((contactPoint) => contactPoint.hasDirtyAttributes)
+        .map((contactPoint) => {
+          return createOrUpdateContactDetail(contactPoint);
+        });
 
-    await Promise.all(savePromises);
+      await Promise.all(savePromises);
 
-    const association = this.association;
-    const site = this.correspondenceAddressSite;
+      const association = this.association;
+      const site = this.correspondenceAddressSite;
 
-    // We only check the address for changes, since site details can't be changed on this page
-    if (address.hasDirtyAttributes) {
-      if (isEmptyAddress(address)) {
-        if (!site.isNew) {
-          await removeCorrespondenceSite(site, association);
+      // We only check the address for changes, since site details can't be changed on this page
+      if (address.hasDirtyAttributes) {
+        if (isEmptyAddress(address)) {
+          if (!site.isNew) {
+            await removeCorrespondenceSite(site, association);
+          }
+        } else {
+          await createOrUpdateCorrespondenceSite(site, association);
         }
-      } else {
-        await createOrUpdateCorrespondenceSite(site, association);
       }
-    }
 
-    this.router.transitionTo('association.contact-details');
+      this.router.transitionTo('association.contact-details');
+    } catch (error) {
+      handleError(this.toaster, error);
+    }
   });
 
   handlePrimaryChange = (contactPoint) => {

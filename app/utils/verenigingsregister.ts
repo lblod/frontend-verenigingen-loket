@@ -308,3 +308,13 @@ type AttributeMap<T> = {
     | string
     | ((value: unknown, mapped: Record<string, unknown>) => void);
 };
+
+export function handleError(
+  toaster: { error: (message: string, title?: string) => void },
+  error: Error,
+) {
+  toaster.error(
+    'Er ging iets fout bij het verzenden van de gegevens naar het Verenigingsregister.',
+  );
+  console.error(error, JSON.stringify(error));
+}
