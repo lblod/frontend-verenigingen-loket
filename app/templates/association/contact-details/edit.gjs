@@ -331,16 +331,6 @@ class AddressEdit extends Component {
     }
   };
 
-  setPostcode = (postcode) => {
-    this.args.address.postcode = postcode;
-    this.args.address.municipality = undefined;
-  };
-
-  setCountry = (country) => {
-    this.args.address.country = country;
-    this.args.address.municipality = undefined;
-  };
-
   <template>
     <section>
       <EditCard @containsRequiredFields={{this.isManualInputMode}}>
@@ -428,7 +418,7 @@ class AddressEdit extends Component {
                   <:content>
                     <AddressInput
                       @value={{@address.postcode}}
-                      @onChange={{this.setPostcode}}
+                      @onChange={{fn (mut @address.postcode)}}
                       @errorMessage={{fieldError @address.errors.postcode}}
                       id="address-postcode"
                     />
@@ -461,7 +451,7 @@ class AddressEdit extends Component {
                   <:content>
                     <CountrySelect
                       @selected={{@address.country}}
-                      @onChange={{this.setCountry}}
+                      @onChange={{fn (mut @address.country)}}
                       @error={{fieldError @address.errors.country}}
                       @id="address-country"
                     />
