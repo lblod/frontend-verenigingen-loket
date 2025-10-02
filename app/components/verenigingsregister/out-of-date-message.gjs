@@ -1,4 +1,6 @@
 import AuAlert from '@appuniversum/ember-appuniversum/components/au-alert';
+import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text';
+import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import { service } from '@ember/service';
 import Component from '@glimmer/component';
 
@@ -41,6 +43,16 @@ export default class OutOfDateMessage extends Component {
       <br />
       Wees gerust, de veranderingen zijn vrijwel meteen zichtbaar in het
       Verenigingsregister.
+      <div>
+        <AuLoader
+          @inline={{true}}
+          @centered={{false}}
+          class="au-u-margin-top"
+        ><span class="au-u-para-small">Gegevens worden bijgewerkt</span></AuLoader>
+        <AuHelpText @skin="tertiary" class="au-u-margin-top-none">
+          Deze melding verdwijnt zodra de update is voltooid.
+        </AuHelpText>
+      </div>
     </AuAlert>
   </template>
 
