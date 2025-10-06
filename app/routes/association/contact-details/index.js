@@ -2,6 +2,7 @@ import Route from '@ember/routing/route';
 import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
 import { findCorrespondenceAddressSite } from 'frontend-verenigingen-loket/utils/association';
+import { isOutOfDate } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 
 export default class AssociationContactDetailsIndexRoute extends Route {
   @service store;
@@ -13,11 +14,11 @@ export default class AssociationContactDetailsIndexRoute extends Route {
 
   async model(params) {
     return {
-      task: this.loadAssociation.perform(params),
+      task: this.loadData.perform(params),
     };
   }
 
-  loadAssociation = task({ keepLatest: true }, async ({ page, size, sort }) => {
+  loadData = task({ keepLatest: true }, async ({ page, size, sort }) => {
     const { id } = this.paramsFor('association');
 
     const association = await this.store.findRecord('association', id, {
@@ -35,6 +36,7 @@ export default class AssociationContactDetailsIndexRoute extends Route {
         this.store,
         association,
       ),
+      isOutOfDate: await isOutOfDate(association),
     };
   });
 }

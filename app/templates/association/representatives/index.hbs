@@ -19,13 +19,19 @@
       >
         {{#if this.association}}
           {{#if this.currentSession.canEdit}}
-            <AuLink
-              @route="association.representatives.edit"
-              @skin="button-secondary"
-              @icon="pencil"
-            >
-              Bewerk
-            </AuLink>
+            {{#if this.model.isOutOfDate}}
+              <AuButton @skin="secondary" @icon="pencil" @disabled={{true}}>
+                Bewerk
+              </AuButton>
+            {{else}}
+              <AuLink
+                @route="association.representatives.edit"
+                @skin="button-secondary"
+                @icon="pencil"
+              >
+                Bewerk
+              </AuLink>
+            {{/if}}
           {{else}}
             <ReportWrongData @model={{this.association}} />
           {{/if}}
@@ -48,6 +54,11 @@
         </h3>
       {{/if}}
     </section>
+    {{#if this.model.isOutOfDate}}
+      <Verenigingsregister::OutOfDateMessage
+        class="au-u-margin-left au-u-margin-right au-u-margin-top au-u-margin-bottom"
+      />
+    {{/if}}
   </t.menu>
   <t.content class="au-c-data-table__table--small" as |c|>
     <c.header>

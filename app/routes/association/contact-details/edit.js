@@ -3,14 +3,18 @@ import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
 import { TrackedArray } from 'tracked-built-ins';
 import { findCorrespondenceAddressSite } from 'frontend-verenigingen-loket/utils/association';
+import { isOutOfDate } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 
 export default class AssociationContactDetailsEditRoute extends Route {
   @service currentSession;
   @service router;
   @service store;
 
-  beforeModel() {
-    if (!this.currentSession.canEdit) {
+  async beforeModel() {
+    // TODO: the type assertion shouldn't be needed when the parent route is converted to TS.
+    const association = this.modelFor('association');
+
+    if (!this.currentSession.canEdit || (await isOutOfDate(association))) {
       this.router.transitionTo('association.contact-details');
     }
   }

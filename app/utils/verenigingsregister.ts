@@ -10,6 +10,27 @@ import type Site from 'frontend-verenigingen-loket/models/site';
 
 const manager = new RequestManager().use([Fetch]);
 
+export async function isOutOfDate(association: Association) {
+  const currentEtag = association.etag;
+  if (typeof currentEtag !== 'string') {
+    // If the etag isn't a string, we assume it was harvested incorrectly and we can't be sure the data is out of date.
+    return false;
+  }
+
+  const latestEtag = await getLatestEtag(association);
+  return currentEtag !== latestEtag;
+}
+
+export async function getLatestEtag(association: Association) {
+  const url = await buildVerenigingUrl(association);
+  const dataDocument = await manager.request({
+    url,
+  });
+
+  const etag = dataDocument.response?.headers?.get('etag');
+  return etag;
+}
+
 export async function createOrUpdateContactDetail(contactPoint: ContactPoint) {
   const url = await buildContactDetailUrl(contactPoint);
   const method = contactPoint.isNew ? 'POST' : 'PATCH';
