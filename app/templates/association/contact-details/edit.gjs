@@ -113,20 +113,18 @@ export default class ContactEdit extends Component {
     }
 
     try {
-      await Promise.all(
-        this.contactPointsToRemove.map((contactPoint) => {
-          return removeContactDetail(contactPoint);
-        }),
-      );
+      for (const contactPoint of this.contactPointsToRemove) {
+        await removeContactDetail(contactPoint);
+      }
       this.contactPointsToRemove = [];
 
-      const savePromises = this.contactPoints
-        .filter((contactPoint) => contactPoint.hasDirtyAttributes)
-        .map((contactPoint) => {
-          return createOrUpdateContactDetail(contactPoint);
-        });
+      const contactPointsToSave = this.contactPoints.filter(
+        (contactPoint) => contactPoint.hasDirtyAttributes,
+      );
 
-      await Promise.all(savePromises);
+      for (const contactPoint of contactPointsToSave) {
+        await createOrUpdateContactDetail(contactPoint);
+      }
 
       const association = this.association;
       const site = this.correspondenceAddressSite;
