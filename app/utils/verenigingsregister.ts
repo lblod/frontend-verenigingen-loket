@@ -7,7 +7,6 @@ import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point'
 import type { ChangedAttributesHash } from '@warp-drive/core-types/cache';
 import type Membership from 'frontend-verenigingen-loket/models/membership';
 import type Site from 'frontend-verenigingen-loket/models/site';
-import type Address from 'frontend-verenigingen-loket/models/address';
 
 const manager = new RequestManager().use([Fetch]);
 
@@ -60,11 +59,16 @@ export async function createOrUpdateCorrespondenceSite(
       bronwaarde: address.addressRegisterUri,
     };
   } else {
-    locationBody['adres'] = mapRecordAttributesToAPIFields<Address>(
-      address.changedAttributes(),
-      SITE_ADDRESS_ATTRIBUTE_MAP,
-      ['addressRegisterUri'],
-    );
+    // It seems we need to send _all_ the address values, even if only a single thing changes,
+    // so we can't use the .changedAttributes and mapRecordAttributesToApiFields setup here
+    locationBody['adres'] = {
+      straatnaam: address.street,
+      huisnummer: address.number,
+      busnummer: address.boxNumber,
+      postcode: address.postcode,
+      gemeente: address.municipality,
+      land: address.country,
+    };
   }
 
   await manager.request({
@@ -226,15 +230,6 @@ const CONTACT_DETAILS_ATTRIBUTE_MAP = {
   ) {
     mappedAttributes['isPrimair'] = typeValue === 'Primary';
   },
-};
-
-const SITE_ADDRESS_ATTRIBUTE_MAP = {
-  street: 'straatnaam',
-  number: 'huisnummer',
-  boxNumber: 'busnummer',
-  postcode: 'postcode',
-  municipality: 'gemeente',
-  country: 'land',
 };
 
 const REPRESENTATIVE_ATTRIBUTE_MAP = {

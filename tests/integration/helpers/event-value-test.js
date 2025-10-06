@@ -32,4 +32,16 @@ module('Integration | Helper | event-value', function (hooks) {
     await fillIn('input', 'foo');
     assert.strictEqual(this.value, 'foo');
   });
+
+  test('it can trim the event value and pass it into the handler', async function (assert) {
+    await render(hbs`
+      <label>
+        <input {{on "change" (event-value (fn (mut this.value)) trim=true)}} />
+      </label>
+    `);
+
+    assert.strictEqual(this.value, undefined);
+    await fillIn('input', '    foo bar baz     ');
+    assert.strictEqual(this.value, 'foo bar baz');
+  });
 });
