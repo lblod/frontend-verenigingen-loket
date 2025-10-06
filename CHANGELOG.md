@@ -1,3 +1,30 @@
+## v1.6.0 (2025-10-06)
+
+#### :rocket: Enhancement
+
+- [#104](https://github.com/lblod/frontend-verenigingen-loket/pull/104) [CLBV-1077] Display an error message when something goes wrong during the save ([@Windvis](https://github.com/Windvis))
+- [#103](https://github.com/lblod/frontend-verenigingen-loket/pull/103) [CLBV-1066] Disable editing when the data is out-of-date ([@Windvis](https://github.com/Windvis))
+- [#101](https://github.com/lblod/frontend-verenigingen-loket/pull/101) [CLBV-1064] Allow users to manually edit the correspondence address ([@Windvis](https://github.com/Windvis))
+- [#99](https://github.com/lblod/frontend-verenigingen-loket/pull/99) Review `isPrimary` feature ([@benjay10](https://github.com/benjay10))
+- [#102](https://github.com/lblod/frontend-verenigingen-loket/pull/102) Add status "Gestopt" ([@benjay10](https://github.com/benjay10))
+- [#100](https://github.com/lblod/frontend-verenigingen-loket/pull/100) [CLBV-1053] Allow users to edit the correspondence address ([@Windvis](https://github.com/Windvis))
+- [#98](https://github.com/lblod/frontend-verenigingen-loket/pull/98) [CLBV-591] Make it possible to add new representatives ([@Windvis](https://github.com/Windvis))
+- [#96](https://github.com/lblod/frontend-verenigingen-loket/pull/96) [CLBV-592] Make it possible to delete representatives ([@Windvis](https://github.com/Windvis))
+- [#97](https://github.com/lblod/frontend-verenigingen-loket/pull/97) [CLBV-1029] Set up Plausible ([@Windvis](https://github.com/Windvis))
+- [#84](https://github.com/lblod/frontend-verenigingen-loket/pull/84) [CLBV-586] Add a contact details edit page ([@Windvis](https://github.com/Windvis))
+
+#### :bug: Bug Fix
+
+- [#105](https://github.com/lblod/frontend-verenigingen-loket/pull/105) [DL-6934] Fix a race condition when persisting contact changes ([@Windvis](https://github.com/Windvis))
+
+#### :house: Internal
+
+- [#93](https://github.com/lblod/frontend-verenigingen-loket/pull/93) Switch to the TypeScript variant of the Ember blueprint ([@Windvis](https://github.com/Windvis))
+- [#64](https://github.com/lblod/frontend-verenigingen-loket/pull/64) [CLBV-1043] Set up Embroider ([@Windvis](https://github.com/Windvis))
+- [#89](https://github.com/lblod/frontend-verenigingen-loket/pull/89) [CLBV-1043] Update to Ember 6.4 LTS ([@Windvis](https://github.com/Windvis))
+- [#88](https://github.com/lblod/frontend-verenigingen-loket/pull/88) [CLBV-1043] Dependency maintenance ([@Windvis](https://github.com/Windvis))
+- [#87](https://github.com/lblod/frontend-verenigingen-loket/pull/87) [CLBV-1043] Update to Ember v5.12 LTS ([@Windvis](https://github.com/Windvis))
+
 ## v1.5.1 (2025-07-03)
 
 #### :bug: Bug Fix
