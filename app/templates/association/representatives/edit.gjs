@@ -4,6 +4,7 @@ import AuCheckbox from '@appuniversum/ember-appuniversum/components/au-checkbox'
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
+import AuTooltip from '@appuniversum/ember-appuniversum/components/au-tooltip';
 import auInputmask from '@appuniversum/ember-appuniversum/modifiers/au-inputmask';
 import { getPromiseState } from '@warp-drive/ember';
 import { fn, hash } from '@ember/helper';
@@ -66,6 +67,10 @@ export default class RepresentativesEdit extends Component {
   get association() {
     // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
     return this.args.controller.model.association;
+  }
+
+  get canDeleteRepresentatives() {
+    return this.representatives.length > 1;
   }
 
   changePrimaryRepresentative = async (changingRepresentative) => {
@@ -267,6 +272,7 @@ export default class RepresentativesEdit extends Component {
               <EditRow
                 @representative={{representative}}
                 @onPrimaryChange={{this.changePrimaryRepresentative}}
+                @canDelete={{this.canDeleteRepresentatives}}
                 @onDelete={{this.deleteRepresentative}}
               />
             {{else}}
@@ -316,6 +322,10 @@ class EditRow extends Component {
     }
 
     return state.result?.at(0);
+  }
+
+  get isDeleteDisabled() {
+    return !this.args.canDelete;
   }
 
   <template>
@@ -411,13 +421,20 @@ class EditRow extends Component {
         </div>
       </td>
       <td class="au-u-text-right">
-        <AuButton
-          @alert={{true}}
-          @hideText={{true}}
-          @icon="bin"
-          @skin="naked"
-          {{on "click" (fn @onDelete @representative)}}
-        >Verwijder vertegenwoordiger</AuButton>
+        <AuTooltip @placement="left" as |tooltip|>
+          <AuButton
+            @disabled={{this.isDeleteDisabled}}
+            @alert={{true}}
+            @hideText={{true}}
+            @icon="bin"
+            @skin="naked"
+            {{(if this.isDeleteDisabled tooltip.target)}}
+            {{on "click" (fn @onDelete @representative)}}
+          >Verwijder vertegenwoordiger</AuButton>
+          <tooltip.Content>
+            De vereniging moet minstens 1 vertegenwoordiger hebben.
+          </tooltip.Content>
+        </AuTooltip>
       </td>
     </tr>
   </template>
