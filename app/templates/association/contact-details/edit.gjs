@@ -46,6 +46,7 @@ import {
   createOrUpdateCorrespondenceSite,
   removeCorrespondenceSite,
   handleError,
+  waitForStableAPI,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
 
@@ -140,6 +141,7 @@ export default class ContactEdit extends Component {
         }
       }
 
+      await waitForStableAPI();
       this.router.transitionTo('association.contact-details');
     } catch (error) {
       handleError(this.toaster, error);

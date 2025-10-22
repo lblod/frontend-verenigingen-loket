@@ -31,6 +31,23 @@ export async function getLatestEtag(association: Association) {
   return etag;
 }
 
+/**
+ * After writing to the API it is possible that the read requests are temporarily out of date due to its architecture.
+ * The API provides a mechanism where the `expectedSequence` can be provided to verify that the data is up-to-date. If it isn't we have to wait a bit before trying again.
+ * More information: https://vlaamseoverheid.atlassian.net/wiki/spaces/MG/pages/6564610476/Veel+gestelde+vragen+Verenigingsregister#expectedSequence-en-ETag
+ */
+export async function waitForStableAPI() {
+  function wait(delay = 0) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, delay);
+    });
+  }
+
+  // Instead of using the expectedSequence feature we just always wait a certain amount of time to keep things simple.
+  // A delay of 1 second should be more than enough and isn't really noticeable by the user.
+  return wait(1000);
+}
+
 export async function createOrUpdateContactDetail(contactPoint: ContactPoint) {
   const url = await buildContactDetailUrl(contactPoint);
   const method = contactPoint.isNew ? 'POST' : 'PATCH';
