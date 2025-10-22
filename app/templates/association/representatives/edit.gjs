@@ -29,6 +29,7 @@ import {
   createOrUpdateRepresentative,
   removeRepresentative,
   handleError,
+  waitForStableAPI,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
 import {
@@ -165,6 +166,7 @@ export default class RepresentativesEdit extends Component {
           await removeRepresentative(representative, this.association);
         }
 
+        await waitForStableAPI();
         this.router.transitionTo('association.representatives');
       } catch (error) {
         handleError(this.toaster, error);
