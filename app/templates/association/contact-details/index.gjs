@@ -12,6 +12,7 @@ import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import DataCard from 'frontend-verenigingen-loket/components/data-card';
 import LastUpdated from 'frontend-verenigingen-loket/components/last-updated';
 import OutOfDateMessage from 'frontend-verenigingen-loket/components/verenigingsregister/out-of-date-message';
+import ApiUnavailableMessage from 'frontend-verenigingen-loket/components/verenigingsregister/api-unavailable-message';
 import ReportWrongData from 'frontend-verenigingen-loket/components/report-wrong-data';
 import telFormat from 'frontend-verenigingen-loket/helpers/tel-format';
 import { isPrimaryContactPoint } from 'frontend-verenigingen-loket/models/contact-point';
@@ -40,6 +41,14 @@ export default class ContactDetails extends Component {
     return this.args.model.task.value.isOutOfDate;
   }
 
+  get isApiUnavailable() {
+    return this.args.model.task.value.isApiUnavailable;
+  }
+
+  get isEditDisabled() {
+    return this.isOutOfDate || this.isApiUnavailable;
+  }
+
   reloadData = () => {
     this.router.refresh('association.contact-details.index');
   };
@@ -65,7 +74,7 @@ export default class ContactDetails extends Component {
           </div>
           <div class="au-u-flex au-u-flex--column au-u-flex--vertical-end">
             {{#if this.currentSession.canEdit}}
-              {{#if this.isOutOfDate}}
+              {{#if this.isEditDisabled}}
                 <AuButton @skin="secondary" @icon="pencil" @disabled={{true}}>
                   Bewerk
                 </AuButton>
@@ -89,7 +98,13 @@ export default class ContactDetails extends Component {
           </div>
         </section>
 
-        {{#if this.isOutOfDate}}
+        {{#if this.isApiUnavailable}}
+          <ApiUnavailableMessage
+            @association={{this.association}}
+            @onApiAvailable={{this.reloadData}}
+            class="au-u-margin-bottom"
+          />
+        {{else if this.isOutOfDate}}
           <OutOfDateMessage
             @association={{this.association}}
             @onUpdateAvailable={{this.reloadData}}

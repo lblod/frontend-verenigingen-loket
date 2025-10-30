@@ -1,7 +1,10 @@
 import Route from '@ember/routing/route';
 import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
-import { isOutOfDate } from 'frontend-verenigingen-loket/utils/verenigingsregister';
+import {
+  isOutOfDate as isOutOfDateFn,
+  logAPIError,
+} from 'frontend-verenigingen-loket/utils/verenigingsregister';
 
 export default class AssociationRepresentativesRoute extends Route {
   @service store;
@@ -14,11 +17,26 @@ export default class AssociationRepresentativesRoute extends Route {
     const { id } = this.paramsFor('association');
     const association = await this.store.findRecord('association', id);
     const kboNumber = await this.loadKboNumber.perform(association);
+
+    let isOutOfDate = false;
+    let isApiUnavailable = false;
+
+    try {
+      isOutOfDate = await isOutOfDateFn(association);
+    } catch (error) {
+      isApiUnavailable = true;
+      logAPIError(
+        error,
+        'Something went wrong when trying to reach the Verenigingsregister API',
+      );
+    }
+
     return {
       association,
       members: this.loadMembers.perform(association),
       kboNumber,
-      isOutOfDate: await isOutOfDate(association),
+      isOutOfDate,
+      isApiUnavailable,
     };
   }
 
