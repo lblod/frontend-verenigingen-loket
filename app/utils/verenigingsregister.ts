@@ -10,6 +10,19 @@ import type Site from 'frontend-verenigingen-loket/models/site';
 
 const manager = new RequestManager().use([Fetch]);
 
+export async function isApiAvailable(association: Association) {
+  try {
+    const url = await buildVerenigingUrl(association);
+    await manager.request({
+      url,
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function isOutOfDate(association: Association) {
   const currentEtag = association.etag;
   if (typeof currentEtag !== 'string') {
@@ -333,5 +346,13 @@ export function handleError(
   toaster.error(
     'Er ging iets fout bij het verzenden van de gegevens naar het Verenigingsregister.',
   );
-  console.error(error, JSON.stringify(error));
+  logAPIError(error);
+}
+
+export function logAPIError(error: Error, message?: string) {
+  if (message) {
+    console.error(message, error, JSON.stringify(error));
+  } else {
+    console.error(error, JSON.stringify(error));
+  }
 }

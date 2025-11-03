@@ -18,6 +18,10 @@ export default class AssociationRepresentativesController extends Controller {
     return this.model.association;
   }
 
+  get isEditDisabled() {
+    return this.model.isApiUnavailable || this.model.isOutOfDate;
+  }
+
   reloadData = () => {
     this.router.refresh('association.representatives.index');
   };

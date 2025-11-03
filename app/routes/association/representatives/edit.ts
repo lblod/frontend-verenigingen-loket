@@ -6,7 +6,7 @@ import type Store from '@ember-data/store';
 import type Association from 'frontend-verenigingen-loket/models/association';
 // @ts-expect-error: not converted to TS yet
 import type CurrentSession from 'frontend-verenigingen-loket/services/current-session';
-import { isOutOfDate } from 'frontend-verenigingen-loket/utils/verenigingsregister';
+import { isOutOfDate as isOutOfDateFn } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { TrackedArray } from 'tracked-built-ins';
 
 export default class AssociationRepresentativesEditRoute extends Route {
@@ -15,11 +15,19 @@ export default class AssociationRepresentativesEditRoute extends Route {
   @service declare router: RouterService;
 
   async beforeModel() {
-    // TODO: the type assertion shouldn't be needed when the parent route is converted to TS.
-    const association = this.modelFor('association') as Association;
+    let isOutOfDate = false;
+    let isApiUnavailable = false;
+
+    try {
+      // TODO: the type assertion shouldn't be needed when the parent route is converted to TS.
+      const association = this.modelFor('association') as Association;
+      isOutOfDate = await isOutOfDateFn(association);
+    } catch {
+      isApiUnavailable = true;
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (!this.currentSession.canEdit || (await isOutOfDate(association))) {
+    if (!this.currentSession.canEdit || isOutOfDate || isApiUnavailable) {
       this.router.transitionTo('association.representatives');
     }
   }

@@ -19,7 +19,7 @@
       >
         {{#if this.association}}
           {{#if this.currentSession.canEdit}}
-            {{#if this.model.isOutOfDate}}
+            {{#if this.isEditDisabled}}
               <AuButton @skin="secondary" @icon="pencil" @disabled={{true}}>
                 Bewerk
               </AuButton>
@@ -54,7 +54,14 @@
         </h3>
       {{/if}}
     </section>
-    {{#if this.model.isOutOfDate}}
+
+    {{#if this.model.isApiUnavailable}}
+      <Verenigingsregister::ApiUnavailableMessage
+        @association={{this.association}}
+        @onApiAvailable={{this.reloadData}}
+        class="au-u-margin-left au-u-margin-right au-u-margin-top au-u-margin-bottom"
+      />
+    {{else if this.model.isOutOfDate}}
       <Verenigingsregister::OutOfDateMessage
         @association={{this.association}}
         @onUpdateAvailable={{this.reloadData}}
