@@ -18,6 +18,7 @@ import { isPrimaryContactPoint } from 'frontend-verenigingen-loket/models/contac
 
 export default class ContactDetails extends Component {
   @service currentSession;
+  @service router;
 
   get isLoading() {
     return this.args.model.task.isRunning;
@@ -38,6 +39,10 @@ export default class ContactDetails extends Component {
   get isOutOfDate() {
     return this.args.model.task.value.isOutOfDate;
   }
+
+  reloadData = () => {
+    this.router.refresh('association.contact-details.index');
+  };
 
   <template>
     {{pageTitle "Contactgegevens"}}
@@ -87,6 +92,7 @@ export default class ContactDetails extends Component {
         {{#if this.isOutOfDate}}
           <OutOfDateMessage
             @association={{this.association}}
+            @onUpdateAvailable={{this.reloadData}}
             class="au-u-margin-bottom"
           />
         {{/if}}

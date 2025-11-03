@@ -56,6 +56,8 @@
     </section>
     {{#if this.model.isOutOfDate}}
       <Verenigingsregister::OutOfDateMessage
+        @association={{this.association}}
+        @onUpdateAvailable={{this.reloadData}}
         class="au-u-margin-left au-u-margin-right au-u-margin-top au-u-margin-bottom"
       />
     {{/if}}
