@@ -1,3 +1,13 @@
+## v1.7.0 (2025-11-03)
+
+#### :rocket: Enhancement
+* [#109](https://github.com/lblod/frontend-verenigingen-loket/pull/109) [CLBV-1090] Display a message when the Verenigingsregister API is unavailable ([@Windvis](https://github.com/Windvis))
+* [#106](https://github.com/lblod/frontend-verenigingen-loket/pull/106) [CLBV-1095] Auto reload the page when new data is available ([@Windvis](https://github.com/Windvis))
+
+#### :bug: Bug Fix
+* [#108](https://github.com/lblod/frontend-verenigingen-loket/pull/108) [CLBV-1094] Fix a timing issue with the out of date messages ([@Windvis](https://github.com/Windvis))
+* [#107](https://github.com/lblod/frontend-verenigingen-loket/pull/107) [CLBV-1092] Prevent users from removing the last representative ([@Windvis](https://github.com/Windvis))
+
 ## v1.6.0 (2025-10-06)
 
 #### :rocket: Enhancement
