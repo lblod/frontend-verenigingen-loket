@@ -267,7 +267,7 @@ async function buildRepresentativeUrl(
 
 async function buildVerenigingUrl(association: Association) {
   const vCode = await associationVCode(association);
-  return `/verenigingen/${vCode}`;
+  return `/verenigingen-proxy/${vCode}`;
 }
 
 const CONTACT_DETAILS_ATTRIBUTE_MAP = {
