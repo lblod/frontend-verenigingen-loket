@@ -35,6 +35,11 @@ export default class CurrentSessionService extends Service {
     return true; // for demo purposes only -> change asap
   }
 
+  get canEditVerenigingsregisterData() {
+    // The securitySchemeUrl will be set once the administrative unit has a 'verwerkersovereenkomst' which allows them to edit data.
+    return Boolean(this.group.securitySchemeUrl);
+  }
+
   get fullName() {
     if (!this.user) throw new Error('User not loaded.');
     return this.user.fullName;

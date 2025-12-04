@@ -46,7 +46,11 @@ export default class ContactDetails extends Component {
   }
 
   get isEditDisabled() {
-    return this.isOutOfDate || this.isApiUnavailable;
+    return (
+      this.isOutOfDate ||
+      this.isApiUnavailable ||
+      !this.currentSession.canEditVerenigingsregisterData
+    );
   }
 
   reloadData = () => {

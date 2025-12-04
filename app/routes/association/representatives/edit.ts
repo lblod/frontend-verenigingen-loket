@@ -26,8 +26,12 @@ export default class AssociationRepresentativesEditRoute extends Route {
       isApiUnavailable = true;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (!this.currentSession.canEdit || isOutOfDate || isApiUnavailable) {
+    if (
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      !this.currentSession.canEditVerenigingsregisterData ||
+      isOutOfDate ||
+      isApiUnavailable
+    ) {
       this.router.transitionTo('association.representatives');
     }
   }
