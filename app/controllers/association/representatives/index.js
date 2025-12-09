@@ -19,7 +19,11 @@ export default class AssociationRepresentativesController extends Controller {
   }
 
   get isEditDisabled() {
-    return this.model.isApiUnavailable || this.model.isOutOfDate;
+    return (
+      this.model.isApiUnavailable ||
+      this.model.isOutOfDate ||
+      !this.currentSession.canEditVerenigingsregisterData
+    );
   }
 
   reloadData = () => {

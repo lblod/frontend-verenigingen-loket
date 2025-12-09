@@ -21,7 +21,11 @@ export default class AssociationContactDetailsEditRoute extends Route {
       isApiUnavailable = true;
     }
 
-    if (!this.currentSession.canEdit || isOutOfDate || isApiUnavailable) {
+    if (
+      !this.currentSession.canEditVerenigingsregisterData ||
+      isOutOfDate ||
+      isApiUnavailable
+    ) {
       this.router.transitionTo('association.contact-details');
     }
   }
