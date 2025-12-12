@@ -1,153 +1,183 @@
 {{page-title "Vertegenwoordigers"}}
 
-<AuDataTable
-  @content={{this.members}}
-  @noDataMessage="Geen vertegenwoordigers beschikbaar"
-  @isLoading={{this.isLoading}}
-  as |t|
->
-  <t.menu>
+{{#if this.isLoading}}
+  <AuLoader class="au-u-margin-top-huge">Aan het laden</AuLoader>
+{{else}}
+  <div class="au-o-box au-u-padding-left au-u-padding-right au-u-padding-top">
     <section
-      class="au-u-flex au-u-flex--between au-u-padding-left au-u-padding-right au-u-padding-top"
+      class="au-u-flex au-u-flex--between au-u-flex--vertical-end au-u-margin-bottom"
     >
       <div>
         <AuHeading @level="1" @skin="1">Vertegenwoordigers</AuHeading>
-        <AuHeading @level="3" @skin="3">{{this.association.name}}</AuHeading>
+        <AuHeading @level="2" @skin="3">{{this.association.name}}</AuHeading>
       </div>
-      <div
-        class="au-u-flex au-u-flex--end au-u-flex--column au-u-flex--vertical-end"
-      >
-        {{#if this.association}}
-          {{#if this.currentSession.canEdit}}
-            {{#if this.isEditDisabled}}
-              <AuButton @skin="secondary" @icon="pencil" @disabled={{true}}>
-                Bewerk
-              </AuButton>
+
+      {{#if this.currentSession.canEditVerenigingsregisterData}}
+        <div class="au-u-flex au-u-flex--column au-u-flex--vertical-end">
+          {{#if this.association}}
+            {{#if this.currentSession.canEdit}}
+              {{#if this.isEditDisabled}}
+                <AuButton @skin="secondary" @icon="pencil" @disabled={{true}}>
+                  Bewerk
+                </AuButton>
+              {{else}}
+                <AuLink
+                  @route="association.representatives.edit"
+                  @skin="button-secondary"
+                  @icon="pencil"
+                >
+                  Bewerk
+                </AuLink>
+              {{/if}}
             {{else}}
-              <AuLink
-                @route="association.representatives.edit"
-                @skin="button-secondary"
-                @icon="pencil"
-              >
-                Bewerk
-              </AuLink>
+              <ReportWrongData @model={{this.association}} />
             {{/if}}
-          {{else}}
-            <ReportWrongData @model={{this.association}} />
+            <span class="au-u-margin-top-tiny">
+              <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
+            </span>
           {{/if}}
-          <span class="au-u-margin-top-tiny">
-            <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
-          </span>
-        {{/if}}
-      </div>
-    </section>
-    <section class="au-u-padding-left au-u-padding-right au-u-padding-top">
-      {{#if this.model.kboNumber}}
-        <h3
-          class="au-c-heading au-c-heading--5 au-u-margin-bottom-small au-u-flex au-u-flex--between au-u-flex--vertical-end"
-        >
-          <AuLinkExternal
-            href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer={{this.model.kboNumber}}"
-          >
-            Bekijk de functies op de KBO pagina (externe link)
-          </AuLinkExternal>
-        </h3>
+        </div>
       {{/if}}
     </section>
+    {{#if this.currentSession.canEditVerenigingsregisterData}}
+      {{#if this.model.kboNumber}}
+        <section class="au-u-padding-top">
+          <h3
+            class="au-c-heading au-c-heading--5 au-u-margin-bottom-small au-u-flex au-u-flex--between au-u-flex--vertical-end"
+          >
+            <AuLinkExternal
+              href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer={{this.model.kboNumber}}"
+            >
+              Bekijk de functies op de KBO pagina (externe link)
+            </AuLinkExternal>
+          </h3>
+        </section>
+      {{/if}}
 
-    {{#if this.model.isApiUnavailable}}
-      <Verenigingsregister::ApiUnavailableMessage
-        @association={{this.association}}
-        @onApiAvailable={{this.reloadData}}
-        class="au-u-margin-left au-u-margin-right au-u-margin-top au-u-margin-bottom"
-      />
-    {{else if this.model.isOutOfDate}}
-      <Verenigingsregister::OutOfDateMessage
-        @association={{this.association}}
-        @onUpdateAvailable={{this.reloadData}}
-        class="au-u-margin-left au-u-margin-right au-u-margin-top au-u-margin-bottom"
-      />
-    {{/if}}
-  </t.menu>
-  <t.content class="au-c-data-table__table--small" as |c|>
-    <c.header>
-      <th width="80px" class="data-table__header-title"></th>
-      <AuDataTableThSortable
-        @field="person.given-name"
-        @currentSorting={{this.sort}}
-        @label="Voornaam"
-        @class="data-table__header-title"
-      />
-      <AuDataTableThSortable
-        @field="person.family-name"
-        @currentSorting={{this.sort}}
-        @label="Achternaam"
-        @class="data-table__header-title"
-      />
-      <AuDataTableThSortable
-        @field="person.site.contactPoints.email"
-        @currentSorting={{this.sort}}
-        @label="E-mail"
-        @class="data-table__header-title"
-      />
-      <AuDataTableThSortable
-        @field="person.site.contactPoints.telephone"
-        @currentSorting={{this.sort}}
-        @label="Telefoonnummer"
-        @class="data-table__header-title"
-      />
-      <AuDataTableThSortable
-        @field="person.site.contactPoints.website"
-        @currentSorting={{this.sort}}
-        @label="Sociale media"
-        @class="data-table__header-title"
-      />
-    </c.header>
-    {{#if this.hasErrored}}
-      <TableMessage::Error />
+      {{#if this.model.isApiUnavailable}}
+        <Verenigingsregister::ApiUnavailableMessage
+          @association={{this.association}}
+          @onApiAvailable={{this.reloadData}}
+        />
+      {{else if this.model.isOutOfDate}}
+        <Verenigingsregister::OutOfDateMessage
+          @association={{this.association}}
+          @onUpdateAvailable={{this.reloadData}}
+        />
+      {{/if}}
+
     {{else}}
-      <c.body as |member|>
-        <td>
-          {{#if (isPrimaryRole member.role)}}
-            <AuBadge @icon="vote-star-filled" class="star-icon" />
-          {{/if}}
-        </td>
-        <td>
-          {{member.person.givenName}}
-        </td>
-        <td>
-          {{member.person.familyName}}
-        </td>
-        {{#let member.person.contactPoints as |contactPoints|}}
-          {{#let (this.contactPoints.getDetails contactPoints) as |contact|}}
-            <td>
-              <AuLinkExternal href="mailto: {{contact.email}}">
-                {{contact.email}}
-              </AuLinkExternal>
-            </td>
-            <td>
-              {{#each contact.telephone as |phoneNumber|}}
-                <AuLinkExternal href="tel:{{phoneNumber}}">
-                  {{tel-format phoneNumber}}
-                </AuLinkExternal>
-              {{/each}}
-            </td>
-            <td>
-              {{#each contact.socialMedia as |socialMedia index|}}
-                <AuLinkExternal href={{socialMedia.url}}>
-                  {{#if socialMedia.name}}
-                    {{socialMedia.name}}
-                  {{else}}
-                    {{socialMedia.url}}
-                  {{/if}}
-                </AuLinkExternal>{{#unless
-                  (last-index index contact.socialMedia)
-                }},{{/unless}}
-              {{/each}}
-            </td>
-          {{/let}}
-        {{/let}}
-      </c.body>
+      <AuContent class="au-u-max-width-small">
+        <AuHeading @level="4" @skin="4">Waarom zie ik geen gegevens van
+          vertegenwoordigers meer?</AuHeading>
+        <p>
+          Om de gegevens van vertegenwoordigers te kunnen zien, heb je een
+          verwerkersovereenkomst met ABB én een aansluiting met MAGDA nodig.
+          <br />
+          Voor meer informatie,
+          <AuLinkExternal
+            href="https://abb-vlaanderen.gitbook.io/handleiding-verenigingen/algemeen/verwerkersovereenkomst-en-aansluiting-magda"
+          >
+            klik hier.
+          </AuLinkExternal>
+        </p>
+      </AuContent>
     {{/if}}
-  </t.content>
-</AuDataTable>
+  </div>
+
+  {{#if this.currentSession.canEditVerenigingsregisterData}}
+    <div>
+      <AuDataTable
+        @content={{this.members}}
+        @noDataMessage="Geen vertegenwoordigers beschikbaar"
+        @isLoading={{this.isLoading}}
+        as |t|
+      >
+        <t.content class="au-c-data-table__table--small" as |c|>
+          <c.header>
+            <th width="80px" class="data-table__header-title"></th>
+            <AuDataTableThSortable
+              @field="person.given-name"
+              @currentSorting={{this.sort}}
+              @label="Voornaam"
+              @class="data-table__header-title"
+            />
+            <AuDataTableThSortable
+              @field="person.family-name"
+              @currentSorting={{this.sort}}
+              @label="Achternaam"
+              @class="data-table__header-title"
+            />
+            <AuDataTableThSortable
+              @field="person.site.contactPoints.email"
+              @currentSorting={{this.sort}}
+              @label="E-mail"
+              @class="data-table__header-title"
+            />
+            <AuDataTableThSortable
+              @field="person.site.contactPoints.telephone"
+              @currentSorting={{this.sort}}
+              @label="Telefoonnummer"
+              @class="data-table__header-title"
+            />
+            <AuDataTableThSortable
+              @field="person.site.contactPoints.website"
+              @currentSorting={{this.sort}}
+              @label="Sociale media"
+              @class="data-table__header-title"
+            />
+          </c.header>
+          {{#if this.hasErrored}}
+            <TableMessage::Error />
+          {{else}}
+            <c.body as |member|>
+              <td>
+                {{#if (isPrimaryRole member.role)}}
+                  <AuBadge @icon="vote-star-filled" class="star-icon" />
+                {{/if}}
+              </td>
+              <td>
+                {{member.person.givenName}}
+              </td>
+              <td>
+                {{member.person.familyName}}
+              </td>
+              {{#let member.person.contactPoints as |contactPoints|}}
+                {{#let
+                  (this.contactPoints.getDetails contactPoints)
+                  as |contact|
+                }}
+                  <td>
+                    <AuLinkExternal href="mailto: {{contact.email}}">
+                      {{contact.email}}
+                    </AuLinkExternal>
+                  </td>
+                  <td>
+                    {{#each contact.telephone as |phoneNumber|}}
+                      <AuLinkExternal href="tel:{{phoneNumber}}">
+                        {{tel-format phoneNumber}}
+                      </AuLinkExternal>
+                    {{/each}}
+                  </td>
+                  <td>
+                    {{#each contact.socialMedia as |socialMedia index|}}
+                      <AuLinkExternal href={{socialMedia.url}}>
+                        {{#if socialMedia.name}}
+                          {{socialMedia.name}}
+                        {{else}}
+                          {{socialMedia.url}}
+                        {{/if}}
+                      </AuLinkExternal>{{#unless
+                        (last-index index contact.socialMedia)
+                      }},{{/unless}}
+                    {{/each}}
+                  </td>
+                {{/let}}
+              {{/let}}
+            </c.body>
+          {{/if}}
+        </t.content>
+      </AuDataTable>
+    </div>
+  {{/if}}
+{{/if}}
