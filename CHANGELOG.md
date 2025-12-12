@@ -1,6 +1,10 @@
 ## v1.8.0 (2025-12-23)
+
+#### :rocket: Enhancement
+
 - [#111](https://github.com/lblod/frontend-verenigingen-loket/pull/111) [CLBV-1125] Disable editing of Verenigingsregister data for certain users ([@Windvis](https://github.com/Windvis))
 - [#112](https://github.com/lblod/frontend-verenigingen-loket/pull/112) [CLBV-1124] Display a message about the availability of the representatives data ([@Windvis](https://github.com/Windvis))
+
 ## v1.7.1 (2025-12-03)
 
 #### :bug: Bug Fix
