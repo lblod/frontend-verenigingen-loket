@@ -1,3 +1,8 @@
+## v1.8.1 (2026-01-12)
+
+#### :bug: Bug Fix
+* [#113](https://github.com/lblod/frontend-verenigingen-loket/pull/113) fix controller login ([@bdevloed](https://github.com/bdevloed))
+
 ## v1.8.0 (2025-12-23)
 
 #### :rocket: Enhancement
