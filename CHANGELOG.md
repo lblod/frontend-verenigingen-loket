@@ -1,3 +1,8 @@
+## v1.9.0 (2026-01-13)
+
+#### :rocket: Enhancement
+* [#114](https://github.com/lblod/frontend-verenigingen-loket/pull/114) Always enable the mock-login route ([@Windvis](https://github.com/Windvis))
+
 ## v1.8.1 (2026-01-12)
 
 #### :bug: Bug Fix
