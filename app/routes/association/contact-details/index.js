@@ -8,6 +8,7 @@ import {
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 
 export default class AssociationContactDetailsIndexRoute extends Route {
+  @service currentSession;
   @service store;
 
   queryParams = {
@@ -31,14 +32,21 @@ export default class AssociationContactDetailsIndexRoute extends Route {
     let isOutOfDate = false;
     let isApiUnavailable = false;
 
-    try {
-      isOutOfDate = await isOutOfDateFn(association);
-    } catch (error) {
-      isApiUnavailable = true;
-      logAPIError(
-        error,
-        'Something went wrong when trying to reach the Verenigingsregister API',
-      );
+    /*
+      At the moment only organizations with an agreement can make API calls, so the isApiUnavailable flag would always be true and never switch to false.
+      This confuses users, so we only do this call for users who can edit.
+      The downside is that users won't know if their data is out of date, but the sync should only last a few minutes anyway.
+    */
+    if (this.currentSession.canEditVerenigingsregisterData) {
+      try {
+        isOutOfDate = await isOutOfDateFn(association);
+      } catch (error) {
+        isApiUnavailable = true;
+        logAPIError(
+          error,
+          'Something went wrong when trying to reach the Verenigingsregister API',
+        );
+      }
     }
 
     return {
