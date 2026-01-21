@@ -1,3 +1,8 @@
+## v1.9.2 (2026-01-21)
+
+#### :bug: Bug Fix
+* [#116](https://github.com/lblod/frontend-verenigingen-loket/pull/116) [CLBV-1165] Disable API calls for read-only users ([@Windvis](https://github.com/Windvis))
+
 ## v1.9.1 (2026-01-21)
 
 #### :bug: Bug Fix
