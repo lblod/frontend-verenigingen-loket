@@ -41,7 +41,7 @@ export default class AssociationRepresentativesRoute extends Route {
   }
 
   loadMembers = task({ keepLatest: true }, async (association) => {
-    const members = await association.get('members');
+    const members = await association.hasMany('members').reload();
     const memberPromises = members.map(async (member) => {
       const memberWithPerson = await member.reload({
         include: 'person.contact-points,role',
