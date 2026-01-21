@@ -1,3 +1,8 @@
+## v1.9.1 (2026-01-21)
+
+#### :bug: Bug Fix
+* [#115](https://github.com/lblod/frontend-verenigingen-loket/pull/115) [CLBV-1163] Force reload the members relationship ([@Windvis](https://github.com/Windvis))
+
 ## v1.9.0 (2026-01-13)
 
 #### :rocket: Enhancement
