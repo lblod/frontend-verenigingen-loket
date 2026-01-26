@@ -44,6 +44,48 @@ export async function getLatestEtag(association: Association) {
   return etag;
 }
 
+// These types aren't complete. The API contains more info, but we only type what is useful to keep things simple.
+type Vereniging = {
+  vCode: string;
+  naam: string;
+  korteNaam: string;
+  korteBeschrijving: string;
+  startdatum: string;
+  einddatum: string;
+  status: string;
+  vertegenwoordigers: Vertegenwoordiger[];
+};
+
+type Vertegenwoordiger = {
+  vertegenwoordigerId: number;
+  voornaam: string;
+  achternaam: string;
+  roepnaam: string;
+  rol: string;
+  'e-mail': string;
+  telefoon?: string;
+  socialMedia?: string;
+  isPrimair: boolean;
+};
+
+type VerenigingDetailsResponse = {
+  vereniging: Vereniging;
+  metadata: {
+    datumLaatsteAanpassing: string;
+  };
+};
+
+export async function getVertegenwoordigers(
+  association: Association,
+): Promise<Vertegenwoordiger[]> {
+  const url = await buildVerenigingUrl(association);
+  const dataDocument = await manager.request<VerenigingDetailsResponse>({
+    url,
+  });
+
+  return dataDocument.content.vereniging.vertegenwoordigers;
+}
+
 /**
  * After writing to the API it is possible that the read requests are temporarily out of date due to its architecture.
  * The API provides a mechanism where the `expectedSequence` can be provided to verify that the data is up-to-date. If it isn't we have to wait a bit before trying again.
