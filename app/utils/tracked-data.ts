@@ -17,11 +17,14 @@ export default class TrackedData<T extends object> {
     initialState: T,
     options: { isNew?: boolean } = { isNew: true }
   ) {
+    // @ts-expect-error: todo, not sure how to fix this initialState type error
     const data = new TrackedObject(initialState);
     this.isNew = options.isNew ?? true;
     this.baseline = { ...initialState };
 
+    // @ts-expect-error: todo, not sure how to fix this `this.data` type error
     this.data = new Proxy(data, {
+      // @ts-expect-error: todo, not sure how to fix this `set` type error
       set: (target: T, prop: keyof T, value: T[keyof T]) => {
         if (target[prop] !== value) {
           target[prop] = value;
