@@ -12,7 +12,7 @@ export async function validateData<T extends object>(
   validationOptions: ValidationOptions = {},
 ) {
   try {
-    await schema.validateAsync(instance._data, {
+    await schema.validateAsync(instance.data, {
       abortEarly: false,
       allowUnknown: true,
       ...validationOptions,
