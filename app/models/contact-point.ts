@@ -88,4 +88,3 @@ export const validationSchema = Joi.object({
 }).messages({
   'any.required': 'Dit veld is verplicht.',
 });
-
