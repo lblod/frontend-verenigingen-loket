@@ -138,7 +138,7 @@ export default class SharedBreadCrumbComponent extends Component {
 
   get crumbsForRoute() {
     const results = this.bread(
-      this.currentAssociation.association
+      this.currentAssociation.isSet
         ? this.currentAssociation.association.name
         : null,
     ).filter((value) => value.route === this.router.currentRouteName);
