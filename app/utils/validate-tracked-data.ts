@@ -12,7 +12,7 @@ export async function validateData<T extends object>(
   validationOptions: ValidationOptions = {},
 ) {
   try {
-    await schema.validateAsync(instance.data, {
+    await schema.validateAsync(instance._data, {
       abortEarly: false,
       allowUnknown: true,
       ...validationOptions,
@@ -31,7 +31,10 @@ export async function validateData<T extends object>(
   }
 }
 
-function addErrorsToInstance<T extends object>(instance: TrackedData<T>, errors: ValidationErrorDetails) {
+function addErrorsToInstance<T extends object>(
+  instance: TrackedData<T>,
+  errors: ValidationErrorDetails,
+) {
   Object.entries(errors).forEach(([field, errorMessage]) => {
     // TODO: not sure how to deal with the string vs `keyof T` type conflict
     instance.addError(field as keyof T, errorMessage);

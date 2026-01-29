@@ -7,23 +7,22 @@ import { TrackedObject, TrackedArray } from 'tracked-built-ins';
  * @param initialState The initialState we use as the baseline to track future changes against.
  */
 export default class TrackedData<T extends object> {
-  public data: T;
+  private _data: T;
   private baseline: Partial<T>;
-  @tracked public errors = new TrackedObject<Partial<Record<keyof T, string>>>({});
-  @tracked public isNew: boolean;
+  @tracked public errors = new TrackedObject<Partial<Record<keyof T, string>>>(
+    {},
+  );
+  @tracked private _isNew: boolean;
   @tracked public changedValues: (keyof T)[] = new TrackedArray([]);
 
-  constructor(
-    initialState: T,
-    options: { isNew?: boolean } = { isNew: true }
-  ) {
+  constructor(initialState: T, options: { isNew?: boolean } = { isNew: true }) {
     // @ts-expect-error: todo, not sure how to fix this initialState type error
     const data = new TrackedObject(initialState);
-    this.isNew = options.isNew ?? true;
+    this._isNew = options.isNew ?? true;
     this.baseline = { ...initialState };
 
     // @ts-expect-error: todo, not sure how to fix this `this.data` type error
-    this.data = new Proxy(data, {
+    this._data = new Proxy(data, {
       // @ts-expect-error: todo, not sure how to fix this `set` type error
       set: (target: T, prop: keyof T, value: T[keyof T]) => {
         if (target[prop] !== value) {
@@ -33,7 +32,9 @@ export default class TrackedData<T extends object> {
 
           // If the value is the same as the baseline, remove it from changedValues
           if (this.baseline[prop] === value) {
-            this.changedValues = this.changedValues.filter(key => key !== prop);
+            this.changedValues = this.changedValues.filter(
+              (key) => key !== prop,
+            );
           }
           // Otherwise, add it to changedValues if not already present
           else if (!this.changedValues.includes(prop)) {
@@ -46,12 +47,20 @@ export default class TrackedData<T extends object> {
     });
   }
 
+  public get data(): T {
+    return this._data;
+  }
+
   public get hasChanges(): boolean {
     return this.changedValues.length > 0;
   }
 
   public get hasErrors(): boolean {
     return Object.keys(this.errors).length > 0;
+  }
+
+  public get isNew(): boolean {
+    return this._isNew;
   }
 
   public addError(key: keyof T, message: string): void {
@@ -71,9 +80,15 @@ export default class TrackedData<T extends object> {
   }
 
   public acceptChanges(): void {
-    Object.assign(this.baseline, this.data);
+    Object.assign(this.baseline, this._data);
     this.changedValues = [];
-    this.isNew = false;
+    this._isNew = false;
+  }
+
+  public revertChanges(): void {
+    if (this.hasChanges) {
+      Object.assign(this._data, this.baseline);
+      this.changedValues = [];
+    }
   }
 }
-

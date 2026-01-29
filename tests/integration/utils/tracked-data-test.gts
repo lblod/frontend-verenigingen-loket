@@ -78,8 +78,7 @@ module('Integration | Utility | tracked-data', function (hooks) {
     person.addError('givenName', 'Invalid characters!');
     await settled();
 
-    assert
-      .dom('[data-test-error]').exists();
+    assert.dom('[data-test-error]').exists();
 
     person.data.givenName = 'Jane';
     await settled();

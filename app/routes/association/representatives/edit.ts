@@ -10,7 +10,7 @@ import type CurrentAssociation from 'frontend-verenigingen-loket/services/curren
 import {
   getVertegenwoordigers,
   logAPIError,
-  type Vertegenwoordiger
+  type Vertegenwoordiger,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
 
@@ -41,13 +41,18 @@ export default class AssociationRepresentativesEditRoute extends Route {
   async loadData(association: Association) {
     let vertegenwoordigers: TrackedData<Vertegenwoordiger>[] = [];
     let isApiUnavailable = false;
+    let originalPrimary: TrackedData<Vertegenwoordiger> | undefined;
 
     try {
-      vertegenwoordigers = (
-        await getVertegenwoordigers(association)
-      ).map((vertegenwoordiger) => {
-        return new TrackedData(vertegenwoordiger, { isNew: false });
-      });
+      vertegenwoordigers = (await getVertegenwoordigers(association)).map(
+        (vertegenwoordiger) => {
+          return new TrackedData(vertegenwoordiger, { isNew: false });
+        },
+      );
+
+      originalPrimary = vertegenwoordigers.find(
+        (vertegenwoordiger) => vertegenwoordiger.data.isPrimair,
+      );
     } catch (error) {
       isApiUnavailable = true;
 
@@ -61,6 +66,7 @@ export default class AssociationRepresentativesEditRoute extends Route {
 
     return {
       vertegenwoordigers: new TrackedArray(vertegenwoordigers),
+      originalPrimary,
       isApiUnavailable,
     };
   }

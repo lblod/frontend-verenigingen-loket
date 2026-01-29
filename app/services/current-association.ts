@@ -11,7 +11,9 @@ export default class CurrentAssociationService extends Service {
 
   get association() {
     if (!this._association) {
-      throw new Error('currentAssociation.association was accessed before it was set');
+      throw new Error(
+        'currentAssociation.association was accessed before it was set',
+      );
     }
     return this._association;
   }

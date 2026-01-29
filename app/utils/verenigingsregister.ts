@@ -192,12 +192,16 @@ export async function createOrUpdateVertegenwoordiger(
   association: Association,
   isNew: boolean,
 ) {
-  const url = await buildVertegenwoordigerUrl(vertegenwoordiger, association, isNew);
+  const url = await buildVertegenwoordigerUrl(
+    vertegenwoordiger,
+    association,
+    isNew,
+  );
   const method = isNew ? 'POST' : 'PATCH';
 
   // TODO: We now send everything, is this an issue?
   const requestData = {
-    ...vertegenwoordiger
+    ...vertegenwoordiger,
   };
 
   await manager.request({
@@ -267,7 +271,7 @@ async function buildSiteUrl(site: Site, association: Association) {
 async function buildVertegenwoordigerUrl(
   vertegenwoordiger: Vertegenwoordiger,
   association: Association,
-  isNew: boolean = false
+  isNew: boolean = false,
 ) {
   const url = (await buildVerenigingUrl(association)) + '/vertegenwoordigers';
 

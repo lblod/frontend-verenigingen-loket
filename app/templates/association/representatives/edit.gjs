@@ -92,6 +92,14 @@ export default class RepresentativesEdit extends Component {
     return state.isSuccess ? state.result.vertegenwoordigers : [];
   }
 
+  @cached
+  get originalPrimary() {
+    // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
+    const state = getPromiseState(this.args.controller.model.dataPromise);
+
+    return state.isSuccess ? state.result.originalPrimary : undefined;
+  }
+
   get association() {
     return this.currentAssociation.association;
   }
@@ -124,6 +132,8 @@ export default class RepresentativesEdit extends Component {
     if (!vertegenwoordiger.isNew) {
       // If the representative is not new, we need to mark the records for deletion on the server
       this.representativesToRemove.push(vertegenwoordiger);
+      // We also revert any local changes the user may have made, since they are no longer relevant
+      vertegenwoordiger.revertChanges();
     }
   };
 
@@ -150,31 +160,55 @@ export default class RepresentativesEdit extends Component {
 
     if (isValid) {
       try {
-        console.log('all valid!');
         // The order of API operations is important here because there can only be one primary representative.
         // Ensure there can never be a scenario where there would be 2 primary representatives at the same time (even temporarily), because the API will return an error response.
 
-        // for (const representative of this.representativesToRemove) {
-        //   await removeVertegenwoordiger(representative.data, this.association);
-        //   // TODO: Mark the representative as deleted, so we no longer try to delete it again
-        // }
+        // TODO: figure out if the original primary was changed, and if so, act accordingly
+        // - if it's no longer the primary, persist their changes first
+        // - if it's deleted, mark it as non-primary, and persist that change first, the delete will then remove it without causing potential double primary issues
 
-        // const sortedRepresentatives = [
-        //   ...this.vertegenwoordigers.filter((rep) => !rep.isPrimair),
-        //   ...this.vertegenwoordiger.filter((rep) => rep.isPrimair),
-        // ];
+        if (
+          this.originalPrimary &&
+          this.representativesToRemove.includes(this.originalPrimary)
+        ) {
+          // There was a primary representative, but it has been deleted, so we need to persist the switch to non-primary representative first, so we can't run into the 2 primary validaiton issue
+          const vertegenwoordiger = this.originalPrimary;
+          vertegenwoordiger.data.isPrimair = false;
 
-        // for (const representative of sortedRepresentatives) {
-        //   // TODO; deal with API validation errors and make them visible to the user
-        //   if (representative.hasChanges || representative.isNew) {
-        //     await createOrUpdateVertegenwoordiger(
-        //       representative.data,
-        //       this.association,
-        //       representative.isNew,
-        //     );
-        //   }
-        //   // TODO: mark the representative as persisted, so we no longer try to persist it again (which causes issues with creates)
-        // }
+          await createOrUpdateVertegenwoordiger(
+            vertegenwoordiger.data,
+            this.association,
+          );
+        }
+
+        const sortedRepresentatives = [
+          ...this.vertegenwoordigers.filter((rep) => !rep.isPrimair),
+          ...this.vertegenwoordiger.filter((rep) => rep.isPrimair),
+        ];
+
+        for (const vertegenwoordiger of sortedRepresentatives) {
+          // TODO; deal with API validation errors and make them visible to the user
+          if (vertegenwoordiger.hasChanges || vertegenwoordiger.isNew) {
+            await createOrUpdateVertegenwoordiger(
+              vertegenwoordiger.data,
+              this.association,
+              vertegenwoordiger.isNew,
+            );
+
+            vertegenwoordiger.acceptChanges();
+          }
+        }
+
+        // We take a copy of the original array since we're modifying it while looping at the same time
+        for (const vertegenwoordiger of this.representativesToRemove.slice()) {
+          await removeVertegenwoordiger(
+            vertegenwoordiger.data,
+            this.association,
+          );
+
+          // We remove it from the deletion list, so we no longer try to delete it again if something goes wrong after this call.
+          removeItem(this.representativesToRemove, vertegenwoordiger);
+        }
 
         await waitForStableAPI();
         this.router.transitionTo('association.representatives');
