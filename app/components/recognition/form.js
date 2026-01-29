@@ -5,7 +5,10 @@ import { tracked } from '@glimmer/tracking';
 import dateFormat from '../../helpers/date-format';
 import { task } from 'ember-concurrency';
 import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
-import { AWARDED_BY_OPTIONS, validationSchema } from 'frontend-verenigingen-loket/models/recognition';
+import {
+  AWARDED_BY_OPTIONS,
+  validationSchema,
+} from 'frontend-verenigingen-loket/models/recognition';
 
 export default class FormComponent extends Component {
   items = [AWARDED_BY_OPTIONS.COLLEGE, AWARDED_BY_OPTIONS.OTHER];
