@@ -56,12 +56,14 @@ type Vereniging = {
   vertegenwoordigers: Vertegenwoordiger[];
 };
 
-type Vertegenwoordiger = {
+// A representative in English. We use dutch naming here since it's a verenigingsregister object that also uses dutch property names.
+export type Vertegenwoordiger = {
   vertegenwoordigerId: number;
   voornaam: string;
   achternaam: string;
   roepnaam: string;
-  rol: string;
+  insz?: string;
+  rol: string; // What's this?
   'e-mail': string;
   telefoon?: string;
   socialMedia?: string;
@@ -186,40 +188,17 @@ export async function removeCorrespondenceSite(
   });
 }
 
-export async function createOrUpdateRepresentative(
-  representative: Membership,
+export async function createOrUpdateVertegenwoordiger(
+  vertegenwoordiger: Vertegenwoordiger,
   association: Association,
+  isNew: boolean,
 ) {
-  const url = await buildRepresentativeUrl(representative, association);
-  const method = representative.isNew ? 'POST' : 'PATCH';
+  const url = await buildVertegenwoordigerUrl(vertegenwoordiger, association, isNew);
+  const method = isNew ? 'POST' : 'PATCH';
 
-  const person = await representative.person;
-  const contactPoints = await person.contactPoints;
-  const contactPoint = contactPoints.at(0);
-
-  assert('representatives are expected to have a contact point', contactPoint);
-
-  if (
-    !representative.hasDirtyAttributes &&
-    !person.hasDirtyAttributes &&
-    !contactPoint.hasDirtyAttributes
-  ) {
-    return;
-  }
-
+  // TODO: We now send everything, is this an issue?
   const requestData = {
-    ...mapRecordAttributesToAPIFields(
-      representative.changedAttributes(),
-      REPRESENTATIVE_ATTRIBUTE_MAP,
-    ),
-    ...mapRecordAttributesToAPIFields(
-      person.changedAttributes(),
-      REPRESENTATIVE_ATTRIBUTE_MAP,
-    ),
-    ...mapRecordAttributesToAPIFields(
-      contactPoint.changedAttributes(),
-      REPRESENTATIVE_ATTRIBUTE_MAP,
-    ),
+    ...vertegenwoordiger
   };
 
   await manager.request({
@@ -234,11 +213,11 @@ export async function createOrUpdateRepresentative(
   });
 }
 
-export async function removeRepresentative(
-  representative: Membership,
+export async function removeVertegenwoordiger(
+  vertegenwoordiger: Vertegenwoordiger,
   association: Association,
 ) {
-  const url = await buildRepresentativeUrl(representative, association);
+  const url = await buildVertegenwoordigerUrl(vertegenwoordiger, association);
 
   await manager.request({
     url,
@@ -286,21 +265,22 @@ async function buildSiteUrl(site: Site, association: Association) {
   return url;
 }
 
-async function buildRepresentativeUrl(
-  representative: Membership,
+async function buildVertegenwoordigerUrl(
+  vertegenwoordiger: Vertegenwoordiger,
   association: Association,
+  isNew: boolean = false
 ) {
   const url = (await buildVerenigingUrl(association)) + '/vertegenwoordigers';
 
-  if (!representative.isNew) {
-    const internalId = representative.internalId;
+  if (!isNew) {
+    const id = vertegenwoordiger.vertegenwoordigerId;
     assert(
-      'existing representatives are expected to have an internal id',
-      internalId,
+      'existing vertegenwoordigers are expected to have a "vertegenwoordigerId"',
+      id,
     );
 
-    if (internalId) {
-      return url + '/' + internalId;
+    if (id) {
+      return url + '/' + id;
     }
   }
 
@@ -323,16 +303,6 @@ const CONTACT_DETAILS_ATTRIBUTE_MAP = {
   ) {
     mappedAttributes['isPrimair'] = typeValue === 'Primary';
   },
-};
-
-const REPRESENTATIVE_ATTRIBUTE_MAP = {
-  givenName: 'voornaam',
-  familyName: 'achternaam',
-  email: 'e-mail',
-  telephone: 'telefoon',
-  website: 'socialMedia',
-  isPrimary: 'isPrimair',
-  ssn: 'insz',
 };
 
 /**
