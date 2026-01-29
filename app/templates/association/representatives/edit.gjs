@@ -92,14 +92,6 @@ export default class RepresentativesEdit extends Component {
     return state.isSuccess ? state.result.vertegenwoordigers : [];
   }
 
-  @cached
-  get roles() {
-    // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    const state = getPromiseState(this.args.controller.model.dataPromise);
-
-    return state.isSuccess ? state.result.roles : [];
-  }
-
   get association() {
     return this.currentAssociation.association;
   }

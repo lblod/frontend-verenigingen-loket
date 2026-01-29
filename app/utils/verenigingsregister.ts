@@ -5,7 +5,6 @@ import { associationVCode } from 'frontend-verenigingen-loket/models/association
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point';
 import type { ChangedAttributesHash } from '@warp-drive/core-types/cache';
-import type Membership from 'frontend-verenigingen-loket/models/membership';
 import type Site from 'frontend-verenigingen-loket/models/site';
 
 const manager = new RequestManager().use([Fetch]);

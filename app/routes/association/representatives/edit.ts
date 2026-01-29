@@ -61,7 +61,6 @@ export default class AssociationRepresentativesEditRoute extends Route {
 
     return {
       vertegenwoordigers: new TrackedArray(vertegenwoordigers),
-      roles: await this.store.findAll('role'),
       isApiUnavailable,
     };
   }
