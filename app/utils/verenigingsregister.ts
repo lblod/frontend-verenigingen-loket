@@ -60,9 +60,8 @@ export type Vertegenwoordiger = {
   vertegenwoordigerId: number;
   voornaam: string;
   achternaam: string;
-  roepnaam: string;
+  roepnaam?: string;
   insz?: string;
-  rol: string; // What's this?
   'e-mail': string;
   telefoon?: string;
   socialMedia?: string;
@@ -84,7 +83,20 @@ export async function getVertegenwoordigers(
     url,
   });
 
-  return dataDocument.content.vereniging.vertegenwoordigers;
+  return dataDocument.content.vereniging.vertegenwoordigers.map(
+    (vertegenwoordiger) => {
+      // We only return the data we actually need. The API responds with more (nested) data.
+      return {
+        vertegenwoordigerId: vertegenwoordiger.vertegenwoordigerId,
+        voornaam: vertegenwoordiger.voornaam,
+        achternaam: vertegenwoordiger.achternaam,
+        'e-mail': vertegenwoordiger['e-mail'],
+        telefoon: vertegenwoordiger.telefoon,
+        socialMedia: vertegenwoordiger.socialMedia,
+        isPrimair: vertegenwoordiger.isPrimair,
+      };
+    },
+  );
 }
 
 /**

@@ -109,10 +109,10 @@ export default class RepresentativesEdit extends Component {
   }
 
   changePrimaryRepresentative = async (changingVertegenwoordiger) => {
-    const isCurrentPrimary = changingVertegenwoordiger.isPrimair;
+    const isCurrentPrimary = changingVertegenwoordiger.data.isPrimair;
 
     if (isCurrentPrimary) {
-      changingVertegenwoordiger.isPrimair = false;
+      changingVertegenwoordiger.data.isPrimair = false;
     } else {
       // This representative isn't the primary yet, but there can only be one primary.
       // We need to find the previous primary and unset it.
@@ -171,7 +171,7 @@ export default class RepresentativesEdit extends Component {
           this.originalPrimary &&
           this.representativesToRemove.includes(this.originalPrimary)
         ) {
-          // There was a primary representative, but it has been deleted, so we need to persist the switch to non-primary representative first, so we can't run into the 2 primary validaiton issue
+          // There was a primary representative but it has been deleted, so we need to persist the switch to non-primary representative first, so we can't run into the 2 primary validaiton issue
           const vertegenwoordiger = this.originalPrimary;
           vertegenwoordiger.data.isPrimair = false;
 
@@ -181,12 +181,16 @@ export default class RepresentativesEdit extends Component {
           );
         }
 
-        const sortedRepresentatives = [
-          ...this.vertegenwoordigers.filter((rep) => !rep.isPrimair),
-          ...this.vertegenwoordiger.filter((rep) => rep.isPrimair),
+        const sortedVertegenwoordigers = [
+          ...this.vertegenwoordigers.filter(
+            (vertegenwoordiger) => !vertegenwoordiger.data.isPrimair,
+          ),
+          ...this.vertegenwoordigers.filter(
+            (vertegenwoordiger) => vertegenwoordiger.data.isPrimair,
+          ),
         ];
 
-        for (const vertegenwoordiger of sortedRepresentatives) {
+        for (const vertegenwoordiger of sortedVertegenwoordigers) {
           // TODO; deal with API validation errors and make them visible to the user
           if (vertegenwoordiger.hasChanges || vertegenwoordiger.isNew) {
             await createOrUpdateVertegenwoordiger(
