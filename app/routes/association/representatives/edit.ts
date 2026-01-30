@@ -1,69 +1,73 @@
 import Route from '@ember/routing/route';
 import type RouterService from '@ember/routing/router-service';
 import { service } from '@ember/service';
-import { task } from 'ember-concurrency';
 import type Store from '@ember-data/store';
 import type Association from 'frontend-verenigingen-loket/models/association';
 // @ts-expect-error: not converted to TS yet
 import type CurrentSession from 'frontend-verenigingen-loket/services/current-session';
-import { isOutOfDate as isOutOfDateFn } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { TrackedArray } from 'tracked-built-ins';
+import type CurrentAssociation from 'frontend-verenigingen-loket/services/current-association';
+import {
+  getVertegenwoordigers,
+  logAPIError,
+  type Vertegenwoordiger,
+} from 'frontend-verenigingen-loket/utils/verenigingsregister';
+import TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
 
 export default class AssociationRepresentativesEditRoute extends Route {
+  @service declare currentAssociation: CurrentAssociation;
   @service declare currentSession: CurrentSession;
   @service declare store: Store;
   @service declare router: RouterService;
 
-  async beforeModel() {
-    let isOutOfDate = false;
-    let isApiUnavailable = false;
-
-    try {
-      // TODO: the type assertion shouldn't be needed when the parent route is converted to TS.
-      const association = this.modelFor('association') as Association;
-      isOutOfDate = await isOutOfDateFn(association);
-    } catch {
-      isApiUnavailable = true;
-    }
-
+  beforeModel() {
     if (
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      !this.currentSession.canEditVerenigingsregisterData ||
-      isOutOfDate ||
-      isApiUnavailable
+      !this.currentSession.canEditVerenigingsregisterData
     ) {
       this.router.transitionTo('association.representatives');
     }
   }
 
   model() {
-    // TODO: the type assertion shouldn't be needed when the parent route is converted to TS.
-    const association = this.modelFor('association') as Association;
+    const association = this.currentAssociation.association;
 
     return {
       association,
-      task: this.loadMembers.perform(association),
-      roletask: this.loadRoles.perform(),
+      dataPromise: this.loadData(association),
     };
   }
 
-  loadMembers = task({ keepLatest: true }, async (association: Association) => {
-    // TODO: fetch the members with a query instead, since the relationship is paginated and we can't get more pages.
-    // This will start causing issues when there are more than 20 members.
-    const members = await association.members;
-    const memberPromises = members.map(async (member) => {
-      const memberWithPerson = await member.reload({
-        include: 'person.contact-points,role',
-      });
-      return memberWithPerson;
-    });
+  async loadData(association: Association) {
+    let vertegenwoordigers: TrackedData<Vertegenwoordiger>[] = [];
+    let isApiUnavailable = false;
+    let originalPrimary: TrackedData<Vertegenwoordiger> | undefined;
 
-    await Promise.all(memberPromises);
+    try {
+      vertegenwoordigers = (await getVertegenwoordigers(association)).map(
+        (vertegenwoordiger) => {
+          return new TrackedData(vertegenwoordiger, { isNew: false });
+        },
+      );
 
-    return new TrackedArray(members);
-  });
+      originalPrimary = vertegenwoordigers.find(
+        (vertegenwoordiger) => vertegenwoordiger.data.isPrimair,
+      );
+    } catch (error) {
+      isApiUnavailable = true;
 
-  loadRoles = task(async () => {
-    return this.store.findAll('role');
-  });
+      if (error instanceof Error) {
+        logAPIError(
+          error,
+          'Something went wrong when trying to reach the Verenigingsregister API',
+        );
+      }
+    }
+
+    return {
+      vertegenwoordigers: new TrackedArray(vertegenwoordigers),
+      originalPrimary,
+      isApiUnavailable,
+    };
+  }
 }

@@ -5,7 +5,6 @@ import { associationVCode } from 'frontend-verenigingen-loket/models/association
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point';
 import type { ChangedAttributesHash } from '@warp-drive/core-types/cache';
-import type Membership from 'frontend-verenigingen-loket/models/membership';
 import type Site from 'frontend-verenigingen-loket/models/site';
 
 const manager = new RequestManager().use([Fetch]);
@@ -56,12 +55,13 @@ type Vereniging = {
   vertegenwoordigers: Vertegenwoordiger[];
 };
 
-type Vertegenwoordiger = {
+// A representative in English. We use dutch naming here since it's a verenigingsregister object that also uses dutch property names.
+export type Vertegenwoordiger = {
   vertegenwoordigerId: number;
   voornaam: string;
   achternaam: string;
-  roepnaam: string;
-  rol: string;
+  roepnaam?: string;
+  insz?: string;
   'e-mail': string;
   telefoon?: string;
   socialMedia?: string;
@@ -83,7 +83,20 @@ export async function getVertegenwoordigers(
     url,
   });
 
-  return dataDocument.content.vereniging.vertegenwoordigers;
+  return dataDocument.content.vereniging.vertegenwoordigers.map(
+    (vertegenwoordiger) => {
+      // We only return the data we actually need. The API responds with more (nested) data.
+      return {
+        vertegenwoordigerId: vertegenwoordiger.vertegenwoordigerId,
+        voornaam: vertegenwoordiger.voornaam,
+        achternaam: vertegenwoordiger.achternaam,
+        'e-mail': vertegenwoordiger['e-mail'],
+        telefoon: vertegenwoordiger.telefoon,
+        socialMedia: vertegenwoordiger.socialMedia,
+        isPrimair: vertegenwoordiger.isPrimair,
+      };
+    },
+  );
 }
 
 /**
@@ -186,40 +199,21 @@ export async function removeCorrespondenceSite(
   });
 }
 
-export async function createOrUpdateRepresentative(
-  representative: Membership,
+export async function createOrUpdateVertegenwoordiger(
+  vertegenwoordiger: Vertegenwoordiger,
   association: Association,
+  isNew: boolean,
 ) {
-  const url = await buildRepresentativeUrl(representative, association);
-  const method = representative.isNew ? 'POST' : 'PATCH';
+  const url = await buildVertegenwoordigerUrl(
+    vertegenwoordiger,
+    association,
+    isNew,
+  );
+  const method = isNew ? 'POST' : 'PATCH';
 
-  const person = await representative.person;
-  const contactPoints = await person.contactPoints;
-  const contactPoint = contactPoints.at(0);
-
-  assert('representatives are expected to have a contact point', contactPoint);
-
-  if (
-    !representative.hasDirtyAttributes &&
-    !person.hasDirtyAttributes &&
-    !contactPoint.hasDirtyAttributes
-  ) {
-    return;
-  }
-
+  // TODO: We now send everything, is this an issue?
   const requestData = {
-    ...mapRecordAttributesToAPIFields(
-      representative.changedAttributes(),
-      REPRESENTATIVE_ATTRIBUTE_MAP,
-    ),
-    ...mapRecordAttributesToAPIFields(
-      person.changedAttributes(),
-      REPRESENTATIVE_ATTRIBUTE_MAP,
-    ),
-    ...mapRecordAttributesToAPIFields(
-      contactPoint.changedAttributes(),
-      REPRESENTATIVE_ATTRIBUTE_MAP,
-    ),
+    ...vertegenwoordiger,
   };
 
   await manager.request({
@@ -234,11 +228,11 @@ export async function createOrUpdateRepresentative(
   });
 }
 
-export async function removeRepresentative(
-  representative: Membership,
+export async function removeVertegenwoordiger(
+  vertegenwoordiger: Vertegenwoordiger,
   association: Association,
 ) {
-  const url = await buildRepresentativeUrl(representative, association);
+  const url = await buildVertegenwoordigerUrl(vertegenwoordiger, association);
 
   await manager.request({
     url,
@@ -286,21 +280,22 @@ async function buildSiteUrl(site: Site, association: Association) {
   return url;
 }
 
-async function buildRepresentativeUrl(
-  representative: Membership,
+async function buildVertegenwoordigerUrl(
+  vertegenwoordiger: Vertegenwoordiger,
   association: Association,
+  isNew: boolean = false,
 ) {
   const url = (await buildVerenigingUrl(association)) + '/vertegenwoordigers';
 
-  if (!representative.isNew) {
-    const internalId = representative.internalId;
+  if (!isNew) {
+    const id = vertegenwoordiger.vertegenwoordigerId;
     assert(
-      'existing representatives are expected to have an internal id',
-      internalId,
+      'existing vertegenwoordigers are expected to have a "vertegenwoordigerId"',
+      id,
     );
 
-    if (internalId) {
-      return url + '/' + internalId;
+    if (id) {
+      return url + '/' + id;
     }
   }
 
@@ -323,16 +318,6 @@ const CONTACT_DETAILS_ATTRIBUTE_MAP = {
   ) {
     mappedAttributes['isPrimair'] = typeValue === 'Primary';
   },
-};
-
-const REPRESENTATIVE_ATTRIBUTE_MAP = {
-  givenName: 'voornaam',
-  familyName: 'achternaam',
-  email: 'e-mail',
-  telephone: 'telefoon',
-  website: 'socialMedia',
-  isPrimary: 'isPrimair',
-  ssn: 'insz',
 };
 
 /**

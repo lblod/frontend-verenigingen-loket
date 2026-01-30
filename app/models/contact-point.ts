@@ -88,25 +88,3 @@ export const validationSchema = Joi.object({
 }).messages({
   'any.required': 'Dit veld is verplicht.',
 });
-
-// We use the ContactPoint records in different ways depending on the context
-// so it's easier to use separate validation schemas to cover both cases.
-export const representativeContactPointValidationSchema = Joi.object({
-  email: Joi.string().empty('').email({ tlds: false }).required().messages({
-    'string.email': 'Geef een geldig e-mailadres in.',
-  }),
-  telephone: Joi.string()
-    .empty('')
-    .regex(/^(tel:)?\+?[0-9]*$/)
-    .optional()
-    .messages({
-      'string.pattern.base': 'Enkel een plusteken en cijfers zijn toegelaten.',
-    }),
-  website: Joi.string()
-    .empty('')
-    .uri()
-    .optional()
-    .messages({ 'string.uri': 'Geef een geldig internetadres in.' }),
-}).messages({
-  'any.required': 'Dit veld is verplicht.',
-});
