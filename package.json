@@ -68,6 +68,7 @@
     "@tsconfig/ember": "^3.0.11",
     "@types/qunit": "^2.19.13",
     "@types/rsvp": "^4.0.9",
+    "@warp-drive/build-config": "~5.7.0",
     "@warp-drive/core-types": "~5.7.0",
     "@warp-drive/ember": "~5.7.0",
     "broccoli-asset-rev": "^3.0.0",
