@@ -48,7 +48,7 @@ import {
   handleError,
   waitForStableAPI,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
-import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
+import { validateRecord } from 'frontend-verenigingen-loket/utils/validate-record';
 
 export default class ContactEdit extends Component {
   @service router;

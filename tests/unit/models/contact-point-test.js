@@ -2,7 +2,7 @@ import {
   CONTACT_DATA_TYPE,
   validationSchema,
 } from 'frontend-verenigingen-loket/models/contact-point';
-import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
+import { validateRecord } from 'frontend-verenigingen-loket/utils/validate-record';
 import { setupTest } from 'frontend-verenigingen-loket/tests/helpers';
 import { module, test } from 'qunit';
 
