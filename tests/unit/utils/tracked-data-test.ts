@@ -13,8 +13,16 @@ module('Unit | Utilities | tracked-data', function () {
       familyName: 'Doe',
     });
 
-    assert.equal(person.data.givenName, 'John', 'Initial givenName is set');
-    assert.equal(person.data.familyName, 'Doe', 'Initial familyName is set');
+    assert.strictEqual(
+      person.data.givenName,
+      'John',
+      'Initial givenName is set',
+    );
+    assert.strictEqual(
+      person.data.familyName,
+      'Doe',
+      'Initial familyName is set',
+    );
     assert.ok(person.isNew, 'isNew defaults to true');
     assert.deepEqual(person.changedValues, [], 'No changes initially');
     assert.notOk(person.hasChanges, 'No changes initially');
@@ -67,14 +75,14 @@ module('Unit | Utilities | tracked-data', function () {
     });
 
     person.addError('givenName', 'Required');
-    assert.equal(
+    assert.strictEqual(
       person.errors.givenName,
       'Required',
       'Sets error for property',
     );
 
     person.addError('givenName', 'Invalid');
-    assert.equal(
+    assert.strictEqual(
       person.errors.givenName,
       'Invalid',
       'Overwrites existing error',
@@ -129,12 +137,12 @@ module('Unit | Utilities | tracked-data', function () {
       [],
       'changedValues is empty after revertChanges',
     );
-    assert.equal(
+    assert.strictEqual(
       person.data.givenName,
       'John',
       'givenName is reverted to the initial value',
     );
-    assert.equal(
+    assert.strictEqual(
       person.data.familyName,
       'Doe',
       'familyName is reverted to the initial value',
@@ -161,12 +169,12 @@ module('Unit | Utilities | tracked-data', function () {
     person.revertChanges();
     assert.notOk(person.hasChanges, 'Changes are cleared after revertChanges');
 
-    assert.equal(
+    assert.strictEqual(
       person.data.givenName,
       'Jane',
       'givenName is reverted to the new baseline value',
     );
-    assert.equal(
+    assert.strictEqual(
       person.data.familyName,
       'Smith',
       'familyName is reverted to the new baseline value',

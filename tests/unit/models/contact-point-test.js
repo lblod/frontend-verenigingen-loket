@@ -16,7 +16,7 @@ module('Unit | Model | contact point', function (hooks) {
 
       let validationResult = await validateRecord(model, validationSchema);
       assert.false(validationResult.isValid, 'name is required');
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.name);
 
       model.name = 'foo';
@@ -25,7 +25,7 @@ module('Unit | Model | contact point', function (hooks) {
         validationResult.isValid,
         'name can only be a specific type',
       );
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.name);
     });
 
@@ -40,13 +40,13 @@ module('Unit | Model | contact point', function (hooks) {
         validationResult.isValid,
         "email is required when it's a contact point of type email",
       );
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.email);
 
       model.email = 'foo';
       validationResult = await validateRecord(model, validationSchema);
       assert.false(validationResult.isValid, 'must be a valid email');
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.email);
 
       model.email = 'foo@bar.be';
@@ -66,7 +66,7 @@ module('Unit | Model | contact point', function (hooks) {
         validationResult.isValid,
         "telephone is required when it's a contact point of type telephone",
       );
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.telephone);
 
       model.telephone = 'abcd';
@@ -75,7 +75,7 @@ module('Unit | Model | contact point', function (hooks) {
         validationResult.isValid,
         'must be a valid telephone number',
       );
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.telephone);
 
       model.telephone = '123456789';
@@ -100,19 +100,19 @@ module('Unit | Model | contact point', function (hooks) {
         validationResult.isValid,
         "website is required when it's a contact point of type website",
       );
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.website);
 
       model.website = 'abcd';
       validationResult = await validateRecord(model, validationSchema);
       assert.false(validationResult.isValid, 'must be a valid url');
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.website);
 
       model.website = 'website.be';
       validationResult = await validateRecord(model, validationSchema);
       assert.false(validationResult.isValid, 'must be a valid url');
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.website);
 
       model.website = 'https://vlaanderen.be';
@@ -137,19 +137,19 @@ module('Unit | Model | contact point', function (hooks) {
         validationResult.isValid,
         "website is required when it's a contact point of type social media",
       );
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.website);
 
       model.website = 'abcd';
       validationResult = await validateRecord(model, validationSchema);
       assert.false(validationResult.isValid, 'must be a valid url');
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.website);
 
       model.website = 'website.be';
       validationResult = await validateRecord(model, validationSchema);
       assert.false(validationResult.isValid, 'must be a valid url');
-      assert.equal(Object.keys(validationResult.errors).length, 1);
+      assert.strictEqual(Object.keys(validationResult.errors).length, 1);
       assert.ok(validationResult.errors.website);
 
       model.website = 'https://vlaanderen.be';
