@@ -8,7 +8,6 @@ import setupInspector from '@embroider/legacy-inspector-support/ember-source-4.1
 
 if (macroCondition(isDevelopingApp())) {
   importSync('./deprecation-workflow');
-  importSync('./ember-inspector-support');
   silenceEmptySyncRelationshipWarnings();
 }
 
