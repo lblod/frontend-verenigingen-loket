@@ -1,6 +1,7 @@
 <AuLabel class="au-u-margin-top" for="filter-name">Selecteer type(s)</AuLabel>
 <div class={{if @error "ember-power-select--error"}}>
-  <PowerSelectMultiple
+  <PowerSelect
+    @multiple={{true}}
     @noMatchesMessage="Geen resultaten"
     @searchEnabled={{true}}
     @searchField="prefLabel"
@@ -15,5 +16,5 @@
   >
     {{type.prefLabel}}
     ({{type.notation}})
-  </PowerSelectMultiple>
+  </PowerSelect>
 </div>
