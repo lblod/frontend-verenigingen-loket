@@ -1,7 +1,8 @@
 <AuLabel class="au-u-margin-top" for="filter-name">Selecteer postcode(s)
   hoofdzetel</AuLabel>
 <div class={{if @error "ember-power-select--error"}}>
-  <PowerSelectMultiple
+  <PowerSelect
+    @multiple={{true}}
     @noMatchesMessage="Geen resultaten"
     @searchEnabled={{true}}
     @search={{this.searchPostalCodes.perform}}
@@ -16,5 +17,5 @@
     {{postalCode.postalCode}}
     -
     {{postalCode.postalName}}
-  </PowerSelectMultiple>
+  </PowerSelect>
 </div>
