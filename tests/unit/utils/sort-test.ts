@@ -54,10 +54,22 @@ module('Unit | Utility | sort-by-property', function () {
     sortByProperty(people, 'age');
 
     // Check that defined values come first, and undefined values are grouped
-    assert.ok(people[0]?.age !== undefined, 'First element is defined');
-    assert.ok(people[1]?.age !== undefined, 'Second element is defined');
-    assert.ok(people[2]?.age === undefined, 'Third element is undefined');
-    assert.ok(people[3]?.age === undefined, 'Fourth element is undefined');
+    assert.notStrictEqual(
+      people[0]?.age,
+      undefined,
+      'First element is defined',
+    );
+    assert.notStrictEqual(
+      people[1]?.age,
+      undefined,
+      'Second element is defined',
+    );
+    assert.strictEqual(people[2]?.age, undefined, 'Third element is undefined');
+    assert.strictEqual(
+      people[3]?.age,
+      undefined,
+      'Fourth element is undefined',
+    );
   });
 
   test('groups undefined values at the beginning for descending order', function (assert) {
@@ -71,10 +83,22 @@ module('Unit | Utility | sort-by-property', function () {
     sortByProperty(people, '-age');
 
     // Check that undefined values come first, and defined values are grouped
-    assert.ok(people[0]?.age === undefined, 'First element is undefined');
-    assert.ok(people[1]?.age === undefined, 'Second element is undefined');
-    assert.ok(people[2]?.age !== undefined, 'Third element is defined');
-    assert.ok(people[3]?.age !== undefined, 'Fourth element is defined');
+    assert.strictEqual(people[0]?.age, undefined, 'First element is undefined');
+    assert.strictEqual(
+      people[1]?.age,
+      undefined,
+      'Second element is undefined',
+    );
+    assert.notStrictEqual(
+      people[2]?.age,
+      undefined,
+      'Third element is defined',
+    );
+    assert.notStrictEqual(
+      people[3]?.age,
+      undefined,
+      'Fourth element is defined',
+    );
   });
 
   test('sorts using a property map for nested properties', function (assert) {
