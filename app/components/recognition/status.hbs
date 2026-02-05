@@ -1,9 +1,7 @@
 {{#if @association}}
-  {{#if this.getCurrentRecognitionStatus.isFinished}}
-    {{#if (eq this.getCurrentRecognitionStatus.value "Erkend")}}
-      <AuPill @skin="success">Erkend</AuPill>
-    {{else if (eq this.getCurrentRecognitionStatus.value "Verlopen")}}
-      <AuPill @skin="warning">Verlopen</AuPill>
-    {{/if}}
+  {{#if this.isActive}}
+    <AuPill @skin="success">Erkend</AuPill>
+  {{else if this.isExpired}}
+    <AuPill @skin="warning">Verlopen</AuPill>
   {{/if}}
 {{/if}}
