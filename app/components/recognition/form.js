@@ -86,7 +86,6 @@ export default class FormComponent extends Component {
     const recognitions = await this.store.query('recognition', {
       include: 'validity-period',
       filter: {
-        ':has-no:status': true,
         association: {
           id: this.currentAssociation.association.id,
         },
