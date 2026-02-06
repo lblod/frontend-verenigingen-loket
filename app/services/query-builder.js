@@ -2,7 +2,10 @@ import Service from '@ember/service';
 import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
 import { ORGANIZATION_STATUS } from '../models/organization-status-code';
-import { RECOGNITION_STATUS, RECOGNITION_STATUS_URIS } from '../models/recognition';
+import {
+  RECOGNITION_STATUS,
+  RECOGNITION_STATUS_URIS,
+} from '../models/recognition';
 
 export default class QueryBuilderService extends Service {
   @service store;
@@ -69,11 +72,20 @@ export const associationsQuery = ({
       params.recognition.includes(RECOGNITION_STATUS.EXPIRED)
     ) {
       // Filter out "upcoming" recognitions when both filters are selected
-      addFilter(':terms:recognitionStatus', `${RECOGNITION_STATUS_URIS.EXPIRED},${RECOGNITION_STATUS_URIS.ACTIVE}`);
+      addFilter(
+        ':terms:recognitionStatus',
+        `${RECOGNITION_STATUS_URIS.EXPIRED},${RECOGNITION_STATUS_URIS.ACTIVE}`,
+      );
     } else if (params.recognition.includes(RECOGNITION_STATUS.EXPIRED)) {
-      addFilter(':terms:recognitionStatus', `${RECOGNITION_STATUS_URIS.EXPIRED}`);
+      addFilter(
+        ':terms:recognitionStatus',
+        `${RECOGNITION_STATUS_URIS.EXPIRED}`,
+      );
     } else if (params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED)) {
-      addFilter(':terms:recognitionStatus', `${RECOGNITION_STATUS_URIS.ACTIVE}`);
+      addFilter(
+        ':terms:recognitionStatus',
+        `${RECOGNITION_STATUS_URIS.ACTIVE}`,
+      );
     }
 
     return filters;
