@@ -79,12 +79,12 @@ export const associationsQuery = ({
     } else if (params.recognition.includes(RECOGNITION_STATUS.EXPIRED)) {
       addFilter(
         ':terms:recognitionStatus',
-        `${RECOGNITION_STATUS_URIS.EXPIRED}`,
+        RECOGNITION_STATUS_URIS.EXPIRED,
       );
     } else if (params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED)) {
       addFilter(
         ':terms:recognitionStatus',
-        `${RECOGNITION_STATUS_URIS.ACTIVE}`,
+        RECOGNITION_STATUS_URIS.ACTIVE,
       );
     }
 
