@@ -1,6 +1,7 @@
 import Component from '@glimmer/component';
 import { RECOGNITION_STATUS } from 'frontend-verenigingen-loket/models/recognition';
 import { RECOGNITION_STATUS_LABELS } from '../../models/recognition';
+import AuPill from '@appuniversum/ember-appuniversum/components/au-pill';
 
 export default class StatusComponent extends Component {
   get label() {
@@ -20,4 +21,10 @@ export default class StatusComponent extends Component {
         return;
     }
   }
+
+  <template>
+    {{#if @association.recognitionStatus}}
+      <AuPill @skin={{this.skin}}>{{this.label}}</AuPill>
+    {{/if}}
+  </template>
 }
