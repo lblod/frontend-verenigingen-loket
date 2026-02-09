@@ -26,6 +26,10 @@ export const RECOGNITION_STATUS_LABELS = {
   [RECOGNITION_STATUS.UPCOMING]: 'Toekomstig',
 };
 
+export const labelForRecognitionStatus = (uri) => {
+  return RECOGNITION_STATUS_LABELS[uri];
+}
+
 export default class RecognitionModel extends Model {
   @attr dateDocument;
   @attr legalResource;

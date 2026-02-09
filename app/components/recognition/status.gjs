@@ -1,11 +1,13 @@
 import Component from '@glimmer/component';
-import { RECOGNITION_STATUS } from 'frontend-verenigingen-loket/models/recognition';
-import { RECOGNITION_STATUS_LABELS } from '../../models/recognition';
+import {
+  RECOGNITION_STATUS,
+  labelForRecognitionStatus,
+} from 'frontend-verenigingen-loket/models/recognition';
 import AuPill from '@appuniversum/ember-appuniversum/components/au-pill';
 
 export default class StatusComponent extends Component {
   get label() {
-    return RECOGNITION_STATUS_LABELS[this.args.association.recognitionStatus];
+    return labelForRecognitionStatus(this.args.association.recognitionStatus);
   }
 
   get skin() {
