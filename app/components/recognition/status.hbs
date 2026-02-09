@@ -3,5 +3,7 @@
     <AuPill @skin="success">Erkend</AuPill>
   {{else if this.isExpired}}
     <AuPill @skin="warning">Verlopen</AuPill>
+  {{else if this.isUpcoming}}
+    <AuPill @skin="link">Toekomstig</AuPill>
   {{/if}}
 {{/if}}

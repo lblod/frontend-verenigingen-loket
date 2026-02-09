@@ -67,24 +67,16 @@ export const associationsQuery = ({
     } else if (postalCodesQuery) {
       addFilter(':query:primarySite.address.postcode', `(${postalCodesQuery})`);
     }
-    if (
-      params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED) &&
-      params.recognition.includes(RECOGNITION_STATUS.EXPIRED)
-    ) {
-      // Filter out "upcoming" recognitions when both filters are selected
+    const recognitionStatusMapping = {
+      [RECOGNITION_STATUS.RECOGNIZED]: RECOGNITION_STATUS_URIS.ACTIVE,
+      [RECOGNITION_STATUS.EXPIRED]: RECOGNITION_STATUS_URIS.EXPIRED,
+      [RECOGNITION_STATUS.UPCOMING]: RECOGNITION_STATUS_URIS.UPCOMING,
+    };
+    if (params.recognition.length) {
+      const recognitionUris = params.recognition.map((recognition) => recognitionStatusMapping[recognition]);
       addFilter(
         ':terms:recognitionStatus',
-        `${RECOGNITION_STATUS_URIS.EXPIRED},${RECOGNITION_STATUS_URIS.ACTIVE}`,
-      );
-    } else if (params.recognition.includes(RECOGNITION_STATUS.EXPIRED)) {
-      addFilter(
-        ':terms:recognitionStatus',
-        RECOGNITION_STATUS_URIS.EXPIRED,
-      );
-    } else if (params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED)) {
-      addFilter(
-        ':terms:recognitionStatus',
-        RECOGNITION_STATUS_URIS.ACTIVE,
+        recognitionUris.join(','),
       );
     }
 

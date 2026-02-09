@@ -14,4 +14,11 @@ export default class StatusComponent extends Component {
       RECOGNITION_STATUS_URIS.EXPIRED
     );
   }
+
+  get isUpcoming() {
+    return (
+      this.args.association.recognitionStatus ===
+      RECOGNITION_STATUS_URIS.UPCOMING
+    );
+  }
 }

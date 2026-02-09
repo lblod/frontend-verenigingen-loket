@@ -8,8 +8,12 @@ export const AWARDED_BY_OPTIONS = {
 export const RECOGNITION_STATUS = {
   RECOGNIZED: 'Erkend',
   EXPIRED: 'Verlopen',
+  UPCOMING: 'Toekomstig'
 };
 
+/**
+ * @type {const}
+ */
 export const RECOGNITION_STATUS_URIS = {
   ACTIVE:
     'http://lblod.data.gift/concepts/0d2dc070-2c6d-4af3-bedc-3fd96c45bb3a',
