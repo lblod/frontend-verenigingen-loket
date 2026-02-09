@@ -2,10 +2,6 @@ import Service from '@ember/service';
 import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
 import { ORGANIZATION_STATUS } from '../models/organization-status-code';
-import {
-  RECOGNITION_STATUS,
-  RECOGNITION_STATUS_URIS,
-} from '../models/recognition';
 
 export default class QueryBuilderService extends Service {
   @service store;
@@ -67,16 +63,8 @@ export const associationsQuery = ({
     } else if (postalCodesQuery) {
       addFilter(':query:primarySite.address.postcode', `(${postalCodesQuery})`);
     }
-    const recognitionStatusMapping = {
-      [RECOGNITION_STATUS.RECOGNIZED]: RECOGNITION_STATUS_URIS.ACTIVE,
-      [RECOGNITION_STATUS.EXPIRED]: RECOGNITION_STATUS_URIS.EXPIRED,
-      [RECOGNITION_STATUS.UPCOMING]: RECOGNITION_STATUS_URIS.UPCOMING,
-    };
     if (params.recognition.length) {
-      const recognitionUris = params.recognition.map(
-        (recognition) => recognitionStatusMapping[recognition],
-      );
-      addFilter(':terms:recognitionStatus', recognitionUris.join(','));
+      addFilter(':terms:recognitionStatus', params.recognition.join(','));
     }
 
     return filters;
@@ -141,15 +129,6 @@ export const associationsQuery = ({
 
     if (params.status) {
       filters['status_id'] = ORGANIZATION_STATUS.ACTIVE;
-    }
-
-    if (Array.isArray(params.recognition)) {
-      if (
-        params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED) &&
-        params.recognition.includes(RECOGNITION_STATUS.EXPIRED)
-      ) {
-        filters[':has:recognitions.validityPeriod.endTime'] = true;
-      }
     }
 
     if (

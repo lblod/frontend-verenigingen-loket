@@ -9,10 +9,11 @@
       @onChange={{@onChange}}
       as |Group|
     >
-      {{! TODO: use the STATUS const instead of hardcoding the strings when we switch to .gjs }}
-      <Group.Checkbox @value="Erkend">Erkend</Group.Checkbox>
-      <Group.Checkbox @value="Verlopen">Verlopen</Group.Checkbox>
-      <Group.Checkbox @value="Toekomstig">Toekomstig</Group.Checkbox>
+      {{#each this.options as |option|}}
+        <Group.Checkbox @value={{option}}>{{this.optionLabel
+            option
+          }}</Group.Checkbox>
+      {{/each}}
     </AuCheckboxGroup>
   </f.content>
 </AuFieldset>

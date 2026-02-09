@@ -1,24 +1,23 @@
 import Component from '@glimmer/component';
-import { RECOGNITION_STATUS_URIS } from 'frontend-verenigingen-loket/models/recognition';
+import { RECOGNITION_STATUS } from 'frontend-verenigingen-loket/models/recognition';
+import { RECOGNITION_STATUS_LABELS } from '../../models/recognition';
 
 export default class StatusComponent extends Component {
-  get isActive() {
-    return (
-      this.args.association.recognitionStatus === RECOGNITION_STATUS_URIS.ACTIVE
-    );
+  get label() {
+    return RECOGNITION_STATUS_LABELS[this.args.association.recognitionStatus];
   }
 
-  get isExpired() {
-    return (
-      this.args.association.recognitionStatus ===
-      RECOGNITION_STATUS_URIS.EXPIRED
-    );
-  }
-
-  get isUpcoming() {
-    return (
-      this.args.association.recognitionStatus ===
-      RECOGNITION_STATUS_URIS.UPCOMING
-    );
+  get skin() {
+    switch (this.args.association.recognitionStatus) {
+      case RECOGNITION_STATUS.ACTIVE:
+        return 'success';
+      case RECOGNITION_STATUS.EXPIRED:
+        return 'warning';
+      case RECOGNITION_STATUS.UPCOMING:
+        return 'link';
+      default:
+        // eslint-disable-next-line getter-return
+        return;
+    }
   }
 }
