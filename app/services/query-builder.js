@@ -73,11 +73,10 @@ export const associationsQuery = ({
       [RECOGNITION_STATUS.UPCOMING]: RECOGNITION_STATUS_URIS.UPCOMING,
     };
     if (params.recognition.length) {
-      const recognitionUris = params.recognition.map((recognition) => recognitionStatusMapping[recognition]);
-      addFilter(
-        ':terms:recognitionStatus',
-        recognitionUris.join(','),
+      const recognitionUris = params.recognition.map(
+        (recognition) => recognitionStatusMapping[recognition],
       );
+      addFilter(':terms:recognitionStatus', recognitionUris.join(','));
     }
 
     return filters;

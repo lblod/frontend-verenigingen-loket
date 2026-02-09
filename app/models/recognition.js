@@ -8,7 +8,7 @@ export const AWARDED_BY_OPTIONS = {
 export const RECOGNITION_STATUS = {
   RECOGNIZED: 'Erkend',
   EXPIRED: 'Verlopen',
-  UPCOMING: 'Toekomstig'
+  UPCOMING: 'Toekomstig',
 };
 
 /**
