@@ -7,6 +7,7 @@ import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point'
 import type { ChangedAttributesHash } from '@warp-drive/core-types/cache';
 import type Site from 'frontend-verenigingen-loket/models/site';
 import { isValidRijksregisternummer } from 'frontend-verenigingen-loket/utils/rijksregisternummer';
+import type TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
 import Joi from 'joi';
 
 const manager = new RequestManager().use([Fetch]);
@@ -59,21 +60,45 @@ type Vereniging = {
 
 // A representative in English. We use dutch naming here since it's a verenigingsregister object that also uses dutch property names.
 export type Vertegenwoordiger = {
-  vertegenwoordigerId: number;
-  voornaam: string;
-  achternaam: string;
+  vertegenwoordigerId?: number;
+  voornaam?: string;
+  achternaam?: string;
   roepnaam?: string;
   insz?: string;
-  'e-mail': string;
+  'e-mail'?: string;
   telefoon?: string;
   socialMedia?: string;
-  isPrimair: boolean;
+  isPrimair?: boolean;
+} & {
+  // Not a real property, but we use it to store generic errors for now.
+  genericError?: string;
 };
 
 type VerenigingDetailsResponse = {
   vereniging: Vereniging;
   metadata: {
     datumLaatsteAanpassing: string;
+  };
+};
+
+// 400 errors
+// Based on the documentation here: https://beheer.verenigingen.vlaanderen.be/docs/api-documentation.html#tag/Decentraal-beheer-van-verenigingen/paths/~1v1~1verenigingen~1{vCode}~1vertegenwoordigers~1{vertegenwoordigerId}/patch
+// The actual responses don't fully match that though (they only document the nested "details" object), which might be a mistake in the documentation.
+type ApiErrorResponse = {
+  error: string;
+  details: {
+    type: string;
+    title: string;
+    detail: string;
+    status: number;
+    instance: string;
+    validationErrors?: Record<
+      string, // property name, but it doesn't 100% match the actual properties
+      {
+        code: string;
+        reason: string;
+      }[]
+    >;
   };
 };
 
@@ -204,32 +229,57 @@ export async function removeCorrespondenceSite(
 }
 
 export async function createOrUpdateVertegenwoordiger(
-  vertegenwoordiger: Vertegenwoordiger,
+  vertegenwoordiger: TrackedData<Vertegenwoordiger>,
   association: Association,
-  isNew: boolean,
 ) {
   const url = await buildVertegenwoordigerUrl(
-    vertegenwoordiger,
+    vertegenwoordiger.data,
     association,
-    isNew,
+    vertegenwoordiger.isNew,
   );
-  const method = isNew ? 'POST' : 'PATCH';
+  const method = vertegenwoordiger.isNew ? 'POST' : 'PATCH';
 
-  // TODO: We now send everything, is this an issue?
-  const requestData = {
-    ...vertegenwoordiger,
-  };
+  const requestData: Partial<
+    Record<keyof Vertegenwoordiger, Vertegenwoordiger[keyof Vertegenwoordiger]>
+  > = {};
 
-  await manager.request({
-    url,
-    method,
-    headers: new Headers({
-      'Content-Type': 'application/json',
-    }),
-    body: JSON.stringify({
-      vertegenwoordiger: requestData,
-    }),
-  });
+  for (const value of vertegenwoordiger.changedValues) {
+    requestData[value] = vertegenwoordiger.data[value];
+  }
+
+  try {
+    await manager.request({
+      url,
+      method,
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify({
+        vertegenwoordiger: requestData,
+      }),
+    });
+  } catch (error) {
+    // TODO: use the correct error type, not sure if WarpDrive exports this
+    // @ts-expect-error: Find out where to get proper types for this error: https://github.com/warp-drive-data/warp-drive/blob/7f899457cea393b233b86a4d92c9f5bd4a51ea76/warp-drive-packages/core/src/request/-private/fetch.ts#L249-L258
+    if (error instanceof Error && error.status === 400) {
+      // @ts-expect-error: missing error types
+      const apiError = error.content as ApiErrorResponse;
+      if (apiError.details) {
+        // All "detail" values seem to contain a `Source: ` prefix, which we don't want to show to users..
+        const errorMessage = apiError.details.detail.replace('Source: ', '');
+
+        // This is a very naive check, but there doesn't seem to be anything else in the response that we could otherwise use to map it to the field..
+        if (errorMessage.toLowerCase().includes('insz')) {
+          vertegenwoordiger.addError('insz', errorMessage);
+        } else {
+          vertegenwoordiger.addError('genericError', errorMessage);
+        }
+      }
+      throw new ApiValidationError(vertegenwoordiger);
+    } else {
+      throw error;
+    }
+  }
 }
 
 export async function removeVertegenwoordiger(
@@ -435,3 +485,14 @@ export const vertegenwoordigerValidationSchema = Joi.object({
 }).messages({
   'any.required': 'Dit veld is verplicht.',
 });
+
+export class ApiValidationError<T> extends Error {
+  subject: T;
+  name: string;
+
+  constructor(subject: T) {
+    super('API Validation error');
+    this.name = 'ApiValidationError';
+    this.subject = subject;
+  }
+}

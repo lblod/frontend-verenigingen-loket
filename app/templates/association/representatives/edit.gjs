@@ -1,3 +1,4 @@
+import AuAlert from '@appuniversum/ember-appuniversum/components/au-alert';
 import AuButtonGroup from '@appuniversum/ember-appuniversum/components/au-button-group';
 import AuButton from '@appuniversum/ember-appuniversum/components/au-button';
 import AuCheckbox from '@appuniversum/ember-appuniversum/components/au-checkbox';
@@ -28,6 +29,7 @@ import {
   handleError,
   vertegenwoordigerValidationSchema as validationSchema,
   waitForStableAPI,
+  ApiValidationError,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import { validateData } from 'frontend-verenigingen-loket/utils/validate-tracked-data';
 
@@ -69,6 +71,14 @@ export default class RepresentativesEdit extends Component {
     return this.vertegenwoordigers.length > 1;
   }
 
+  get genericValidationError() {
+    const withGenericError = this.vertegenwoordigers.find((vertegenwoordiger) =>
+      vertegenwoordiger.hasError('genericError'),
+    );
+
+    return withGenericError ? withGenericError.errors.genericError : undefined;
+  }
+
   changePrimaryRepresentative = async (changingVertegenwoordiger) => {
     const isCurrentPrimary = changingVertegenwoordiger.data.isPrimair;
 
@@ -105,6 +115,11 @@ export default class RepresentativesEdit extends Component {
   save = dropTask(async (event) => {
     event.preventDefault();
 
+    // clear the generic error messages we received from the server previously
+    this.vertegenwoordigers.forEach((vertegenwoordiger) =>
+      vertegenwoordiger.removeError('genericError'),
+    );
+
     const promises = this.vertegenwoordigers.map((vertegenwoordiger) => {
       return validateData(vertegenwoordiger, validationSchema, {
         context: {
@@ -121,23 +136,24 @@ export default class RepresentativesEdit extends Component {
 
     if (isValid) {
       try {
-        // The order of API operations is important here because there can only be one primary representative.
-        // Ensure there can never be a scenario where there would be 2 primary representatives at the same time (even temporarily), because the API will return an error response.
-
-        // TODO: figure out if the original primary was changed, and if so, act accordingly
-        // - if it's no longer the primary, persist their changes first
-        // - if it's deleted, mark it as non-primary, and persist that change first, the delete will then remove it without causing potential double primary issues
+        /*
+          The order of API operations is important because the API enforces some rules:
+            - there can only be one primary representative
+            - there needs to be at least 1 representative
+        */
 
         if (
           this.originalPrimary &&
           this.representativesToRemove.includes(this.originalPrimary)
         ) {
-          // There was a primary representative but it has been deleted, so we need to persist the switch to non-primary representative first, so we can't run into the 2 primary validaiton issue
+          // There was a primary representative but it has been deleted.
+          // We need to persist the change to a non-primary representative first after which
+          // it can be safely removed later without running intto the 2 primary validation rule.
           const vertegenwoordiger = this.originalPrimary;
           vertegenwoordiger.data.isPrimair = false;
 
           await createOrUpdateVertegenwoordiger(
-            vertegenwoordiger.data,
+            vertegenwoordiger,
             this.association,
           );
         }
@@ -152,12 +168,10 @@ export default class RepresentativesEdit extends Component {
         ];
 
         for (const vertegenwoordiger of sortedVertegenwoordigers) {
-          // TODO; deal with API validation errors and make them visible to the user
           if (vertegenwoordiger.hasChanges || vertegenwoordiger.isNew) {
             await createOrUpdateVertegenwoordiger(
-              vertegenwoordiger.data,
+              vertegenwoordiger,
               this.association,
-              vertegenwoordiger.isNew,
             );
 
             vertegenwoordiger.acceptChanges();
@@ -178,7 +192,9 @@ export default class RepresentativesEdit extends Component {
         await waitForStableAPI();
         this.router.transitionTo('association.representatives');
       } catch (error) {
-        handleError(this.toaster, error);
+        if (!(error instanceof ApiValidationError)) {
+          handleError(this.toaster, error);
+        }
       }
     }
   });
@@ -203,7 +219,7 @@ export default class RepresentativesEdit extends Component {
           </div>
 
           <div>
-            <AuButtonGroup class="au-c-button-group--align-right">
+            <AuButtonGroup class="au-u-flex au-u-flex--end">
               <AuLink
                 @route="association.representatives"
                 @skin="button-secondary"
@@ -219,6 +235,17 @@ export default class RepresentativesEdit extends Component {
                 Opslaan
               </AuButton>
             </AuButtonGroup>
+            {{#if this.genericValidationError}}
+              <AuAlert
+                @skin="error"
+                @size="small"
+                @icon="info-circle"
+                @closable={{true}}
+                class="au-u-margin-top-small au-u-max-width-xsmall"
+              >
+                {{this.genericValidationError}}
+              </AuAlert>
+            {{/if}}
           </div>
         </section>
       </div>
@@ -290,7 +317,13 @@ class EditRow extends Component {
   }
 
   <template>
-    <tr>
+    <tr
+      class="c-edit-table-row
+        {{~if
+          @vertegenwoordiger.errors.genericError
+          ' c-edit-table-row--error'
+        }}"
+    >
       {{#if @vertegenwoordiger.isNew}}
         <EditCell @errorMessage={{@vertegenwoordiger.errors.voornaam}}>
           <:label>Voornaam</:label>
