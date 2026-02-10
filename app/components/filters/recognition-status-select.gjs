@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import {
   RECOGNITION_STATUS,
-  labelForRecognitionStatus
+  labelForRecognitionStatus,
 } from '../../models/recognition';
 import AuFieldset from '@appuniversum/ember-appuniversum/components/au-fieldset';
 import AuCheckboxGroup from '@appuniversum/ember-appuniversum/components/au-checkbox-group';

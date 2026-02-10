@@ -28,7 +28,7 @@ export const RECOGNITION_STATUS_LABELS = {
 
 export const labelForRecognitionStatus = (uri) => {
   return RECOGNITION_STATUS_LABELS[uri];
-}
+};
 
 export default class RecognitionModel extends Model {
   @attr dateDocument;
