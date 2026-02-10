@@ -54,7 +54,7 @@ type Vereniging = {
   startdatum: string;
   einddatum: string;
   status: string;
-  vertegenwoordigers: Vertegenwoordiger[];
+  vertegenwoordigers?: Vertegenwoordiger[];
 };
 
 // A representative in English. We use dutch naming here since it's a verenigingsregister object that also uses dutch property names.
@@ -85,19 +85,21 @@ export async function getVertegenwoordigers(
     url,
   });
 
-  return dataDocument.content.vereniging.vertegenwoordigers.map(
-    (vertegenwoordiger) => {
-      // We only return the data we actually need. The API responds with more (nested) data.
-      return {
-        vertegenwoordigerId: vertegenwoordiger.vertegenwoordigerId,
-        voornaam: vertegenwoordiger.voornaam,
-        achternaam: vertegenwoordiger.achternaam,
-        'e-mail': vertegenwoordiger['e-mail'],
-        telefoon: vertegenwoordiger.telefoon,
-        socialMedia: vertegenwoordiger.socialMedia,
-        isPrimair: vertegenwoordiger.isPrimair,
-      };
-    },
+  return (
+    dataDocument.content.vereniging.vertegenwoordigers?.map(
+      (vertegenwoordiger) => {
+        // We only return the data we actually need. The API responds with more (nested) data.
+        return {
+          vertegenwoordigerId: vertegenwoordiger.vertegenwoordigerId,
+          voornaam: vertegenwoordiger.voornaam,
+          achternaam: vertegenwoordiger.achternaam,
+          'e-mail': vertegenwoordiger['e-mail'],
+          telefoon: vertegenwoordiger.telefoon,
+          socialMedia: vertegenwoordiger.socialMedia,
+          isPrimair: vertegenwoordiger.isPrimair,
+        };
+      },
+    ) || []
   );
 }
 
