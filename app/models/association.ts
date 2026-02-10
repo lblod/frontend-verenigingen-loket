@@ -24,6 +24,7 @@ export default class Association extends Model {
   @attr declare lastUpdated?: string;
   @attr declare createdOn?: string;
   @attr declare etag?: string;
+  @attr recognitionStatus?: string;
 
   @hasMany<Identifier>('identifier', { inverse: null, async: true })
   declare identifiers: Promise<Identifier[]>;

@@ -1,9 +1,7 @@
 import Service from '@ember/service';
 import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
-import dateFormat from '../helpers/date-format';
 import { ORGANIZATION_STATUS } from '../models/organization-status-code';
-import { STATUS as RECOGNITION_STATUS } from '../models/recognition';
 
 export default class QueryBuilderService extends Service {
   @service store;
@@ -55,8 +53,6 @@ export const associationsQuery = ({
       'primarySite.address.postcode',
       params.postalCodes,
     );
-    const today = dateFormat(new Date(), 'YYY-MM-DD');
-
     if (activitiesQuery && postalCodesQuery) {
       addFilter(
         ':query:primarySite.address.postcode',
@@ -67,28 +63,8 @@ export const associationsQuery = ({
     } else if (postalCodesQuery) {
       addFilter(':query:primarySite.address.postcode', `(${postalCodesQuery})`);
     }
-
-    if (
-      params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED) &&
-      params.recognition.includes(RECOGNITION_STATUS.EXPIRED)
-    ) {
-      // Filter out "upcoming" recognitions when both filters are selected
-      addFilter(
-        ':query:recognitions.validityPeriod',
-        `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})) OR ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:<=${today}))`,
-      );
-    } else if (params.recognition.includes(RECOGNITION_STATUS.EXPIRED)) {
-      addFilter(
-        ':query:recognitions.validityPeriod',
-        `(NOT ((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today}))) AND NOT (recognitions.validityPeriod.startTime:>${today})`,
-      );
-      addFilter(':has:recognitions.validityPeriod.endTime', true);
-    } else if (params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED)) {
-      addFilter(
-        ':query:recognitions.validityPeriod',
-        `((recognitions.validityPeriod.startTime:<=${today}) AND (recognitions.validityPeriod.endTime:>=${today})) OR (NOT (recognitions.validityPeriod.startTime:>${today}) AND (recognitions.validityPeriod.endTime:>${today}))`,
-      );
-      addFilter(':has:recognitions.validityPeriod.endTime', true);
+    if (params.recognition.length) {
+      addFilter(':terms:recognitionStatus', params.recognition.join(','));
     }
 
     return filters;
@@ -153,16 +129,6 @@ export const associationsQuery = ({
 
     if (params.status) {
       filters['status_id'] = ORGANIZATION_STATUS.ACTIVE;
-    }
-
-    if (Array.isArray(params.recognition)) {
-      if (
-        params.recognition.includes(RECOGNITION_STATUS.RECOGNIZED) &&
-        params.recognition.includes(RECOGNITION_STATUS.EXPIRED)
-      ) {
-        filters[':has:recognitions.validityPeriod.endTime'] = true;
-        filters[':has-no:recognitions.status'] = true;
-      }
     }
 
     if (

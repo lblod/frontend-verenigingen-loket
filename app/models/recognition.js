@@ -6,9 +6,29 @@ export const AWARDED_BY_OPTIONS = {
   OTHER: 'Andere',
 };
 
-export const STATUS = {
-  RECOGNIZED: 'Erkend',
-  EXPIRED: 'Verlopen',
+/**
+ * @type {const}
+ */
+export const RECOGNITION_STATUS = {
+  ACTIVE:
+    'http://lblod.data.gift/concepts/0d2dc070-2c6d-4af3-bedc-3fd96c45bb3a',
+  UPCOMING:
+    'http://lblod.data.gift/concepts/61875267-3045-4da7-9e38-ca7ddb7d3e3c',
+  EXPIRED:
+    'http://lblod.data.gift/concepts/34ff67a0-8196-4228-937a-d3f46191c85b',
+};
+
+/**
+ * @type {const}
+ */
+export const RECOGNITION_STATUS_LABELS = {
+  [RECOGNITION_STATUS.ACTIVE]: 'Erkend',
+  [RECOGNITION_STATUS.EXPIRED]: 'Verlopen',
+  [RECOGNITION_STATUS.UPCOMING]: 'Toekomstig',
+};
+
+export const labelForRecognitionStatus = (uri) => {
+  return RECOGNITION_STATUS_LABELS[uri];
 };
 
 export default class RecognitionModel extends Model {

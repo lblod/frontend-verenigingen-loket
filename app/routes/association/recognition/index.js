@@ -19,7 +19,6 @@ export default class AssociationRecognitionRoute extends Route {
     return await this.store.query('recognition', {
       include: ['awarded-by', 'validity-period', 'file'].join(','),
       filter: {
-        ':has-no:status': true,
         association: {
           id: id,
         },
