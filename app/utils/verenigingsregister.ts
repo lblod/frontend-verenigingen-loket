@@ -386,9 +386,18 @@ export function logAPIError(error: Error, message?: string) {
   }
 }
 
+const nameSchema = Joi.string()
+  .trim()
+  .empty('')
+  .required()
+  .pattern(/^[^0-9]*$/) // No numbers allowed
+  .messages({
+    'string.pattern.base': 'Dit veld mag geen cijfers bevatten.',
+  });
+
 export const vertegenwoordigerValidationSchema = Joi.object({
-  voornaam: Joi.string().empty('').required(),
-  achternaam: Joi.string().empty('').required(),
+  voornaam: nameSchema,
+  achternaam: nameSchema,
   insz: Joi.string()
     .empty('')
     .when('$isNew', {
@@ -402,6 +411,9 @@ export const vertegenwoordigerValidationSchema = Joi.object({
       }
 
       return value;
+    })
+    .messages({
+      'string.invalid-ssn': 'Geen geldig rijksregisternummer.',
     }),
   'e-mail': Joi.string().empty('').email({ tlds: false }).required().messages({
     'string.email': 'Geef een geldig e-mailadres in.',
@@ -420,5 +432,4 @@ export const vertegenwoordigerValidationSchema = Joi.object({
     .messages({ 'string.uri': 'Geef een geldig internetadres in.' }),
 }).messages({
   'any.required': 'Dit veld is verplicht.',
-  'string.invalid-ssn': 'Geen geldig rijksregisternummer.',
 });
