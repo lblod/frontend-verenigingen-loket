@@ -1,3 +1,14 @@
+## v1.10.0 (2026-02-10)
+
+#### :rocket: Enhancement
+* [#123](https://github.com/lblod/frontend-verenigingen-loket/pull/123) CLBV-1164: use new `association.recognitionStatus` field ([@elpoelma](https://github.com/elpoelma))
+* [#118](https://github.com/lblod/frontend-verenigingen-loket/pull/118) [CLBV-1160] Representative edit page improvements ([@Windvis](https://github.com/Windvis))
+* [#117](https://github.com/lblod/frontend-verenigingen-loket/pull/117) [CLBV-1159] Rework the data loading for the representatives overview page ([@Windvis](https://github.com/Windvis))
+
+#### Committers: 2
+- Elena Poelman ([@elpoelma](https://github.com/elpoelma))
+- Sam Van Campenhout ([@Windvis](https://github.com/Windvis))
+
 ## v1.9.2 (2026-01-21)
 
 #### :bug: Bug Fix
