@@ -1,6 +1,7 @@
 <AuLabel for="filter-name">Selecteer hoofdactiviteit(en)</AuLabel>
 <div class={{if @error "ember-power-select--error"}}>
-  <PowerSelectMultiple
+  <PowerSelect
+    @multiple={{true}}
     @noMatchesMessage="Geen resultaten"
     @searchEnabled={{true}}
     @searchField="prefLabel"
@@ -13,5 +14,5 @@
     as |activity|
   >
     {{activity.prefLabel}}
-  </PowerSelectMultiple>
+  </PowerSelect>
 </div>

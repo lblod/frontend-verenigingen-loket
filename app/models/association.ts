@@ -4,7 +4,6 @@ import { Type } from '@warp-drive/core-types/symbols';
 // @ts-expect-error Class isn't typed yet.
 import type Activity from './activity';
 import type Identifier from './identifier';
-import type Membership from './membership';
 import type Site from './site';
 import type ContactPoint from './contact-point';
 // @ts-expect-error Class isn't typed yet.
@@ -51,9 +50,6 @@ export default class Association extends Model {
 
   @hasMany<Activity>('activity', { inverse: null, async: true })
   declare activities: Promise<Activity[]>;
-
-  @hasMany<Membership>('membership', { inverse: null, async: true })
-  declare members: Promise<Membership[]>;
 
   @hasMany<ChangeEvent>('change-event', { inverse: null, async: true })
   declare changeEvents: Promise<ChangeEvent[]>;

@@ -20,5 +20,11 @@ setupDeprecationWorkflow({
      */
     /* example: */
     /* { handler: 'silence', matchId: 'template-action' }, */
+
+    // TODO: Remove this and resolve all EmberData deprecations before updating to v6
+    {
+      handler: 'silence',
+      matchId: 'warp-drive:deprecate-legacy-request-methods',
+    },
   ],
 });

@@ -20,150 +20,159 @@ import EditTable, {
 } from 'frontend-verenigingen-loket/components/edit-table';
 import RequiredPill from 'frontend-verenigingen-loket/components/required-pill';
 import eventValue from 'frontend-verenigingen-loket/helpers/event-value';
-import fieldError from 'frontend-verenigingen-loket/helpers/field-error';
-import isPrimaryRole from 'frontend-verenigingen-loket/helpers/isPrimaryRole';
-import { representativeContactPointValidationSchema as contactPointValidationSchema } from 'frontend-verenigingen-loket/models/contact-point';
-import { validationSchema as personValidationSchema } from 'frontend-verenigingen-loket/models/person';
 import { removeItem } from 'frontend-verenigingen-loket/utils/array';
+import TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
 import {
-  createOrUpdateRepresentative,
-  removeRepresentative,
+  createOrUpdateVertegenwoordiger,
+  removeVertegenwoordiger,
   handleError,
+  vertegenwoordigerValidationSchema as validationSchema,
   waitForStableAPI,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
-import { validateRecord } from 'frontend-verenigingen-loket/validations/validate-record';
-import {
-  getPrimaryRole,
-  getSecondaryRole,
-} from 'frontend-verenigingen-loket/utils/roles';
+import { validateData } from 'frontend-verenigingen-loket/utils/validate-tracked-data';
 
 export default class RepresentativesEdit extends Component {
+  @service currentAssociation;
   @service router;
   @service store;
   @service toaster;
   representativesToRemove = [];
 
+  @cached
   get isLoading() {
     // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    return (
-      this.args.controller.model.task.isRunning ||
-      this.args.controller.model.roletask.isRunning
-    );
+    const state = getPromiseState(this.args.controller.model.dataPromise);
+    return state.isPending;
   }
 
-  get representatives() {
+  @cached
+  get vertegenwoordigers() {
     // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    return this.args.controller.model.task.isFinished
-      ? this.args.controller.model.task.value
-      : [];
+    const state = getPromiseState(this.args.controller.model.dataPromise);
+
+    return state.isSuccess ? state.result.vertegenwoordigers : [];
   }
 
-  get roles() {
+  @cached
+  get originalPrimary() {
     // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    return this.args.controller.model.roletask.isFinished
-      ? this.args.controller.model.roletask.value
-      : [];
+    const state = getPromiseState(this.args.controller.model.dataPromise);
+
+    return state.isSuccess ? state.result.originalPrimary : undefined;
   }
 
   get association() {
-    // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    return this.args.controller.model.association;
+    return this.currentAssociation.association;
   }
 
-  get canDeleteRepresentatives() {
-    return this.representatives.length > 1;
+  get canDeleteVertegenwoordigers() {
+    return this.vertegenwoordigers.length > 1;
   }
 
-  changePrimaryRepresentative = async (changingRepresentative) => {
-    const currentRole = await changingRepresentative.role;
-    const isCurrentPrimary = isPrimaryRole(currentRole);
+  changePrimaryRepresentative = async (changingVertegenwoordiger) => {
+    const isCurrentPrimary = changingVertegenwoordiger.data.isPrimair;
 
     if (isCurrentPrimary) {
-      changingRepresentative.role = getSecondaryRole(this.roles);
-      changingRepresentative.isPrimary = false;
+      changingVertegenwoordiger.data.isPrimair = false;
     } else {
       // This representative isn't the primary yet, but there can only be one primary.
       // We need to find the previous primary and unset it.
-      for (const representative of this.representatives) {
-        const role = await representative.role;
-        if (isPrimaryRole(role)) {
-          representative.role = getSecondaryRole(this.roles);
-          representative.isPrimary = false;
+      for (const vertegenwoordiger of this.vertegenwoordigers) {
+        if (vertegenwoordiger.data.isPrimair) {
+          vertegenwoordiger.data.isPrimair = false;
           break;
         }
       }
-      changingRepresentative.role = getPrimaryRole(this.roles);
-      changingRepresentative.isPrimary = true;
+      changingVertegenwoordiger.data.isPrimair = true;
     }
   };
 
-  deleteRepresentative = async (representative) => {
-    removeItem(this.representatives, representative);
+  deleteRepresentative = async (vertegenwoordiger) => {
+    removeItem(this.vertegenwoordigers, vertegenwoordiger);
 
-    const person = await representative.person;
-    const contactPoints = await person.contactPoints;
-    const recordsToRemove = [representative, person, ...contactPoints];
-
-    if (!representative.isNew) {
+    if (!vertegenwoordiger.isNew) {
       // If the representative is not new, we need to mark the records for deletion on the server
-      this.representativesToRemove.push(representative);
+      this.representativesToRemove.push(vertegenwoordiger);
+      // We also revert any local changes the user may have made, since they are no longer relevant
+      vertegenwoordiger.revertChanges();
     }
-
-    // We (also) mark the records for deletion in the store, which also removes any newly created ones
-    recordsToRemove.forEach((record) => record.deleteRecord());
   };
 
   addNewRepresentative = () => {
-    const contactPoint = this.store.createRecord('contact-point', {});
-    const person = this.store.createRecord('person', {
-      contactPoints: [contactPoint],
-    });
-    const representative = this.store.createRecord('membership', {
-      person,
-    });
-    representative.role = getSecondaryRole(this.roles);
-    representative.isPrimary = false;
-
-    this.representatives.push(representative);
+    this.vertegenwoordigers.push(new TrackedData({}));
   };
 
   save = dropTask(async (event) => {
     event.preventDefault();
 
-    const promises = this.representatives.map(async (representative) => {
-      const person = await representative.person;
-
-      await validateRecord(person, personValidationSchema, {
+    const promises = this.vertegenwoordigers.map((vertegenwoordiger) => {
+      return validateData(vertegenwoordiger, validationSchema, {
         context: {
-          isNew: person.isNew,
+          isNew: vertegenwoordiger.isNew,
         },
       });
-
-      const contactPoints = await person.contactPoints;
-      // We assume a representative only has a single contact point which can contain all the data we allow users to edit.
-      const contactPoint = contactPoints.at(0);
-
-      await validateRecord(contactPoint, contactPointValidationSchema);
-
-      return person.isValid && contactPoint.isValid;
     });
 
-    const isValid = (await Promise.all(promises)).every((isValid) =>
-      Boolean(isValid),
+    await Promise.all(promises);
+
+    const isValid = !this.vertegenwoordigers.some(
+      (vertegenwoordiger) => vertegenwoordiger.hasErrors,
     );
 
     if (isValid) {
       try {
-        const sortedRepresentatives = [
-          ...this.representatives.filter((rep) => !rep.isPrimary),
-          ...this.representatives.filter((rep) => rep.isPrimary),
-        ];
-        for (const representative of sortedRepresentatives) {
-          await createOrUpdateRepresentative(representative, this.association);
+        // The order of API operations is important here because there can only be one primary representative.
+        // Ensure there can never be a scenario where there would be 2 primary representatives at the same time (even temporarily), because the API will return an error response.
+
+        // TODO: figure out if the original primary was changed, and if so, act accordingly
+        // - if it's no longer the primary, persist their changes first
+        // - if it's deleted, mark it as non-primary, and persist that change first, the delete will then remove it without causing potential double primary issues
+
+        if (
+          this.originalPrimary &&
+          this.representativesToRemove.includes(this.originalPrimary)
+        ) {
+          // There was a primary representative but it has been deleted, so we need to persist the switch to non-primary representative first, so we can't run into the 2 primary validaiton issue
+          const vertegenwoordiger = this.originalPrimary;
+          vertegenwoordiger.data.isPrimair = false;
+
+          await createOrUpdateVertegenwoordiger(
+            vertegenwoordiger.data,
+            this.association,
+          );
         }
 
-        for (const representative of this.representativesToRemove) {
-          await removeRepresentative(representative, this.association);
+        const sortedVertegenwoordigers = [
+          ...this.vertegenwoordigers.filter(
+            (vertegenwoordiger) => !vertegenwoordiger.data.isPrimair,
+          ),
+          ...this.vertegenwoordigers.filter(
+            (vertegenwoordiger) => vertegenwoordiger.data.isPrimair,
+          ),
+        ];
+
+        for (const vertegenwoordiger of sortedVertegenwoordigers) {
+          // TODO; deal with API validation errors and make them visible to the user
+          if (vertegenwoordiger.hasChanges || vertegenwoordiger.isNew) {
+            await createOrUpdateVertegenwoordiger(
+              vertegenwoordiger.data,
+              this.association,
+              vertegenwoordiger.isNew,
+            );
+
+            vertegenwoordiger.acceptChanges();
+          }
+        }
+
+        // We take a copy of the original array since we're modifying it while looping at the same time
+        for (const vertegenwoordiger of this.representativesToRemove.slice()) {
+          await removeVertegenwoordiger(
+            vertegenwoordiger.data,
+            this.association,
+          );
+
+          // We remove it from the deletion list, so we no longer try to delete it again if something goes wrong after this call.
+          removeItem(this.representativesToRemove, vertegenwoordiger);
         }
 
         await waitForStableAPI();
@@ -173,32 +182,6 @@ export default class RepresentativesEdit extends Component {
       }
     }
   });
-
-  async reset() {
-    const recordsToRollBack = [];
-    const representativesToRollBack = [
-      ...this.representatives,
-      ...this.representativesToRemove,
-    ];
-
-    this.representativesToRemove = [];
-
-    for (const representative of representativesToRollBack) {
-      const person = await representative.person;
-      const contactPoints = await person.contactPoints;
-      recordsToRollBack.push(representative, person, ...contactPoints);
-    }
-
-    recordsToRollBack.forEach((record) => record.rollbackAttributes());
-  }
-
-  willDestroy() {
-    super.willDestroy();
-
-    if (!this.save.isRunning) {
-      this.reset();
-    }
-  }
 
   <template>
     {{pageTitle "Bewerk vertegenwoordigers"}}
@@ -270,11 +253,11 @@ export default class RepresentativesEdit extends Component {
             </th>
           </:columns>
           <:tbody>
-            {{#each this.representatives as |representative|}}
+            {{#each this.vertegenwoordigers as |vertegenwoordiger|}}
               <EditRow
-                @representative={{representative}}
+                @vertegenwoordiger={{vertegenwoordiger}}
                 @onPrimaryChange={{this.changePrimaryRepresentative}}
-                @canDelete={{this.canDeleteRepresentatives}}
+                @canDelete={{this.canDeleteVertegenwoordigers}}
                 @onDelete={{this.deleteRepresentative}}
               />
             {{else}}
@@ -302,96 +285,84 @@ export default class RepresentativesEdit extends Component {
 }
 
 class EditRow extends Component {
-  @cached
-  get person() {
-    const state = getPromiseState(this.args.representative.person);
-
-    if (state.isPending || state.isError) {
-      return null;
-    }
-
-    return state.result;
-  }
-
-  @cached
-  get contactPoint() {
-    if (!this.person) return null;
-
-    const state = getPromiseState(this.person.contactPoints);
-
-    if (state.isPending || state.isError) {
-      return null;
-    }
-
-    return state.result?.at(0);
-  }
-
   get isDeleteDisabled() {
     return !this.args.canDelete;
   }
 
   <template>
     <tr>
-      {{#if this.person.isNew}}
-        <EditCell @errorMessage={{fieldError this.person.errors.givenName}}>
+      {{#if @vertegenwoordiger.isNew}}
+        <EditCell @errorMessage={{@vertegenwoordiger.errors.voornaam}}>
           <:label>Voornaam</:label>
           <:input as |CellInput|>
             <CellInput
-              value={{this.person.givenName}}
-              {{on "input" (eventValue (fn (mut this.person.givenName)))}}
+              value={{this.vertegenwoordiger.data.voornaam}}
+              {{on
+                "input"
+                (eventValue (fn (mut @vertegenwoordiger.data.voornaam)))
+              }}
             />
           </:input>
         </EditCell>
-        <EditCell @errorMessage={{fieldError this.person.errors.familyName}}>
+        <EditCell @errorMessage={{@vertegenwoordiger.errors.achternaam}}>
           <:label>Achternaam</:label>
           <:input as |CellInput|>
             <CellInput
-              value={{this.person.familyName}}
-              {{on "input" (eventValue (fn (mut this.person.familyName)))}}
+              value={{@vertegenwoordiger.data.achternaam}}
+              {{on
+                "input"
+                (eventValue (fn (mut @vertegenwoordiger.data.achternaam)))
+              }}
             />
           </:input>
         </EditCell>
-        <EditCell @errorMessage={{fieldError this.person.errors.ssn}}>
+        <EditCell @errorMessage={{@vertegenwoordiger.errors.insz}}>
           <:label>Rijksregisternummer</:label>
           <:input as |CellInput|>
             <CellInput
-              value={{this.person.ssn}}
+              value={{@vertegenwoordiger.data.insz}}
               {{auInputmask
                 options=(hash
                   mask="99.99.99-999.99" autoUnmask="true" placeholder="_"
                 )
               }}
-              {{on "input" (eventValue (fn (mut this.person.ssn)))}}
+              {{on
+                "input"
+                (eventValue (fn (mut @vertegenwoordiger.data.insz)))
+              }}
               placeholder="00.00.00-000.00"
             />
           </:input>
         </EditCell>
       {{else}}
         <td>
-          {{this.person.givenName}}
+          {{@vertegenwoordiger.data.voornaam}}
         </td>
         <td>
-          {{this.person.familyName}}
+          {{@vertegenwoordiger.data.achternaam}}
         </td>
         <td>
           -
         </td>
       {{/if}}
-      <EditCell @errorMessage={{fieldError this.contactPoint.errors.email}}>
+      <EditCell @errorMessage={{@vertegenwoordiger.errors.e-mail}}>
         <:label>E-mail</:label>
         <:input as |CellInput|>
           <CellInput
-            value={{this.contactPoint.email}}
-            {{on "input" (eventValue (fn (mut this.contactPoint.email)))}}
+            value={{@vertegenwoordiger.data.e-mail}}
+            {{on
+              "input"
+              (eventValue (fn (mut @vertegenwoordiger.data.e-mail)))
+            }}
           />
         </:input>
       </EditCell>
       <PhoneInput
-        @onUpdate={{fn (mut this.contactPoint.telephone)}}
-        @value={{this.contactPoint.telephone}}
+        @onUpdate={{fn (mut @vertegenwoordiger.data.telefoon)}}
+        @value={{@vertegenwoordiger.data.telefoon}}
         as |phone|
       >
-        {{#let (fieldError @contactPoint.errors.telephone) as |errorMessage|}}
+        {{#let @contactPoint.errors.telefoon as |errorMessage|}}
           <EditCell
             @errorMessage={{errorMessage}}
             @warningMessage={{phone.warning}}
@@ -403,20 +374,23 @@ class EditRow extends Component {
           </EditCell>
         {{/let}}
       </PhoneInput>
-      <EditCell @errorMessage={{fieldError this.contactPoint.errors.website}}>
+      <EditCell @errorMessage={{@vertegenwoordiger.errors.socialMedia}}>
         <:label>Sociale media</:label>
         <:input as |CellInput|>
           <CellInput
-            value={{this.contactPoint.website}}
-            {{on "input" (eventValue (fn (mut this.contactPoint.website)))}}
+            value={{@vertegenwoordiger.data.socialMedia}}
+            {{on
+              "input"
+              (eventValue (fn (mut @vertegenwoordiger.data.socialMedia)))
+            }}
           />
         </:input>
       </EditCell>
       <td>
         <div class="au-u-margin-top-tiny">
           <AuCheckbox
-            @checked={{isPrimaryRole @representative.role}}
-            @onChange={{fn @onPrimaryChange @representative}}
+            @checked={{@vertegenwoordiger.data.isPrimair}}
+            @onChange={{fn @onPrimaryChange @vertegenwoordiger}}
           >
             Primair
           </AuCheckbox>
@@ -431,7 +405,7 @@ class EditRow extends Component {
             @icon="bin"
             @skin="naked"
             {{(if this.isDeleteDisabled tooltip.target)}}
-            {{on "click" (fn @onDelete @representative)}}
+            {{on "click" (fn @onDelete @vertegenwoordiger)}}
           >Verwijder vertegenwoordiger</AuButton>
           <tooltip.Content>
             De vereniging moet minstens 1 vertegenwoordiger hebben.

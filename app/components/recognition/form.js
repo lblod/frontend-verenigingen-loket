@@ -1,12 +1,14 @@
 import Component from '@glimmer/component';
 import { service } from '@ember/service';
 import { action, set } from '@ember/object';
-import { errorValidation } from '../../validations/recognition-validation';
 import { tracked } from '@glimmer/tracking';
 import dateFormat from '../../helpers/date-format';
 import { task } from 'ember-concurrency';
 import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
-import { AWARDED_BY_OPTIONS } from 'frontend-verenigingen-loket/models/recognition';
+import {
+  AWARDED_BY_OPTIONS,
+  validationSchema,
+} from 'frontend-verenigingen-loket/models/recognition';
 
 export default class FormComponent extends Component {
   items = [AWARDED_BY_OPTIONS.COLLEGE, AWARDED_BY_OPTIONS.OTHER];
@@ -137,7 +139,7 @@ export default class FormComponent extends Component {
     );
     const isNew = !this.legalResourceFile?.id && this.legalResourceFile?.isNew;
 
-    const err = errorValidation.validate({
+    const err = validationSchema.validate({
       ...this.currentRecognition.recognitionModel,
       awardedBy: this.currentRecognition.recognitionModel.awardedBy,
       isDelegatedToRequired:
