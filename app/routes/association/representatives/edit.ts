@@ -3,7 +3,6 @@ import type RouterService from '@ember/routing/router-service';
 import { service } from '@ember/service';
 import type Store from '@ember-data/store';
 import type Association from 'frontend-verenigingen-loket/models/association';
-// @ts-expect-error: not converted to TS yet
 import type CurrentSession from 'frontend-verenigingen-loket/services/current-session';
 import { TrackedArray } from 'tracked-built-ins';
 import type CurrentAssociation from 'frontend-verenigingen-loket/services/current-association';
@@ -21,10 +20,7 @@ export default class AssociationRepresentativesEditRoute extends Route {
   @service declare router: RouterService;
 
   beforeModel() {
-    if (
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      !this.currentSession.canEditVerenigingsregisterData
-    ) {
+    if (!this.currentSession.canEditVerenigingsregisterData) {
       this.router.transitionTo('association.representatives');
     }
   }

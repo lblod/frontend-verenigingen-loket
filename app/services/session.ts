@@ -1,8 +1,33 @@
 import { service } from '@ember/service';
 import SessionService from 'ember-simple-auth/services/session';
+import type CurrentSessionService from 'frontend-verenigingen-loket/services/current-session';
 
-export default class LoketSessionService extends SessionService {
-  @service currentSession;
+// Both mock-login and acm-idm-login authenticators provide this data
+type AuthenticatorData = {
+  authenticated: {
+    authenticator: string;
+    data: {
+      attributes: {
+        roles: string[];
+      };
+    };
+    relationships: {
+      account: {
+        data: {
+          id: string;
+        };
+      };
+      group: {
+        data: {
+          id: string;
+        };
+      };
+    };
+  };
+};
+
+export default class LoketSessionService extends SessionService<AuthenticatorData> {
+  @service declare currentSession: CurrentSessionService;
 
   get isMockLoginSession() {
     return this.isAuthenticated
@@ -14,7 +39,8 @@ export default class LoketSessionService extends SessionService {
       ? this.data.authenticated.authenticator.includes('controller-login')
       : false;
   }
-  async handleAuthentication(routeAfterAuthentication) {
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises -- return types don't match, but that's intentional here
+  async handleAuthentication(routeAfterAuthentication: string): Promise<void> {
     // We wait for the currentSession to load before navigating. This fixes the empty index page since the data might not be loaded yet.
     await this.currentSession.load();
     super.handleAuthentication(routeAfterAuthentication);
