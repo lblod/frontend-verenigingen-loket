@@ -1,8 +1,11 @@
 import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text';
-import AuInput from '@appuniversum/ember-appuniversum/components/au-input';
+import AuInput, {
+  type AuInputSignature,
+} from '@appuniversum/ember-appuniversum/components/au-input';
 import type { TOC } from '@ember/component/template-only';
 import { uniqueId } from '@ember/helper';
 import Component from '@glimmer/component';
+import type { WithBoundArgs } from '@glint/template';
 
 interface EditTableSignature {
   Element: HTMLDivElement;
@@ -29,18 +32,39 @@ interface EditTableSignature {
   </div>
 </template> satisfies TOC<EditTableSignature>;
 
-export class EditCell extends Component {
+interface EditCellSignature {
+  Args: {
+    errorMessage?: string;
+    warningMessage?: string;
+  };
+  Element: HTMLTableCellElement;
+  Blocks: {
+    label: [];
+    input: [
+      WithBoundArgs<typeof CellInput, 'id' | 'error' | 'warning'>,
+      string,
+    ];
+  };
+}
+
+export class EditCell extends Component<EditCellSignature> {
   id = uniqueId();
+
+  get error() {
+    return Boolean(this.args.errorMessage);
+  }
+
+  get warning() {
+    return Boolean(this.args.warningMessage);
+  }
 
   <template>
     <td ...attributes>
       <label class="au-u-hidden-visually" for={{this.id}}>
-        {{this.label}}
+        {{yield to="label"}}
       </label>
       {{yield
-        (component
-          CellInput id=this.id error=@errorMessage warning=@warningMessage
-        )
+        (component CellInput id=this.id error=this.error warning=this.warning)
         this.id
         to="input"
       }}
@@ -54,6 +78,16 @@ export class EditCell extends Component {
   </template>
 }
 
+interface CellInputSignature {
+  Args: {
+    width?: AuInputSignature['Args']['width'];
+    error?: boolean;
+    warning?: boolean;
+    id: string;
+  };
+  Element: AuInputSignature['Element'];
+}
+
 const CellInput = <template>
   <AuInput
     @width={{@width}}
@@ -62,4 +96,4 @@ const CellInput = <template>
     id={{@id}}
     ...attributes
   />
-</template>;
+</template> satisfies TOC<CellInputSignature>;
