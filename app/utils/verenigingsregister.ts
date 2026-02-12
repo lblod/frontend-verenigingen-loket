@@ -16,6 +16,7 @@ export async function isApiAvailable(association: Association) {
     const url = await buildVerenigingUrl(association);
     await manager.request({
       url,
+      method: 'HEAD',
     });
 
     return true;
@@ -39,6 +40,7 @@ export async function getLatestEtag(association: Association) {
   const url = await buildVerenigingUrl(association);
   const dataDocument = await manager.request({
     url,
+    method: 'HEAD',
   });
 
   const etag = dataDocument.response?.headers?.get('etag');
