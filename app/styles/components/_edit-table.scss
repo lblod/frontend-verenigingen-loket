@@ -14,7 +14,13 @@
     bottom: unset;
   }
 }
-.c-edit-table__cell {
-}
-.c-edit-table__cell-input {
+
+// Error state based on Webuniversum: https://www.vlaanderen.be/vlaanderen-design-system/componenten/data-table
+.c-edit-table-row--error {
+  background: #fbebec !important;
+  border-bottom: 0.1rem solid #d2373c !important;
+
+  &:hover {
+    background: #f3f5f6 !important;
+  }
 }

@@ -53,6 +53,10 @@ export default class AssociationRepresentativesEditRoute extends Route {
       originalPrimary = vertegenwoordigers.find(
         (vertegenwoordiger) => vertegenwoordiger.data.isPrimair,
       );
+
+      if (vertegenwoordigers.length === 0) {
+        vertegenwoordigers.push(new TrackedData({}));
+      }
     } catch (error) {
       isApiUnavailable = true;
 

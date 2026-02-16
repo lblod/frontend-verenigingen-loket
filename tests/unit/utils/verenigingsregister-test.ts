@@ -46,98 +46,238 @@ module('Unit | Utility | verenigingsregister', function () {
         assert.ok(result);
       });
 
-      test('voornaam is required', async function (assert) {
-        const invalidVertegenwoordiger = {
-          achternaam: 'Janssens',
-          'e-mail': 'jan.janssens@example.com',
-        };
+      test('voornaam', async function (assert) {
         await assert.rejects(
-          validate(vertegenwoordigerValidationSchema, invalidVertegenwoordiger),
+          validate(vertegenwoordigerValidationSchema, {
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+          }),
           /Dit veld is verplicht/,
           'Missing voornaam should throw',
         );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: '',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+          }),
+          /Dit veld is verplicht/,
+          'an empty string is invalid',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: ' ',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+          }),
+          /Dit veld is verplicht/,
+          'whitespace is invalid',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: '123',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+          }),
+          /Dit veld mag geen cijfers bevatten/,
+          'numbers are not allowed',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan 123',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+          }),
+          /Dit veld mag geen cijfers bevatten/,
+          'numbers are not allowed',
+        );
       });
 
-      test('achternaam is required', async function (assert) {
-        const invalidVertegenwoordiger = {
-          voornaam: 'Jan',
-          insz: '80010100123',
-          'e-mail': 'jan.janssens@example.com',
-        };
+      test('achternaam', async function (assert) {
         await assert.rejects(
-          validate(vertegenwoordigerValidationSchema, invalidVertegenwoordiger),
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            'e-mail': 'jan.janssens@example.com',
+          }),
           /Dit veld is verplicht/,
           'Missing achternaam should throw',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: '',
+            'e-mail': 'jan.janssens@example.com',
+          }),
+          /Dit veld is verplicht/,
+          'an empty string is invalid',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: ' ',
+            'e-mail': 'jan.janssens@example.com',
+          }),
+          /Dit veld is verplicht/,
+          'whitespace is invalid',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: '123',
+            'e-mail': 'jan.janssens@example.com',
+          }),
+          /Dit veld mag geen cijfers bevatten/,
+          'numbers are not allowed',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens 123',
+            'e-mail': 'jan.janssens@example.com',
+          }),
+          /Dit veld mag geen cijfers bevatten/,
+          'numbers are not allowed',
         );
       });
 
       test('`insz` is required if `isNew` is true', async function (assert) {
-        const invalidVertegenwoordiger = {
-          voornaam: 'Jan',
-          achternaam: 'Janssens',
-          'e-mail': 'jan.janssens@example.com',
-        };
         await assert.rejects(
           validate(
             vertegenwoordigerValidationSchema,
-            invalidVertegenwoordiger,
+            {
+              voornaam: 'Jan',
+              achternaam: 'Janssens',
+              'e-mail': 'jan.janssens@example.com',
+            },
             { context: { isNew: true } },
           ),
           /Dit veld is verplicht/,
           'Missing insz when isNew should throw',
         );
+
+        await assert.rejects(
+          validate(
+            vertegenwoordigerValidationSchema,
+            {
+              voornaam: 'Jan',
+              achternaam: 'Janssens',
+              'e-mail': 'jan.janssens@example.com',
+              insz: '',
+            },
+            { context: { isNew: true } },
+          ),
+          /Dit veld is verplicht/,
+          'an empty string is invalid',
+        );
       });
 
-      test('it validates the given `insz`', async function (assert) {
-        const invalidVertegenwoordiger = {
-          voornaam: 'Jan',
-          achternaam: 'Janssens',
-          insz: '123',
-          'e-mail': 'jan.janssens@example.com',
-        };
+      test('insz', async function (assert) {
         await assert.rejects(
-          validate(vertegenwoordigerValidationSchema, invalidVertegenwoordiger),
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            insz: '123',
+            'e-mail': 'jan.janssens@example.com',
+          }),
           /Geen geldig rijksregisternummer/,
           'Invalid insz should throw',
         );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            insz: ' ',
+            'e-mail': 'jan.janssens@example.com',
+          }),
+          /Geen geldig rijksregisternummer/,
+          'whitespace is invalid',
+        );
       });
 
-      test('it validates the email format', async function (assert) {
-        const invalidVertegenwoordiger = {
-          voornaam: 'Jan',
-          achternaam: 'Janssens',
-          'e-mail': 'not-an-email',
-        };
+      test('e-mail', async function (assert) {
         await assert.rejects(
-          validate(vertegenwoordigerValidationSchema, invalidVertegenwoordiger),
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            'e-mail': 'not-an-email',
+          }),
           /Geef een geldig e-mailadres in/,
           'Invalid e-mail should throw',
         );
-      });
 
-      test('it validates the phone format', async function (assert) {
-        const invalidVertegenwoordiger = {
-          voornaam: 'Jan',
-          achternaam: 'Janssens',
-          'e-mail': 'jan.janssens@example.com',
-          telefoon: 'not-a-phone',
-        };
         await assert.rejects(
-          validate(vertegenwoordigerValidationSchema, invalidVertegenwoordiger),
-          /Enkel een plusteken en cijfers zijn toegelaten/,
-          'Invalid telefoon should throw',
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            'e-mail': '',
+          }),
+          /Dit veld is verplicht/,
+          'an empty string is invalid',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            'e-mail': ' ',
+          }),
+          /Geef een geldig e-mailadres in/,
+          'whitespace is invalid',
         );
       });
 
-      test('it validates the `socialMedia` uri format', async function (assert) {
-        const invalidVertegenwoordiger = {
-          voornaam: 'Jan',
-          achternaam: 'Janssens',
-          'e-mail': 'jan.janssens@example.com',
-          socialMedia: 'not-a-uri',
-        };
+      test('telefoon', async function (assert) {
         await assert.rejects(
-          validate(vertegenwoordigerValidationSchema, invalidVertegenwoordiger),
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+            telefoon: 'not-a-phone',
+          }),
+          /Enkel een plusteken en cijfers zijn toegelaten/,
+          'Invalid telefoon should throw',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+            telefoon: ' ',
+          }),
+          /Enkel een plusteken en cijfers zijn toegelaten/,
+          'whitespace is invalid',
+        );
+      });
+
+      test('socialMedia', async function (assert) {
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+            socialMedia: 'not-a-uri',
+          }),
+          /Geef een geldig internetadres in/,
+          'Invalid socialMedia should throw',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+            socialMedia: ' ',
+          }),
           /Geef een geldig internetadres in/,
           'Invalid socialMedia should throw',
         );
