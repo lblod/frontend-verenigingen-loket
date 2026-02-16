@@ -1,4 +1,5 @@
 import Model, { attr } from '@ember-data/model';
+import { Type } from '@warp-drive/core-types/symbols';
 
 export const CLASSIFICATION_CODE = {
   MUNICIPALITY: '5ab0e9b8a3b2ca7c5e000001',
@@ -67,8 +68,10 @@ export const CLASSIFICATION = {
   },
 };
 
-export default class AdministrativeUnitClassificationCodeModel extends Model {
-  @attr label;
+export default class AdministrativeUnitClassificationCode extends Model {
+  declare [Type]: 'administrative-unit-classification-code';
+
+  @attr declare label: string;
 
   get isAgbOrApb() {
     return (
