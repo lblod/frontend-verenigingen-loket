@@ -5,7 +5,8 @@ import type Association from 'frontend-verenigingen-loket/models/association';
 import type CurrentSession from 'frontend-verenigingen-loket/services/current-session';
 import { TrackedArray } from 'tracked-built-ins';
 import type CurrentAssociation from 'frontend-verenigingen-loket/services/current-association';
-import type StoreService from 'frontend-verenigingen-loket/services/store';
+import type SensitiveData from 'frontend-verenigingen-loket/services/sensitive-data';
+import type Store from 'frontend-verenigingen-loket/services/store';
 import {
   getVertegenwoordigers,
   logAPIError,
@@ -16,11 +17,16 @@ import TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
 export default class AssociationRepresentativesEditRoute extends Route {
   @service declare currentAssociation: CurrentAssociation;
   @service declare currentSession: CurrentSession;
-  @service declare store: StoreService;
+  @service declare sensitiveData: SensitiveData;
+  @service declare store: Store;
   @service declare router: RouterService;
 
   beforeModel() {
-    if (!this.currentSession.canEditVerenigingsregisterData) {
+    if (
+      this.sensitiveData.requiresReason(this.currentAssociation.association)
+    ) {
+      this.router.transitionTo('association.representatives.access-reason');
+    } else if (!this.currentSession.canEditVerenigingsregisterData) {
       this.router.transitionTo('association.representatives');
     }
   }
@@ -40,11 +46,14 @@ export default class AssociationRepresentativesEditRoute extends Route {
     let originalPrimary: TrackedData<Vertegenwoordiger> | undefined;
 
     try {
-      vertegenwoordigers = (await getVertegenwoordigers(association)).map(
-        (vertegenwoordiger) => {
-          return new TrackedData(vertegenwoordiger, { isNew: false });
-        },
-      );
+      vertegenwoordigers = (
+        await getVertegenwoordigers(
+          association,
+          this.sensitiveData.getReason(association),
+        )
+      ).map((vertegenwoordiger) => {
+        return new TrackedData(vertegenwoordiger, { isNew: false });
+      });
 
       originalPrimary = vertegenwoordigers.find(
         (vertegenwoordiger) => vertegenwoordiger.data.isPrimair,

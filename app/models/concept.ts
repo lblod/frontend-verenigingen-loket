@@ -3,6 +3,7 @@ import type { Type } from '@warp-drive/core/types/symbols';
 
 export const CONCEPT_SCHEME = {
   ACTIVITIES: '6c10d98a-9089-4fe8-ba81-3ed136db0265',
+  REASON_CODES: '145f3a1b-13f0-4fb6-959a-57872e113bca',
 };
 
 export default class ConceptModel extends Model {

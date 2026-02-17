@@ -44,6 +44,7 @@ Router.map(function () {
     });
     this.route('location');
     this.route('representatives', { path: '/vertegenwoordigers' }, function () {
+      this.route('access-reason', { path: '/toegang-aanvragen' });
       this.route('edit', { path: '/bewerk' });
     });
     this.route('recognition', { path: 'erkenningen' }, function () {

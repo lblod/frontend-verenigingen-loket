@@ -2,6 +2,7 @@ import { assert } from '@ember/debug';
 import { Fetch, RequestManager } from '@warp-drive/core';
 import { associationVCode } from 'frontend-verenigingen-loket/models/association';
 import type Association from 'frontend-verenigingen-loket/models/association';
+import type Concept from 'frontend-verenigingen-loket/models/concept';
 import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point';
 import type { ChangedAttributesHash } from '@warp-drive/core/types/cache';
 import type Site from 'frontend-verenigingen-loket/models/site';
@@ -45,6 +46,21 @@ export async function getLatestEtag(association: Association) {
 
   const etag = dataDocument.response?.headers?.get('etag');
   return etag;
+}
+
+export async function hasApiAuthorization(
+  association: Association,
+): Promise<boolean> {
+  const url = (await buildVerenigingUrl(association)) + '/authorization-check';
+  try {
+    await manager.request({
+      url,
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // These types aren't complete. The API contains more info, but we only type what is useful to keep things simple.
@@ -105,10 +121,16 @@ type ApiErrorResponse = {
 
 export async function getVertegenwoordigers(
   association: Association,
+  reason: Concept,
 ): Promise<Vertegenwoordiger[]> {
   const url = await buildVerenigingUrl(association);
+  assert('The reason concept record has to have an id', reason.id);
+
   const dataDocument = await manager.request<VerenigingDetailsResponse>({
     url,
+    headers: new Headers({
+      'X-Request-Reason': reason.id,
+    }),
   });
 
   return (
