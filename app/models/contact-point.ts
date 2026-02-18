@@ -1,6 +1,6 @@
-import Model, { attr, belongsTo } from '@ember-data/model';
+import Model, { attr, belongsTo } from '@warp-drive/legacy/model';
 import Joi from 'joi';
-import type { Type } from '@warp-drive/core-types/symbols';
+import type { Type } from '@warp-drive/core/types/symbols';
 import type Association from './association';
 
 // The `.name` property is used to determine the type of data that is stored in the contact point.

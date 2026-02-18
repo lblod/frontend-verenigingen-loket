@@ -435,6 +435,7 @@ export default class FormComponent extends Component {
       let formData = new FormData();
       formData.append('file', file);
       try {
+        /* eslint-disable-next-line warp-drive/no-external-request-patterns */
         let response = await fetch('/files', {
           method: 'POST',
           body: formData,

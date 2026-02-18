@@ -1,3 +1,4 @@
+/* eslint-disable warp-drive/no-external-request-patterns */
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
 const basePath = '/mock/sessions';
 const contentType = 'application/vnd.api+json';

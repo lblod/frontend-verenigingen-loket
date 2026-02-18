@@ -1,5 +1,5 @@
-import Model, { attr } from '@ember-data/model';
-import { Type } from '@warp-drive/core-types/symbols';
+import Model, { attr } from '@warp-drive/legacy/model';
+import { Type } from '@warp-drive/core/types/symbols';
 
 export const CLASSIFICATION_CODE = {
   MUNICIPALITY: '5ab0e9b8a3b2ca7c5e000001',

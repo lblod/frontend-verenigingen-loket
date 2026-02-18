@@ -1,5 +1,5 @@
 import { assert } from '@ember/debug';
-import type Model from '@ember-data/model';
+import type Model from '@warp-drive/legacy/model';
 import { ValidationError } from 'joi';
 import type { Schema, ValidationOptions } from 'joi';
 

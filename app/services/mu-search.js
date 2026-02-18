@@ -36,6 +36,7 @@ export default class MuSearchService extends Service {
       }
 
       const endpoint = `/search/${index}/search?${params.join('&')}`;
+      /* eslint-disable-next-line warp-drive/no-external-request-patterns */
       const response = await fetch(endpoint);
       const json = await response.json();
 

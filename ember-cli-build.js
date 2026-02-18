@@ -16,6 +16,10 @@ module.exports = async function (defaults) {
 
   const { setConfig } = await import('@warp-drive/build-config');
   setConfig(app, __dirname, {
+    // this should be the most recent <major>.<minor> version for
+    // which all deprecations have been fully resolved
+    // and should be updated when that changes
+    // compatWith: '5.8',
     deprecations: {
       // New projects can safely leave this deprecation disabled.
       // If upgrading, to opt-into the deprecated behavior, set this to true and then follow:

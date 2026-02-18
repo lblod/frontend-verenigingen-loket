@@ -1,6 +1,6 @@
 /* eslint-disable ember/no-get, ember/classic-decorator-no-classic-methods */
-import Model, { attr, hasMany } from '@ember-data/model';
-import { Type } from '@warp-drive/core-types/symbols';
+import Model, { attr, hasMany } from '@warp-drive/legacy/model';
+import { Type } from '@warp-drive/core/types/symbols';
 import type Account from './account';
 import type AdministrativeUnit from './administrative-unit';
 

@@ -1,3 +1,4 @@
+import '@warp-drive/ember/install';
 import Application from 'frontend-verenigingen-loket/app';
 import config from 'frontend-verenigingen-loket/config/environment';
 import * as QUnit from 'qunit';

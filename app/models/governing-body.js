@@ -1,4 +1,4 @@
-import Model, { belongsTo, attr } from '@ember-data/model';
+import Model, { belongsTo, attr } from '@warp-drive/legacy/model';
 
 export default class GoverningBodyModel extends Model {
   @attr('date') start;

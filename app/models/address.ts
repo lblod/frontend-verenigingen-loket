@@ -1,5 +1,5 @@
-import Model, { attr } from '@ember-data/model';
-import type { Type } from '@warp-drive/core-types/symbols';
+import Model, { attr } from '@warp-drive/legacy/model';
+import type { Type } from '@warp-drive/core/types/symbols';
 import Joi from 'joi';
 
 export default class Address extends Model {

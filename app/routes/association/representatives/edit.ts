@@ -1,11 +1,11 @@
 import Route from '@ember/routing/route';
 import type RouterService from '@ember/routing/router-service';
 import { service } from '@ember/service';
-import type Store from '@ember-data/store';
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type CurrentSession from 'frontend-verenigingen-loket/services/current-session';
 import { TrackedArray } from 'tracked-built-ins';
 import type CurrentAssociation from 'frontend-verenigingen-loket/services/current-association';
+import type StoreService from 'frontend-verenigingen-loket/services/store';
 import {
   getVertegenwoordigers,
   logAPIError,
@@ -16,7 +16,7 @@ import TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
 export default class AssociationRepresentativesEditRoute extends Route {
   @service declare currentAssociation: CurrentAssociation;
   @service declare currentSession: CurrentSession;
-  @service declare store: Store;
+  @service declare store: StoreService;
   @service declare router: RouterService;
 
   beforeModel() {

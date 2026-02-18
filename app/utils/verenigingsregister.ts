@@ -1,10 +1,9 @@
 import { assert } from '@ember/debug';
-import RequestManager from '@ember-data/request';
-import Fetch from '@ember-data/request/fetch';
+import { Fetch, RequestManager } from '@warp-drive/core';
 import { associationVCode } from 'frontend-verenigingen-loket/models/association';
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point';
-import type { ChangedAttributesHash } from '@warp-drive/core-types/cache';
+import type { ChangedAttributesHash } from '@warp-drive/core/types/cache';
 import type Site from 'frontend-verenigingen-loket/models/site';
 import { isValidRijksregisternummer } from 'frontend-verenigingen-loket/utils/rijksregisternummer';
 import type TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';

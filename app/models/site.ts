@@ -1,5 +1,5 @@
-import Model, { belongsTo, attr, hasMany } from '@ember-data/model';
-import type { Type } from '@warp-drive/core-types/symbols';
+import Model, { belongsTo, attr, hasMany } from '@warp-drive/legacy/model';
+import type { Type } from '@warp-drive/core/types/symbols';
 import type Address from './address';
 import type ContactPoint from './contact-point';
 import type SiteType from './site-type';
