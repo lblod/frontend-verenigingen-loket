@@ -1,3 +1,4 @@
+import './styles/app.scss';
 import '@warp-drive/ember/install';
 import Application from '@ember/application';
 import { importSync, isDevelopingApp, macroCondition } from '@embroider/macros';
