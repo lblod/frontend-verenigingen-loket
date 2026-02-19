@@ -1,3 +1,12 @@
+## v1.11.0 (2026-02-19)
+
+#### :rocket: Enhancement
+* [#126](https://github.com/lblod/frontend-verenigingen-loket/pull/126) [CLBV-1161] Request a reason before displaying representatives ([@Windvis](https://github.com/Windvis))
+* [#124](https://github.com/lblod/frontend-verenigingen-loket/pull/124) [CLBV-1172] Improve (backend) validation feedback ([@Windvis](https://github.com/Windvis))
+
+#### Committers: 1
+- Sam Van Campenhout ([@Windvis](https://github.com/Windvis))
+
 ## v1.10.0 (2026-02-10)
 
 #### :rocket: Enhancement
