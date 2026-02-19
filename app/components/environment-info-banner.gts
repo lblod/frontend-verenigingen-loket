@@ -3,9 +3,6 @@ import AuAlert, {
 } from '@appuniversum/ember-appuniversum/components/au-alert';
 import AuLinkExternal from '@appuniversum/ember-appuniversum/components/au-link-external';
 import Component from '@glimmer/component';
-// This file comes from an addon, but they only export it from the app folder, so we have to use our own namespace to import it.
-// @ts-expect-error: It doesn't export any types either.
-import appVersion from 'frontend-verenigingen-loket/helpers/app-version';
 import config from 'frontend-verenigingen-loket/config/environment';
 
 export default class EnvironmentInfoBanner extends Component {
@@ -75,7 +72,7 @@ export default class EnvironmentInfoBanner extends Component {
           </p>
           <div>
             {{config.appName}}
-            {{appVersion versionOnly=true showExtended=true}}
+            {{config.appVersion}}
           </div>
         </div>
       </AuAlert>

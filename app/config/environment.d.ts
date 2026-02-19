@@ -14,6 +14,7 @@ declare const config: {
   pageSize: number;
   controllerLogin: string;
   appName: string;
+  appVersion: string;
   contactEmail: string;
   environmentName: string;
   roleClaim: string;
