@@ -123,6 +123,16 @@ export default class SharedBreadCrumbComponent extends Component {
         ],
       },
       {
+        route: 'association.representatives.access-reason',
+        crumbs: [
+          { label: 'Verenigingen', link: 'associations' },
+          {
+            label: name,
+          },
+          { label: 'Bekijk vertegenwoordigers' },
+        ],
+      },
+      {
         route: 'association.representatives.edit',
         crumbs: [
           { label: 'Verenigingen', link: 'associations' },

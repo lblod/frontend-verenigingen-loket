@@ -7,6 +7,7 @@ import type Transition from '@ember/routing/transition';
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type CurrentAssociationService from 'frontend-verenigingen-loket/services/current-association';
 import type StoreService from 'frontend-verenigingen-loket/services/store';
+import { hasApiAuthorization } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 
 export default class AssociationRoute extends Route {
   @service declare session: SessionService;
@@ -21,19 +22,30 @@ export default class AssociationRoute extends Route {
 
   async model({ id }: { id: string }) {
     try {
-      const model = await this.store.findRecord<Association>(
+      const association = await this.store.findRecord<Association>(
         'association',
         id,
         {
           include: 'organization-status',
         },
       );
-      if (model == null) {
+
+      if (association == null) {
         throw new Error(`Error loading association with id: (${id})`);
       }
-      this.currentAssociation.setAssociation(model);
 
-      return model;
+      this.currentAssociation.setAssociation(association);
+
+      let canViewRepresentatives = false;
+      try {
+        canViewRepresentatives = await hasApiAuthorization(association);
+      } catch {
+        canViewRepresentatives = false;
+      }
+      return {
+        association,
+        hasApiAuthorization: canViewRepresentatives,
+      };
     } catch (error) {
       this.router.transitionTo('associations');
       this.toaster.error(

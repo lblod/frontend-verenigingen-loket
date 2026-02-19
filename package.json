@@ -24,6 +24,7 @@
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
     "lint:types": "ember-tsc --noEmit",
+    "postinstall": "patch-package",
     "release": "release-it",
     "start": "ember serve",
     "test": "concurrently \"npm:lint\" \"npm:test:*\" --names \"lint,test:\" --prefixColors auto",
@@ -33,6 +34,9 @@
     "@lblod/ember-environment-banner": {
       "ember-source": "$ember-source"
     }
+  },
+  "patchPackageComments": {
+    "@warp-drive/core": "The Fetch handler in v5.7.0 doesn't support HEAD requests yet. Remove the patch once we update to a version that includes a fix for this. More info: https://github.com/warp-drive-data/warp-drive/issues/10462"
   },
   "devDependencies": {
     "@appuniversum/ember-appuniversum": "^3.13.0",
@@ -100,6 +104,7 @@
     "inputmask": "^5.0.9",
     "joi": "^17.11.0",
     "loader.js": "^4.7.0",
+    "patch-package": "^8.0.1",
     "prettier": "^3.6.2",
     "prettier-plugin-ember-template-tag": "^2.1.0",
     "qunit": "^2.24.2",

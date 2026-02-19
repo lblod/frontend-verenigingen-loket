@@ -1,0 +1,13 @@
+diff --git a/node_modules/@warp-drive/core/dist/index-CQP2NSqg.js b/node_modules/@warp-drive/core/dist/index-CQP2NSqg.js
+index 4ac55db..65cc148 100644
+--- a/node_modules/@warp-drive/core/dist/index-CQP2NSqg.js
++++ b/node_modules/@warp-drive/core/dist/index-CQP2NSqg.js
+@@ -9602,7 +9602,7 @@ const Fetch = {
+       }
+     }
+     context.setResponse(response);
+-    if (response.status === 204) {
++    if (response.status === 204 || context.request.method === 'HEAD') {
+       return null;
+     }
+     let text = '';
