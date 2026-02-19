@@ -1,3 +1,9 @@
+## v1.11.1 (2026-02-19)
+
+#### :bug: Bug Fix
+* [#127](https://github.com/lblod/frontend-verenigingen-loket/pull/127) [CLBV-1169] Recognition edit page improvements ([@Windvis](https://github.com/Windvis))
+* [#130](https://github.com/lblod/frontend-verenigingen-loket/pull/130) Fix an issue with the production build ([@Windvis](https://github.com/Windvis))
+
 ## v1.11.0 (2026-02-19)
 
 #### :rocket: Enhancement
