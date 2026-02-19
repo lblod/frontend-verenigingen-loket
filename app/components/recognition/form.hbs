@@ -142,12 +142,16 @@
                         </div>
                         <div class="au-u-flex au-u-flex--column au-u-1-1">
                           <AuInput
-                            placeholder="Vul in organisatie"
-                            value={{model.delegatedTo}}
-                            {{on "blur" this.handleDelegatedToEvent}}
-                            id="delegated-to-organization-name"
                             @width="block"
                             @error={{this.validationErrors.delegatedTo}}
+                            placeholder="Entiteit"
+                            value={{model.delegatedTo}}
+                            id="delegated-to-organization-name"
+                            {{on "blur" this.handleDelegatedToEvent}}
+                            {{on
+                              "input"
+                              (fn this.clearFormError "delegatedTo")
+                            }}
                           />
                           <AuHelpText
                             @error={{this.validationErrors.delegatedTo}}

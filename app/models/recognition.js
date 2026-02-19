@@ -103,11 +103,13 @@ export const validationSchema = Joi.object()
     isDelegatedToRequired: Joi.boolean(),
     delegatedTo: Joi.when('isDelegatedToRequired', {
       is: true,
-      then: Joi.required().messages({
+      then: Joi.required().empty(['', null]).messages({
         'any.required':
-          'Gelieve de gedelegeerde entiteit te selecteren die de erkenning toekent.',
+          'Gelieve de gedelegeerde entiteit in te geven die de erkenning toekent.',
+        'any.empty':
+          'Gelieve de gedelegeerde entiteit in te geven die de erkenning toekent.',
       }),
-      otherwise: Joi.allow(null),
+      otherwise: Joi.allow(null).empty(''),
     }),
     file: Joi.object()
       .allow(null)
