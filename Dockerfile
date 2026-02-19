@@ -4,6 +4,7 @@ LABEL maintainer="info@redpencil.io"
 
 WORKDIR /app
 COPY package.json package-lock.json ./
+COPY patches ./patches
 RUN npm ci
 COPY . .
 RUN npm run build
