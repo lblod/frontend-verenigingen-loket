@@ -50,6 +50,7 @@ export default class AssociationRecognitionShowController extends Controller {
     ) {
       const fileId = recognition.legalResource.split('.pdf')[0];
       try {
+        /* eslint-disable-next-line warp-drive/no-external-request-patterns */
         let response = await fetch(`/files/${fileId}`, {
           method: 'DELETE',
         });

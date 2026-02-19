@@ -1,6 +1,6 @@
 import { assert } from '@ember/debug';
-import Model, { attr, hasMany, belongsTo } from '@ember-data/model';
-import { Type } from '@warp-drive/core-types/symbols';
+import Model, { attr, hasMany, belongsTo } from '@warp-drive/legacy/model';
+import { Type } from '@warp-drive/core/types/symbols';
 // @ts-expect-error Class isn't typed yet.
 import type Activity from './activity';
 import type Identifier from './identifier';

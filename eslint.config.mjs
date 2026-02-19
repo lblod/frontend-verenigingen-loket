@@ -20,7 +20,7 @@ import js from '@eslint/js';
 import ts from 'typescript-eslint';
 
 import ember from 'eslint-plugin-ember/recommended';
-
+import WarpDrive from 'eslint-plugin-warp-drive/recommended';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import qunit from 'eslint-plugin-qunit';
 import n from 'eslint-plugin-n';
@@ -54,7 +54,9 @@ export default ts.config(
   ember.configs.base,
   ember.configs.gjs,
   ember.configs.gts,
+  ...WarpDrive,
   eslintConfigPrettier,
+
   /**
    * Ignores must be in their own object
    * https://eslint.org/docs/latest/use/configure/ignore
@@ -68,6 +70,12 @@ export default ts.config(
   {
     linterOptions: {
       reportUnusedDisableDirectives: 'error',
+    },
+  },
+  {
+    rules: {
+      // We disable this rule until we've converted the existing code to the new patterns
+      'warp-drive/no-legacy-request-patterns': 'off',
     },
   },
   {

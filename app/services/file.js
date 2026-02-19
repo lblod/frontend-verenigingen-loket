@@ -6,6 +6,7 @@ export default class FileService extends Service {
   async getFile(file) {
     if (file) {
       try {
+        /* eslint-disable-next-line warp-drive/no-external-request-patterns */
         const response = await fetch(`/files/${file.id}/download`, {
           method: 'GET',
         });

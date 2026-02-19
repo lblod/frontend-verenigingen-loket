@@ -2,12 +2,11 @@ import Route from '@ember/routing/route';
 import type RouterService from '@ember/routing/router-service';
 import { service } from '@ember/service';
 import type SessionService from 'ember-simple-auth/services/session';
-// TODO: replace this with our app's version once we can convert it to .ts (Vite, or switch to WarpDrive packages)
-import type StoreService from 'ember-data/store';
 import type ToasterService from '@appuniversum/ember-appuniversum/services/toaster';
 import type Transition from '@ember/routing/transition';
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type CurrentAssociationService from 'frontend-verenigingen-loket/services/current-association';
+import type StoreService from 'frontend-verenigingen-loket/services/store';
 
 export default class AssociationRoute extends Route {
   @service declare session: SessionService;

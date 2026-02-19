@@ -1,5 +1,5 @@
-import { belongsTo, attr } from '@ember-data/model';
-import { Type } from '@warp-drive/core-types/symbols';
+import { belongsTo, attr } from '@warp-drive/legacy/model';
+import { Type } from '@warp-drive/core/types/symbols';
 import PublicOrganizationModel from './public-organization';
 import type AdministrativeUnitClassificationCode from './administrative-unit-classification-code';
 

@@ -1,6 +1,6 @@
-import type Store from 'ember-data/store';
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type Site from 'frontend-verenigingen-loket/models/site';
+import type Store from 'frontend-verenigingen-loket/services/store';
 
 export async function findCorrespondenceAddressSite(
   store: Store,

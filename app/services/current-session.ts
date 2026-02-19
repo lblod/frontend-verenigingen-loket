@@ -1,11 +1,10 @@
 import Service, { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-// TODO: replace this with our app's version once we can convert it to .ts (Vite, or switch to WarpDrive packages)
-import type StoreService from 'ember-data/store';
 import type Account from 'frontend-verenigingen-loket/models/account';
 import type AdministrativeUnit from 'frontend-verenigingen-loket/models/administrative-unit';
 import type AdministrativeUnitClassificationCode from 'frontend-verenigingen-loket/models/administrative-unit-classification-code';
 import type User from 'frontend-verenigingen-loket/models/user';
+import type StoreService from './store';
 import type SessionService from './session';
 
 export default class CurrentSessionService extends Service {

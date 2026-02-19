@@ -1,4 +1,4 @@
-import JSONAPISerializer from '@ember-data/serializer/json-api';
+import { JSONAPISerializer } from '@warp-drive/legacy/serializer/json-api';
 
 // We inlined the logic from the ember-data-table addon so we no longer need the dependency
 // Source: https://github.com/mu-semtech/ember-data-table/blob/c690a3948b2d9d5f91d69f0a935c6b5cdb4862ca/addon/mixins/serializer.js
