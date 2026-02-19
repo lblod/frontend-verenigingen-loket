@@ -21,6 +21,7 @@ module.exports = function (environment) {
     pageSize: 50,
     controllerLogin: '{{CONTROLLER_LOGIN}}',
     appName: 'Verenigingen',
+    appVersion: require('../package.json').version,
     contactEmail: 'verenigingen.abb@vlaanderen.be',
     environmentName: '{{ENVIRONMENT_NAME}}',
     roleClaim: '{{CONTROLLER_ROLECLAIM}}',
@@ -40,6 +41,7 @@ module.exports = function (environment) {
   };
 
   if (environment === 'development') {
+    ENV.environmentName = 'LOCAL';
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;
     // ENV.APP.LOG_TRANSITIONS = true;
