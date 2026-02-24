@@ -2,7 +2,7 @@ import {
   vertegenwoordigerValidationSchema,
   type Vertegenwoordiger,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
-import type { Schema, ValidationOptions } from 'joi';
+import { validate } from 'frontend-verenigingen-loket/tests/helpers/validate';
 import { module, test } from 'qunit';
 
 type ValidatedVertegenwoordiger = Partial<Vertegenwoordiger>;
@@ -300,15 +300,3 @@ module('Unit | Utility | verenigingsregister', function () {
     });
   });
 });
-
-async function validate<T>(
-  schema: Schema,
-  data: T,
-  validationOptions: ValidationOptions = {},
-): Promise<T> {
-  return (await schema.validateAsync(data, {
-    abortEarly: false,
-    allowUnknown: true,
-    ...validationOptions,
-  })) as T;
-}

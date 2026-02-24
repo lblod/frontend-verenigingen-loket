@@ -10,7 +10,7 @@ const NON_NUMERIC_CHARACTER = /[^\d+]/g;
  * @param {string} digits - A string representing the series of digits.
  * @returns {string} Formatted string with digits grouped in twos.
  */
-export function formatSeriesDigitsFree(digits) {
+export function formatSeriesDigitsFree(digits: string): string {
   // Throw an error if there are less than 4 digits
   if (digits.length < 4)
     throw new Error('Stopping because of fewer than 4 numbers');
@@ -35,7 +35,7 @@ export function formatSeriesDigitsFree(digits) {
  * @param {string} digits - A string representing the series of digits.
  * @returns {string} Formatted string with digits grouped in twos or threes.
  */
-export function formatSeriesDigitsNormal(digits) {
+export function formatSeriesDigitsNormal(digits: string): string {
   // Throw an error if there are less than 4 digits
   if (digits.length < 4)
     throw new Error('Stopping because of fewer than 4 numbers');
@@ -67,11 +67,7 @@ export function formatSeriesDigitsNormal(digits) {
  * @returns {string} Formatted telephone number.
  * @throws {Error} If the input is not a string or does not match any pattern.
  */
-export default function formatTel(...args) {
-  if (args.length !== 1) throw new Error('Exactly 1 parameter expected');
-
-  const input = args[0];
-
+export default function telFormat(input: string) {
   // If input is empty, return an empty string
   if (input === '') return '';
 
@@ -85,10 +81,10 @@ export default function formatTel(...args) {
   if (SHORT_NR.test(stripped)) return stripped;
 
   // Check if the input matches a free number pattern
-  if (FREE_NR.test(stripped)) {
+  const freeNumberMatch = stripped.match(FREE_NR);
+  if (freeNumberMatch) {
     // If it does, extract the rest of the number and format it with formatSeriesDigitsFree
-    const match = stripped.match(FREE_NR);
-    const rest = match[1];
+    const rest = freeNumberMatch[1]!;
     return `0800 ${formatSeriesDigitsFree(rest)}`;
   }
 
@@ -97,22 +93,21 @@ export default function formatTel(...args) {
     const match1 = stripped.match(NR_WITH_COUNTRY);
     if (match1) {
       return {
-        country: match1[1],
-        rest: match1[2],
+        country: match1[1]!,
+        rest: match1[2]!,
       };
     }
     const match2 = stripped.match(NR_WITHOUT_COUNTRY);
     if (match2) {
       return {
         country: '32',
-        rest: match2[1],
-      };
-    } else {
-      return {
-        country: '',
-        rest: '',
+        rest: match2[1]!,
       };
     }
+    return {
+      country: '',
+      rest: '',
+    };
   })();
 
   // Format the number based on whether it has a country code and return it

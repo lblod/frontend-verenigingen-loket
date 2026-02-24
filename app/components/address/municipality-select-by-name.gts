@@ -3,14 +3,37 @@ import { service } from '@ember/service';
 import { task } from 'ember-concurrency';
 import { CLASSIFICATION } from 'frontend-verenigingen-loket/models/administrative-unit-classification-code';
 import PowerSelect from 'ember-power-select/components/power-select';
+import type Owner from '@ember/owner';
+import type AdministrativeUnit from 'frontend-verenigingen-loket/models/administrative-unit';
+import type StoreService from 'frontend-verenigingen-loket/services/store';
 
-export default class MunicipalitySelectByNameComponent extends Component {
-  @service store;
+interface MunicipalitySelectByNameSignature {
+  Args: {
+    selected?: string;
+    error?: boolean;
+    id?: string;
+    onChange: (municipality: string) => void;
+  };
+}
 
-  constructor() {
-    super(...arguments);
+export default class MunicipalitySelectByName extends Component<MunicipalitySelectByNameSignature> {
+  @service declare store: StoreService;
 
-    this.loadMunicipalitiesTask.perform();
+  constructor(owner: Owner, args: MunicipalitySelectByNameSignature['Args']) {
+    super(owner, args);
+
+    void this.loadMunicipalitiesTask.perform();
+  }
+
+  get options() {
+    const lastTask = this.loadMunicipalitiesTask.last;
+
+    if (!lastTask) {
+      // We explicitly return undefined instead of null, because the PowerSelect types don't support `null`
+      return undefined;
+    }
+
+    return lastTask;
   }
 
   loadMunicipalitiesTask = task(async () => {
@@ -32,7 +55,10 @@ export default class MunicipalitySelectByNameComponent extends Component {
       },
     };
 
-    municipalities = await this.store.query('administrative-unit', query);
+    municipalities = await this.store.query<AdministrativeUnit>(
+      'administrative-unit',
+      query,
+    );
 
     return municipalities.map(({ name }) => name);
   });
@@ -45,7 +71,7 @@ export default class MunicipalitySelectByNameComponent extends Component {
         @loadingMessage="Aan het laden..."
         @noMatchesMessage="Geen resultaten"
         @searchMessage="Typ om te zoeken"
-        @options={{this.loadMunicipalitiesTask.last}}
+        @options={{this.options}}
         @selected={{@selected}}
         @onChange={{@onChange}}
         @triggerId={{@id}}

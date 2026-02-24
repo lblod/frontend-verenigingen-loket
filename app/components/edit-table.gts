@@ -40,12 +40,14 @@ interface EditCellSignature {
   Element: HTMLTableCellElement;
   Blocks: {
     label: [];
-    input: [
-      WithBoundArgs<typeof CellInput, 'id' | 'error' | 'warning'>,
-      string,
-    ];
+    input: [YieldedCellInput, string];
   };
 }
+
+export type YieldedCellInput = WithBoundArgs<
+  typeof CellInput,
+  'id' | 'error' | 'warning'
+>;
 
 export class EditCell extends Component<EditCellSignature> {
   id = uniqueId();

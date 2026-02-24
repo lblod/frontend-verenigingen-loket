@@ -1,7 +1,11 @@
-export default function dateFormat(date, format = 'DD-MM-YYYY') {
+export default function dateFormat(date?: string, format = 'DD-MM-YYYY') {
+  if (!date) {
+    return null;
+  }
+
   const newDate = new Date(date);
 
-  if (!isNaN(newDate)) {
+  if (!isNaN(newDate.getTime())) {
     const day = newDate.toLocaleDateString('nl-BE', { day: '2-digit' }),
       month = newDate.toLocaleDateString('nl-BE', { month: '2-digit' }),
       year = newDate.getFullYear();

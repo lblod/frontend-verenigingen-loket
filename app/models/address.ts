@@ -1,6 +1,5 @@
 import Model, { attr } from '@warp-drive/legacy/model';
 import type { Type } from '@warp-drive/core/types/symbols';
-import Joi from 'joi';
 
 export default class Address extends Model {
   declare [Type]: 'address';
@@ -14,17 +13,6 @@ export default class Address extends Model {
   @attr declare country?: string;
   @attr declare fullAddress?: string;
 }
-
-export const validationSchema = Joi.object({
-  street: Joi.string().empty('').required(),
-  number: Joi.string().empty('').required(),
-  boxNumber: Joi.string().empty(''),
-  postcode: Joi.string().empty('').required(),
-  municipality: Joi.string().empty('').required(),
-  country: Joi.string().empty('').required(),
-}).messages({
-  'any.required': 'Dit veld is verplicht.',
-});
 
 export function isEmptyAddress(address: Address) {
   return (
