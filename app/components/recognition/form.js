@@ -2,7 +2,6 @@ import Component from '@glimmer/component';
 import { service } from '@ember/service';
 import { action, set } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import dateFormat from '../../helpers/date-format';
 import { task } from 'ember-concurrency';
 import dateYear from 'frontend-verenigingen-loket/helpers/date-year';
 import {
@@ -81,62 +80,7 @@ export default class FormComponent extends Component {
     set(this.validationErrors, errorField, null);
   }
 
-  async getRecognitionsInPeriod(startTime, endTime) {
-    const startDateExist = [];
-    const endDateExist = [];
-
-    const recognitions = await this.store.query('recognition', {
-      include: 'validity-period',
-      filter: {
-        association: {
-          id: this.currentAssociation.association.id,
-        },
-      },
-      page: { size: 200 },
-    });
-
-    const currentRecognitionId = this.currentRecognition?.recognition?.id;
-
-    await Promise.all(
-      recognitions
-        .filter((recognition) => recognition.id !== currentRecognitionId)
-        .map(async (recognition) => {
-          const recValidityPeriod = await recognition.validityPeriod;
-          const recStartTime = await recValidityPeriod.get('startTime');
-          const recEndTime = await recValidityPeriod.get('endTime');
-
-          if (startTime <= recEndTime && endTime >= recStartTime) {
-            startDateExist.push(recognition);
-          }
-
-          if (endTime >= recStartTime && endTime <= recEndTime) {
-            endDateExist.push(recognition);
-          }
-
-          if (startTime <= recStartTime && endTime >= recEndTime) {
-            startDateExist.push(recognition);
-            endDateExist.push(recognition);
-          }
-        }),
-    );
-
-    return [startDateExist, endDateExist];
-  }
-
   async validateForm() {
-    const startTime = dateFormat(
-      this.currentRecognition.recognitionModel.startTime,
-      'YYY-MM-DD',
-    );
-    const endTime = dateFormat(
-      this.currentRecognition.recognitionModel.endTime,
-      'YYY-MM-DD',
-    );
-
-    const [startDateExist, endDateExist] = await this.getRecognitionsInPeriod(
-      startTime,
-      endTime,
-    );
     const isNew = !this.legalResourceFile?.id && this.legalResourceFile?.isNew;
 
     const err = validationSchema.validate({
@@ -150,19 +94,6 @@ export default class FormComponent extends Component {
     this.validationErrors = err.error
       ? this.mapValidationDetailsToErrors(err.error.details)
       : {};
-    if (startDateExist.length > 0 || endDateExist.length > 0) {
-      err.error = true;
-      this.currentRecognition.generalError =
-        'Pas de erkenningsperiodes aan of annuleer de erkenning.';
-    }
-    if (startDateExist.length > 0) {
-      this.validationErrors.startTime =
-        'De startdatum komt al overeen met een eerder toegekende erkenning.';
-    }
-    if (endDateExist.length > 0) {
-      this.validationErrors.endTime =
-        'De einddatum komt al overeen met een eerder toegekende erkenning.';
-    }
 
     return err.error;
   }
