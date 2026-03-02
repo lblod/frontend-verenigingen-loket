@@ -151,7 +151,18 @@ export default class ContactEdit extends Component<ContactEditSignature> {
         (contactgegeven) => contactgegeven.hasChanges,
       );
 
-      for (const contactgegeven of contactgegevensToSave) {
+      // We save the primary contactgegevens last.
+      // This prevents the scenario where there are temporarily multiple primary contactgegevens of the same type.
+      const sortedContactgegevensToSave = [
+        ...contactgegevensToSave.filter(
+          (contactgegeven) => !contactgegeven.data.isPrimair,
+        ),
+        ...contactgegevensToSave.filter(
+          (contactgegeven) => contactgegeven.data.isPrimair,
+        ),
+      ];
+
+      for (const contactgegeven of sortedContactgegevensToSave) {
         const changedData: Partial<
           Record<keyof Contactgegeven, Contactgegeven[keyof Contactgegeven]>
         > = {};
