@@ -42,7 +42,7 @@ Router.map(function () {
     this.route('contact-details', { path: '/contactgegevens' }, function () {
       this.route('edit', { path: '/bewerk' });
     });
-    this.route('location');
+    this.route('locations', { path: '/locaties' });
     this.route('representatives', { path: '/vertegenwoordigers' }, function () {
       this.route('access-reason', { path: '/toegang-aanvragen' });
       this.route('edit', { path: '/bewerk' });

@@ -31,6 +31,7 @@ export type LocatieType = 'Correspondentie' | 'Activiteiten';
 export type Locatie = {
   locatietype: LocatieType;
   locatieId: number;
+  naam?: string;
   adresvoorstelling: string;
   adresId?: AdresIdentifier;
   adres: Adres;

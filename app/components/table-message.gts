@@ -1,3 +1,11 @@
+import type { TOC } from '@ember/component/template-only';
+
+interface TableMessageSignature {
+  Blocks: {
+    default: [];
+  };
+}
+
 <template>
   <tbody class="table-message">
     <tr class="table-message__row">
@@ -10,4 +18,4 @@
       </td>
     </tr>
   </tbody>
-</template>
+</template> satisfies TOC<TableMessageSignature>;
