@@ -1,14 +1,33 @@
-import AuInput from '@appuniversum/ember-appuniversum/components/au-input';
-import Component from '@glimmer/component';
+import AuInput, {
+  type AuInputSignature,
+} from '@appuniversum/ember-appuniversum/components/au-input';
+import type { TOC } from '@ember/component/template-only';
 import { hash } from '@ember/helper';
 import { on } from '@ember/modifier';
+import Component from '@glimmer/component';
+import type { WithBoundArgs } from '@glint/template';
 import { modifier } from 'ember-modifier';
 import Inputmask from 'inputmask';
 
 const SHORT_BE_NUMBER_LENGTH = 9; // Belgian landline numbers are at least 9 digits long
 const LONG_INTL_NUMBER_LENGTH = 12; // Mobile phone numbers in international notation are 12 characters, including the +
 
-export default class PhoneInput extends Component {
+interface PhoneInputSignature {
+  Args: {
+    value?: string;
+    onUpdate?: (value: string) => void;
+  };
+  Blocks: {
+    default: [
+      {
+        Input: WithBoundArgs<typeof Input, 'value' | 'warning' | 'onUpdate'>;
+        warning: string | undefined;
+      },
+    ];
+  };
+}
+
+export default class PhoneInput extends Component<PhoneInputSignature> {
   get warningMessage() {
     const phone = this.args.value;
 
@@ -31,15 +50,21 @@ export default class PhoneInput extends Component {
     return undefined;
   }
 
-  onUpdate = (event) => {
-    this.args.onUpdate?.(event.target.value);
+  get warning() {
+    return Boolean(this.warningMessage);
+  }
+
+  onUpdate = (event: Event) => {
+    if (event.target instanceof HTMLInputElement) {
+      this.args.onUpdate?.(event.target.value);
+    }
   };
 
   <template>
     {{yield
       (hash
         Input=(component
-          Input value=@value warning=this.warningMessage onUpdate=this.onUpdate
+          Input value=@value warning=this.warning onUpdate=this.onUpdate
         )
         warning=this.warningMessage
       )
@@ -47,12 +72,12 @@ export default class PhoneInput extends Component {
   </template>
 }
 
-function isInternationalNumber(phone) {
+function isInternationalNumber(phone: string) {
   const BASIC_INTL_FORMAT_REGEX = /\+\d*/;
   return BASIC_INTL_FORMAT_REGEX.test(phone);
 }
 
-const phoneInputMask = modifier(function (element) {
+const phoneInputMask = modifier(function (element: HTMLInputElement) {
   new Inputmask({
     regex: '^\\+?\\d*',
     placeholder: '',
@@ -62,6 +87,14 @@ const phoneInputMask = modifier(function (element) {
     element.inputmask?.remove();
   };
 });
+
+interface InputSignature {
+  Args: AuInputSignature['Args'] & {
+    value: string;
+    onUpdate: (event: Event) => void;
+  };
+  Element: AuInputSignature['Element'];
+}
 
 const Input = <template>
   <AuInput
@@ -75,4 +108,4 @@ const Input = <template>
     {{phoneInputMask}}
     ...attributes
   />
-</template>;
+</template> satisfies TOC<InputSignature>;

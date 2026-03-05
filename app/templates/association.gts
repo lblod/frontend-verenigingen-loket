@@ -2,7 +2,6 @@ import AuMainContainer from '@appuniversum/ember-appuniversum/components/au-main
 import AuNavigationLink from '@appuniversum/ember-appuniversum/components/au-navigation-link';
 import type { TOC } from '@ember/component/template-only';
 import { pageTitle } from 'ember-page-title';
-import EditCard from 'frontend-verenigingen-loket/components/edit-card';
 import type AssociationRoute from 'frontend-verenigingen-loket/routes/association';
 import type { ModelFrom } from 'frontend-verenigingen-loket/type-utils/model-from';
 
@@ -17,7 +16,6 @@ interface AssociationSignature {
 
   <AuMainContainer as |m|>
     <m.sidebar>
-      <EditCard />
       <div class="au-c-sidebar">
         <div class="au-c-sidebar__content">
           <nav>

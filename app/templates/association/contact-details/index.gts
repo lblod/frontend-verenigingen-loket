@@ -11,46 +11,63 @@ import AuLinkExternal from '@appuniversum/ember-appuniversum/components/au-link-
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import DataCard from 'frontend-verenigingen-loket/components/data-card';
 import LastUpdated from 'frontend-verenigingen-loket/components/last-updated';
-import OutOfDateMessage from 'frontend-verenigingen-loket/components/verenigingsregister/out-of-date-message';
 import ApiUnavailableMessage from 'frontend-verenigingen-loket/components/verenigingsregister/api-unavailable-message';
 import ReportWrongData from 'frontend-verenigingen-loket/components/report-wrong-data';
 import telFormat from 'frontend-verenigingen-loket/helpers/tel-format';
-import { isPrimaryContactPoint } from 'frontend-verenigingen-loket/models/contact-point';
+import type { ModelFrom } from 'frontend-verenigingen-loket/type-utils/model-from';
+import type Route from 'frontend-verenigingen-loket/routes/association/contact-details';
+import type CurrentSessionService from 'frontend-verenigingen-loket/services/current-session';
+import type RouterService from '@ember/routing/router-service';
+import type {
+  Contactgegeven,
+  ContactgegevenType,
+} from 'frontend-verenigingen-loket/utils/verenigingsregister';
+import Controller from 'frontend-verenigingen-loket/controllers/association/contact-details';
+import { assert } from '@ember/debug';
+import { sortByProperty } from 'frontend-verenigingen-loket/utils/sort';
 
-export default class ContactDetails extends Component {
-  @service currentSession;
-  @service router;
+interface ContactDetailsSignature {
+  Args: {
+    model: ModelFrom<Route>;
+    controller: Controller;
+  };
+}
+
+export default class ContactDetails extends Component<ContactDetailsSignature> {
+  @service declare currentSession: CurrentSessionService;
+  @service declare router: RouterService;
 
   get isLoading() {
     return this.args.model.task.isRunning;
   }
 
   get association() {
-    return this.args.model.task.value.association;
+    const association = this.args.model.task.value?.association;
+    assert('association was accessed before it was loaded', association);
+
+    return association;
   }
 
-  get contactPoints() {
-    return this.args.model.task.value.contactPoints;
+  get contactgegevens() {
+    const contactgegevens = this.args.model.task.value?.contactgegevens ?? [];
+
+    return sortContactgegevens(contactgegevens, this.args.controller.sort);
   }
 
-  get correspondenceAddressSite() {
-    return this.args.model.task.value.correspondenceAddressSite;
+  get correspondenceLocatie() {
+    return this.args.model.task.value?.correspondenceLocatie;
   }
 
-  get isOutOfDate() {
-    return this.args.model.task.value.isOutOfDate;
+  get lastUpdated() {
+    return this.args.model.task.value?.lastUpdated;
   }
 
   get isApiUnavailable() {
-    return this.args.model.task.value.isApiUnavailable;
+    return this.args.model.task.value?.isApiUnavailable;
   }
 
   get isEditDisabled() {
-    return (
-      this.isOutOfDate ||
-      this.isApiUnavailable ||
-      !this.currentSession.canEditVerenigingsregisterData
-    );
+    return !this.currentSession.canEditVerenigingsregisterData;
   }
 
   reloadData = () => {
@@ -87,7 +104,6 @@ export default class ContactDetails extends Component {
                   @route="association.contact-details.edit"
                   @skin="button-secondary"
                   @icon="pencil"
-                  @disabled={{true}}
                 >
                   Bewerk
                 </AuLink>
@@ -97,7 +113,7 @@ export default class ContactDetails extends Component {
             {{/if}}
 
             <div class="au-u-margin-top-tiny">
-              <LastUpdated @lastUpdated={{this.association.lastUpdated}} />
+              <LastUpdated @lastUpdated={{this.lastUpdated}} />
             </div>
           </div>
         </section>
@@ -106,12 +122,6 @@ export default class ContactDetails extends Component {
           <ApiUnavailableMessage
             @association={{this.association}}
             @onApiAvailable={{this.reloadData}}
-            class="au-u-margin-bottom"
-          />
-        {{else if this.isOutOfDate}}
-          <OutOfDateMessage
-            @association={{this.association}}
-            @onUpdateAvailable={{this.reloadData}}
             class="au-u-margin-bottom"
           />
         {{/if}}
@@ -127,8 +137,8 @@ export default class ContactDetails extends Component {
                   <Item>
                     <:label>Adres</:label>
                     <:content>
-                      {{#if this.correspondenceAddressSite}}
-                        {{this.correspondenceAddressSite.address.fullAddress}}
+                      {{#if this.correspondenceLocatie}}
+                        {{this.correspondenceLocatie.adresvoorstelling}}
                       {{else}}
                         Niet opgegeven
                       {{/if}}
@@ -143,30 +153,27 @@ export default class ContactDetails extends Component {
 
       <div>
         <AuDataTable
-          @content={{this.contactPoints}}
+          @content={{this.contactgegevens}}
           @isLoading={{this.isLoading}}
-          @page={{@controller.page}}
-          @sort={{@controller.sort}}
-          @size={{@controller.size}}
           @noDataMessage="Er werden geen contactgegevens gevonden."
           as |t|
         >
           {{#let
-            (hasPrimaryContactPoints this.contactPoints)
+            (hasPrimaryContactgegevens this.contactgegevens)
             as |showFavoriteColumn|
           }}
             <t.content class="au-c-data-table__table--small" as |c|>
               <c.header>
                 {{#if showFavoriteColumn}}
                   <ThSortable
-                    @field="type,name"
+                    @field="is-primair,contactgegeventype"
                     @currentSorting={{@controller.sort}}
                     @label="Favorieten"
                     @class="data-table__header-title u-shrink-column"
                   />
                 {{/if}}
                 <ThSortable
-                  @field="name"
+                  @field="contactgegeventype,is-primair"
                   @currentSorting={{@controller.sort}}
                   @label="Type contactgegeven"
                   @class="data-table__header-title"
@@ -174,19 +181,19 @@ export default class ContactDetails extends Component {
                 />
                 <th>Waarde</th>
               </c.header>
-              <c.body as |contactPoint|>
+              <c.body as |contactgegeven|>
                 {{#if showFavoriteColumn}}
                   <td>
-                    {{#if (isPrimaryContactPoint contactPoint)}}
+                    {{#if contactgegeven.isPrimair}}
                       <AuBadge @icon="vote-star-filled" class="star-icon" />
                     {{/if}}
                   </td>
                 {{/if}}
                 <td>
-                  {{typeLabel contactPoint}}
+                  {{typeLabel contactgegeven}}
                 </td>
                 <td>
-                  <ContactPointValue @contactPoint={{contactPoint}} />
+                  <ContactPointValue @contactgegeven={{contactgegeven}} />
                 </td>
               </c.body>
             </t.content>
@@ -197,31 +204,55 @@ export default class ContactDetails extends Component {
   </template>
 }
 
-class ContactPointValue extends Component {
+interface ContactgegevenValueSignature {
+  Args: {
+    contactgegeven: Contactgegeven;
+  };
+}
+
+class ContactPointValue extends Component<ContactgegevenValueSignature> {
+  get isEmail() {
+    return this.args.contactgegeven.contactgegeventype === 'E-mail';
+  }
+
+  get isPhone() {
+    return this.args.contactgegeven.contactgegeventype === 'Telefoon';
+  }
+
   get isSocialMediaLink() {
-    return this.args.contactPoint.name === 'SocialMedia';
+    return this.args.contactgegeven.contactgegeventype === 'SocialMedia';
+  }
+
+  get value() {
+    return this.args.contactgegeven.waarde;
   }
 
   <template>
-    {{#if @contactPoint.email}}
-      <AuLinkExternal href="mailto:{{@contactPoint.email}}">
-        {{@contactPoint.email}}
+    {{#if this.isEmail}}
+      <AuLinkExternal href="mailto:{{this.value}}">
+        {{this.value}}
       </AuLinkExternal>
-    {{else if @contactPoint.telephone}}
-      <AuLinkExternal href="tel:{{@contactPoint.telephone}}">
-        {{telFormat @contactPoint.telephone}}
+    {{else if this.isPhone}}
+      <AuLinkExternal href="tel:{{this.value}}">
+        {{telFormat this.value}}
       </AuLinkExternal>
     {{else if this.isSocialMediaLink}}
-      <SocialMediaLink @url={{@contactPoint.website}} />
+      <SocialMediaLink @url={{this.value}} />
     {{else}}
-      <AuLinkExternal href={{@contactPoint.website}}>
-        {{@contactPoint.website}}
+      <AuLinkExternal href={{this.value}}>
+        {{this.value}}
       </AuLinkExternal>
     {{/if}}
   </template>
 }
 
-class SocialMediaLink extends Component {
+interface SocialMediaLinkSignature {
+  Args: {
+    url: string;
+  };
+}
+
+class SocialMediaLink extends Component<SocialMediaLinkSignature> {
   get name() {
     const url = this.args.url.toLowerCase();
 
@@ -247,17 +278,35 @@ class SocialMediaLink extends Component {
   </template>
 }
 
-function typeLabel(contactPoint) {
-  const labels = {
+function sortContactgegevens(contactgegevens: Contactgegeven[], sort: string) {
+  if (!sort) {
+    // The Magda API sorts the contactgegevens by `id` by default
+    return contactgegevens;
+  }
+
+  const sortedContactgevens = contactgegevens.slice();
+
+  // The `AuDataTableThSortable` component always dasherizes the field, which isn't useful for us here. As a workaround we map the dasherized value back to the original one.
+  // TODO, remove this mapping once the `AuDataTableThSortable` component has an option to not change the sort key.
+  sortByProperty(sortedContactgevens, sort, {
+    'is-primair': 'isPrimair',
+  });
+
+  return sortedContactgevens;
+}
+
+function typeLabel(contactgegeven: Contactgegeven) {
+  const labels: Partial<Record<ContactgegevenType, string>> = {
     Telefoon: 'Telefoonnummer',
     SocialMedia: 'Sociale media',
   };
 
-  return labels[contactPoint.name] ?? contactPoint.name;
+  return (
+    labels[contactgegeven.contactgegeventype] ??
+    contactgegeven.contactgegeventype
+  );
 }
 
-function hasPrimaryContactPoints(contactPoints) {
-  return contactPoints.some((contactPoint) =>
-    isPrimaryContactPoint(contactPoint),
-  );
+function hasPrimaryContactgegevens(contactgegevens: Contactgegeven[]) {
+  return contactgegevens.some((contactgegeven) => contactgegeven.isPrimair);
 }

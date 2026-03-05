@@ -1,16 +1,28 @@
-import AuAlert from '@appuniversum/ember-appuniversum/components/au-alert';
+import AuAlert, {
+  type AuAlertSignature,
+} from '@appuniversum/ember-appuniversum/components/au-alert';
 import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text';
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
+import type Owner from '@ember/owner';
 import Component from '@glimmer/component';
+import type Association from 'frontend-verenigingen-loket/models/association';
 import { isApiAvailable } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 
 const POLLING_DELAY = 30_000;
 
-export default class ApiUnavailableMessage extends Component {
-  intervalId;
+interface ApiUnavailableMessageSignature {
+  Args: {
+    association: Association;
+    onApiAvailable?: () => void;
+  };
+  Element: AuAlertSignature['Element'];
+}
 
-  constructor() {
-    super(...arguments);
+export default class ApiUnavailableMessage extends Component<ApiUnavailableMessageSignature> {
+  intervalId?: number;
+
+  constructor(owner: Owner, args: ApiUnavailableMessageSignature['Args']) {
+    super(owner, args);
 
     this.pollForAvailability();
   }

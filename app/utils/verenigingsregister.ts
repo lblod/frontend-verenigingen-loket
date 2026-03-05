@@ -3,65 +3,15 @@ import { Fetch, RequestManager } from '@warp-drive/core';
 import { associationVCode } from 'frontend-verenigingen-loket/models/association';
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type Concept from 'frontend-verenigingen-loket/models/concept';
-import type ContactPoint from 'frontend-verenigingen-loket/models/contact-point';
-import type { ChangedAttributesHash } from '@warp-drive/core/types/cache';
-import type Site from 'frontend-verenigingen-loket/models/site';
 import { isValidRijksregisternummer } from 'frontend-verenigingen-loket/utils/rijksregisternummer';
 import type TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
 import Joi from 'joi';
 
 const manager = new RequestManager().use([Fetch]);
 
-export async function isApiAvailable(association: Association) {
-  try {
-    const url = await buildVerenigingUrl(association);
-    await manager.request({
-      url,
-      method: 'HEAD',
-    });
-
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export async function isOutOfDate(association: Association) {
-  const currentEtag = association.etag;
-  if (typeof currentEtag !== 'string') {
-    // If the etag isn't a string, we assume it was harvested incorrectly and we can't be sure the data is out of date.
-    return false;
-  }
-
-  const latestEtag = await getLatestEtag(association);
-  return currentEtag !== latestEtag;
-}
-
-export async function getLatestEtag(association: Association) {
-  const url = await buildVerenigingUrl(association);
-  const dataDocument = await manager.request({
-    url,
-    method: 'HEAD',
-  });
-
-  const etag = dataDocument.response?.headers?.get('etag');
-  return etag;
-}
-
-export async function hasApiAuthorization(
-  association: Association,
-): Promise<boolean> {
-  const url = (await buildVerenigingUrl(association)) + '/authorization-check';
-  try {
-    await manager.request({
-      url,
-    });
-
-    return true;
-  } catch {
-    return false;
-  }
-}
+////////////////////////////////////////////////////////////////////////////
+/// Types
+////////////////////////////////////////////////////////////////////////////
 
 // These types aren't complete. The API contains more info, but we only type what is useful to keep things simple.
 type Vereniging = {
@@ -72,10 +22,50 @@ type Vereniging = {
   startdatum: string;
   einddatum: string;
   status: string;
+  locaties?: Locatie[];
+  contactgegevens?: Contactgegeven[];
   vertegenwoordigers?: Vertegenwoordiger[];
 };
 
+export type LocatieType = 'Correspondentie' | 'Activiteiten';
+export type Locatie = {
+  locatietype: LocatieType;
+  locatieId: number;
+  adresvoorstelling: string;
+  adresId?: AdresIdentifier;
+  adres: Adres;
+  isPrimair: boolean;
+};
+
+export type AdresIdentifier = {
+  bronwaarde: string;
+  broncode: 'AR';
+};
+
+export type Adres = {
+  straatnaam: string;
+  huisnummer: string;
+  busnummer?: string;
+  postcode: string;
+  gemeente: string;
+  land: string;
+};
+
+export type ContactgegevenType =
+  | 'Telefoon'
+  | 'E-mail'
+  | 'Website'
+  | 'SocialMedia';
+
+export type Contactgegeven = {
+  contactgegevenId: number;
+  contactgegeventype: ContactgegevenType;
+  waarde: string;
+  isPrimair: boolean;
+};
+
 // A representative in English. We use dutch naming here since it's a verenigingsregister object that also uses dutch property names.
+// TODO: remove undefined from some of these props. Some are optional, but we mainly did it for the edit page. We should use a separate type for that (with optional fields)
 export type Vertegenwoordiger = {
   vertegenwoordigerId?: number;
   voornaam?: string;
@@ -88,6 +78,7 @@ export type Vertegenwoordiger = {
   isPrimair?: boolean;
 } & {
   // Not a real property, but we use it to store generic errors for now.
+  // TODO: This is only relevant for the edit page, we shouldn't add it here.
   genericError?: string;
 };
 
@@ -119,36 +110,73 @@ type ApiErrorResponse = {
   };
 };
 
-export async function getVertegenwoordigers(
-  association: Association,
-  reason: Concept,
-): Promise<Vertegenwoordiger[]> {
-  const url = await buildVerenigingUrl(association);
-  assert('The reason concept record has to have an id', reason.id);
+////////////////////////////////////////////////////////////////////////////
+// Constants
+////////////////////////////////////////////////////////////////////////////
 
-  const dataDocument = await manager.request<VerenigingDetailsResponse>({
+export const CONTACTGEGEVEN_LABEL: Record<ContactgegevenType, string> = {
+  'E-mail': 'E-mail',
+  Telefoon: 'Telefoonnummer',
+  Website: 'Website',
+  SocialMedia: 'Social media',
+};
+
+////////////////////////////////////////////////////////////////////////////
+// Status checking
+////////////////////////////////////////////////////////////////////////////
+
+export async function isApiAvailable(association: Association) {
+  try {
+    const vCode = await associationVCode(association);
+    const url = buildVerenigingUrl(vCode);
+    await manager.request({
+      url,
+      method: 'HEAD',
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function isOutOfDate(association: Association) {
+  const currentEtag = association.etag;
+  if (typeof currentEtag !== 'string') {
+    // If the etag isn't a string, we assume it was harvested incorrectly and we can't be sure the data is out of date.
+    return false;
+  }
+
+  const latestEtag = await getLatestEtag(association);
+  return currentEtag !== latestEtag;
+}
+
+export async function getLatestEtag(association: Association) {
+  const vCode = await associationVCode(association);
+  const url = buildVerenigingUrl(vCode);
+  const dataDocument = await manager.request({
     url,
-    headers: new Headers({
-      'X-Request-Reason': reason.id,
-    }),
+    method: 'HEAD',
   });
 
-  return (
-    dataDocument.content.vereniging.vertegenwoordigers?.map(
-      (vertegenwoordiger) => {
-        // We only return the data we actually need. The API responds with more (nested) data.
-        return {
-          vertegenwoordigerId: vertegenwoordiger.vertegenwoordigerId,
-          voornaam: vertegenwoordiger.voornaam,
-          achternaam: vertegenwoordiger.achternaam,
-          'e-mail': vertegenwoordiger['e-mail'],
-          telefoon: vertegenwoordiger.telefoon,
-          socialMedia: vertegenwoordiger.socialMedia,
-          isPrimair: vertegenwoordiger.isPrimair,
-        };
-      },
-    ) || []
-  );
+  const etag = dataDocument.response?.headers?.get('etag');
+  return etag;
+}
+
+export async function hasApiAuthorization(
+  association: Association,
+): Promise<boolean> {
+  const vCode = await associationVCode(association);
+  const url = buildVerenigingUrl(vCode) + '/authorization-check';
+  try {
+    await manager.request({
+      url,
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -168,9 +196,91 @@ export async function waitForStableAPI() {
   return wait(1000);
 }
 
-export async function createOrUpdateContactDetail(contactPoint: ContactPoint) {
-  const url = await buildContactDetailUrl(contactPoint);
-  const method = contactPoint.isNew ? 'POST' : 'PATCH';
+////////////////////////////////////////////////////////////////////////////
+// Data fetching
+////////////////////////////////////////////////////////////////////////////
+
+export async function getVerenigingDetails(
+  association: Association,
+  reasonId?: string,
+) {
+  const vCode = await associationVCode(association);
+  const url = reasonId
+    ? buildVerenigingUrl(vCode)
+    : buildBasisInformatieUrl(vCode);
+
+  const dataDocument = await manager.request<VerenigingDetailsResponse>({
+    url,
+  });
+
+  return dataDocument.content;
+}
+
+export function getLocatiesFromVereniging(vereniging: Vereniging): Locatie[] {
+  return vereniging.locaties || [];
+}
+
+export function findCorrespondenceLocatie(
+  locaties: Locatie[],
+): Locatie | undefined {
+  return locaties.find((locatie) => locatie.locatietype === 'Correspondentie');
+}
+
+export function getContactgegevensFromVereniging(
+  vereniging: Vereniging,
+): Contactgegeven[] {
+  return (
+    vereniging.contactgegevens?.map((contactgegeven) => {
+      // We only return the data we actually need. The API responds with more (nested) data.
+      return {
+        contactgegevenId: contactgegeven.contactgegevenId,
+        contactgegeventype: contactgegeven.contactgegeventype,
+        waarde: contactgegeven.waarde,
+        isPrimair: contactgegeven.isPrimair,
+      };
+    }) || []
+  );
+}
+
+export async function getVertegenwoordigers(
+  association: Association,
+  reason: Concept,
+): Promise<Vertegenwoordiger[]> {
+  assert('concept id is required', reason.id);
+  const vereniging = (await getVerenigingDetails(association, reason.id))
+    .vereniging;
+
+  return (
+    vereniging.vertegenwoordigers?.map((vertegenwoordiger) => {
+      // We only return the data we actually need. The API responds with more (nested) data.
+      return {
+        vertegenwoordigerId: vertegenwoordiger.vertegenwoordigerId,
+        voornaam: vertegenwoordiger.voornaam,
+        achternaam: vertegenwoordiger.achternaam,
+        'e-mail': vertegenwoordiger['e-mail'],
+        telefoon: vertegenwoordiger.telefoon,
+        socialMedia: vertegenwoordiger.socialMedia,
+        isPrimair: vertegenwoordiger.isPrimair,
+      };
+    }) || []
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////
+// Data persistence
+////////////////////////////////////////////////////////////////////////////
+
+export async function createOrUpdateContactgegeven({
+  vCode,
+  contactgegevenId,
+  data,
+}: {
+  vCode: string;
+  contactgegevenId?: number;
+  data: Partial<Contactgegeven>;
+}) {
+  const url = buildContactgegevenUrl(vCode, contactgegevenId);
+  const method = contactgegevenId ? 'PATCH' : 'POST';
 
   await manager.request({
     url,
@@ -179,16 +289,16 @@ export async function createOrUpdateContactDetail(contactPoint: ContactPoint) {
       'Content-Type': 'application/json',
     }),
     body: JSON.stringify({
-      contactgegeven: mapRecordAttributesToAPIFields(
-        contactPoint.changedAttributes(),
-        CONTACT_DETAILS_ATTRIBUTE_MAP,
-      ),
+      contactgegeven: data,
     }),
   });
 }
 
-export async function removeContactDetail(contactPoint: ContactPoint) {
-  const url = await buildContactDetailUrl(contactPoint);
+export async function deleteContactgegeven(
+  vCode: string,
+  contactgegevenId: number,
+) {
+  const url = buildContactgegevenUrl(vCode, contactgegevenId);
 
   await manager.request({
     url,
@@ -196,36 +306,49 @@ export async function removeContactDetail(contactPoint: ContactPoint) {
   });
 }
 
-export async function createOrUpdateCorrespondenceSite(
-  site: Site,
-  association: Association,
-) {
-  const url = await buildSiteUrl(site, association);
-  const method = site.isNew ? 'POST' : 'PATCH';
-  const address = await site.address;
-  const locationBody: Record<string, unknown> = {};
+export async function createOrUpdateCorrespondenceLocatie({
+  vCode,
+  locatieId,
+  data,
+}: {
+  vCode: string;
+  locatieId?: number;
+  data: Partial<Adres & AdresIdentifier>;
+}) {
+  const url = buildLocatieUrl(vCode, locatieId);
+  const isNew = typeof locatieId !== 'number';
+  const method = isNew ? 'POST' : 'PATCH';
+  const locatieData: Partial<Locatie> = {};
 
-  if (site.isNew) {
-    locationBody['locatietype'] = 'Correspondentie';
+  if (isNew) {
+    locatieData.locatietype = 'Correspondentie';
   }
 
   // "adresId" and "adres" are mutually exclusive.
   // The verenigingsregister API will automatically fetch the address information when we provide the address register URI.
-  if (address.addressRegisterUri) {
-    locationBody['adresId'] = {
+  if (data.bronwaarde) {
+    locatieData.adresId = {
       broncode: 'AR',
-      bronwaarde: address.addressRegisterUri,
+      bronwaarde: data.bronwaarde,
     };
   } else {
-    // It seems we need to send _all_ the address values, even if only a single thing changes,
-    // so we can't use the .changedAttributes and mapRecordAttributesToApiFields setup here
-    locationBody['adres'] = {
-      straatnaam: address.street,
-      huisnummer: address.number,
-      busnummer: address.boxNumber,
-      postcode: address.postcode,
-      gemeente: address.municipality,
-      land: address.country,
+    assert(
+      'all required address fields are expected to be set',
+      data.straatnaam &&
+        data.huisnummer &&
+        data.postcode &&
+        data.gemeente &&
+        data.land,
+    );
+
+    // It seems we need to send _all_ the address values, even if only a single part changes,
+    locatieData['adres'] = {
+      straatnaam: data.straatnaam,
+      huisnummer: data.huisnummer,
+      busnummer: data.busnummer,
+      postcode: data.postcode,
+      gemeente: data.gemeente,
+      land: data.land,
     };
   }
 
@@ -235,15 +358,15 @@ export async function createOrUpdateCorrespondenceSite(
     headers: new Headers({
       'Content-Type': 'application/json',
     }),
-    body: JSON.stringify({ locatie: locationBody }),
+    body: JSON.stringify({ locatie: locatieData }),
   });
 }
 
-export async function removeCorrespondenceSite(
-  site: Site,
-  association: Association,
+export async function deleteCorrespondenceLocatie(
+  vCode: string,
+  locatieId: number,
 ) {
-  const url = await buildSiteUrl(site, association);
+  const url = buildLocatieUrl(vCode, locatieId);
 
   await manager.request({
     url,
@@ -317,41 +440,33 @@ export async function removeVertegenwoordiger(
   });
 }
 
-async function buildContactDetailUrl(contactPoint: ContactPoint) {
-  const association = contactPoint.organization;
+////////////////////////////////////////////////////////////////////////////
+// Url builders
+////////////////////////////////////////////////////////////////////////////
 
-  assert(
-    'association contact points are expected to have an association relationship',
-    association,
-  );
+function buildVerenigingUrl(vCode: string) {
+  return `/verenigingen-proxy/${vCode}`;
+}
 
-  const url = (await buildVerenigingUrl(association)) + '/contactgegevens';
+function buildBasisInformatieUrl(vCode: string) {
+  return buildVerenigingUrl(vCode) + '/basisinformatie';
+}
 
-  if (!contactPoint.isNew) {
-    const internalId = contactPoint.internalId;
-    assert(
-      'existing contact points are expected to have an internal id',
-      internalId,
-    );
+function buildContactgegevenUrl(vCode: string, contactgegevenId?: number) {
+  const url = buildVerenigingUrl(vCode) + '/contactgegevens';
 
-    if (internalId) {
-      return url + '/' + internalId;
-    }
+  if (typeof contactgegevenId === 'number') {
+    return url + '/' + contactgegevenId;
   }
 
   return url;
 }
 
-async function buildSiteUrl(site: Site, association: Association) {
-  const url = (await buildVerenigingUrl(association)) + '/locaties';
+function buildLocatieUrl(vCode: string, locatieId?: number) {
+  const url = buildVerenigingUrl(vCode) + '/locaties';
 
-  if (!site.isNew) {
-    const internalId = site.internalId;
-    assert('existing sites are expected to have an internal id', internalId);
-
-    if (internalId) {
-      return url + '/' + internalId;
-    }
+  if (locatieId) {
+    return url + '/' + locatieId;
   }
 
   return url;
@@ -362,7 +477,8 @@ async function buildVertegenwoordigerUrl(
   association: Association,
   isNew: boolean = false,
 ) {
-  const url = (await buildVerenigingUrl(association)) + '/vertegenwoordigers';
+  const vCode = await associationVCode(association);
+  const url = buildVerenigingUrl(vCode) + '/vertegenwoordigers';
 
   if (!isNew) {
     const id = vertegenwoordiger.vertegenwoordigerId;
@@ -379,69 +495,9 @@ async function buildVertegenwoordigerUrl(
   return url;
 }
 
-async function buildVerenigingUrl(association: Association) {
-  const vCode = await associationVCode(association);
-  return `/verenigingen-proxy/${vCode}`;
-}
-
-const CONTACT_DETAILS_ATTRIBUTE_MAP = {
-  name: 'contactgegeventype',
-  telephone: 'waarde',
-  email: 'waarde',
-  website: 'waarde',
-  type: function (
-    typeValue: unknown,
-    mappedAttributes: Record<string, unknown>,
-  ) {
-    mappedAttributes['isPrimair'] = typeValue === 'Primary';
-  },
-};
-
-/**
- * The verenigingsregister API uses different field names than our mu-cl-resources API, so we need to map between them.
- * @param attributes: The hash of changed attributes
- * @param attributeMap: The object that maps the EmberData attribute names to the corresponding API field. It can also be a function if the mapped value needs to be changed as well.
- * @returns
- */
-function mapRecordAttributesToAPIFields<T>(
-  attributes: ChangedAttributesHash,
-  attributeMap: AttributeMap<T>,
-  ignoredAttributes?: (keyof T)[],
-): Record<string, unknown> {
-  const mappedAttributes: Record<string, unknown> = {};
-
-  Object.keys(attributes).forEach((attribute) => {
-    // TODO: there might be a way to type this properly without the type assertion?
-    const mappedAttributeOrHandler = attributeMap[attribute as keyof T];
-
-    if (
-      Array.isArray(ignoredAttributes) &&
-      ignoredAttributes.includes(attribute as keyof T)
-    ) {
-      return;
-    }
-
-    assert(
-      `Map is missing for attribute "${attribute}"`,
-      mappedAttributeOrHandler,
-    );
-
-    if (typeof mappedAttributeOrHandler === 'function') {
-      const newValue = attributes[attribute]?.at(1);
-      mappedAttributeOrHandler(newValue, mappedAttributes);
-    } else if (typeof mappedAttributeOrHandler === 'string') {
-      mappedAttributes[mappedAttributeOrHandler] = attributes[attribute]?.at(1);
-    }
-  });
-
-  return mappedAttributes;
-}
-
-type AttributeMap<T> = {
-  [K in keyof T]?:
-    | string
-    | ((value: unknown, mapped: Record<string, unknown>) => void);
-};
+////////////////////////////////////////////////////////////////////////////
+// Error handling
+////////////////////////////////////////////////////////////////////////////
 
 export function handleError(
   toaster: { error: (message: string, title?: string) => void },
@@ -461,6 +517,22 @@ export function logAPIError(error: Error, message?: string) {
   }
 }
 
+export class ApiValidationError<T> extends Error {
+  subject: T;
+  name: string;
+
+  constructor(subject: T) {
+    super('API Validation error');
+    this.name = 'ApiValidationError';
+    this.subject = subject;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////
+// Validations
+////////////////////////////////////////////////////////////////////////////
+
+// TODO: move the validation code to the representatives edit page, it doesn't really belong here
 const nameSchema = Joi.string()
   .trim()
   .empty('')
@@ -508,14 +580,3 @@ export const vertegenwoordigerValidationSchema = Joi.object({
 }).messages({
   'any.required': 'Dit veld is verplicht.',
 });
-
-export class ApiValidationError<T> extends Error {
-  subject: T;
-  name: string;
-
-  constructor(subject: T) {
-    super('API Validation error');
-    this.name = 'ApiValidationError';
-    this.subject = subject;
-  }
-}

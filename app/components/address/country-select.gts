@@ -2,14 +2,24 @@ import Component from '@glimmer/component';
 import { service } from '@ember/service';
 import { restartableTask, timeout } from 'ember-concurrency';
 import PowerSelect from 'ember-power-select/components/power-select';
+import type StoreService from 'frontend-verenigingen-loket/services/store';
+import type Country from 'frontend-verenigingen-loket/models/country';
 
-export default class CountrySelect extends Component {
-  @service store;
+interface CountrySelectSignature {
+  Args: {
+    id: string;
+    selected?: string;
+    onChange: (country: string) => void;
+  };
+}
 
-  searchCountriesTask = restartableTask(async (search = '') => {
+export default class CountrySelect extends Component<CountrySelectSignature> {
+  @service declare store: StoreService;
+
+  searchCountriesTask = restartableTask(async (search: string = '') => {
     await timeout(500);
 
-    const query = {
+    const query: Record<string, string> = {
       sort: 'name',
     };
 
@@ -17,7 +27,7 @@ export default class CountrySelect extends Component {
       query['filter[name]'] = search;
     }
 
-    const countries = await this.store.query('country', query);
+    const countries = await this.store.query<Country>('country', query);
     return countries.map((n) => n.name);
   });
 
