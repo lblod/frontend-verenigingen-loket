@@ -37,7 +37,7 @@ interface AssociationSignature {
               </li>
 
               <li class="au-c-list-navigation__item">
-                <AuNavigationLink @route="association.location">
+                <AuNavigationLink @route="association.locations">
                   Locaties
                 </AuNavigationLink>
               </li>
