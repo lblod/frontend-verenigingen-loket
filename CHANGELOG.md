@@ -1,3 +1,10 @@
+## v1.12.0 (2026-03-05)
+
+#### :rocket: Enhancement
+* [#133](https://github.com/lblod/frontend-verenigingen-loket/pull/133) [CLBV-1188] Use the Verenigingsregister API to retrieve the data for the locaties page ([@Windvis](https://github.com/Windvis))
+* [#132](https://github.com/lblod/frontend-verenigingen-loket/pull/132) [CLBV-1184] Retrieve contactgegevens directly from the Verenigingsregister API ([@Windvis](https://github.com/Windvis))
+* [#131](https://github.com/lblod/frontend-verenigingen-loket/pull/131) [CLBV-1114] Remove the validation that checks for overlapping recognitions ([@Windvis](https://github.com/Windvis))
+
 ## v1.11.1 (2026-02-19)
 
 #### :bug: Bug Fix
