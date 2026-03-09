@@ -51,7 +51,7 @@ export default class CurrentSessionService extends Service {
     return true; // for demo purposes only -> change asap
   }
 
-  get canEditVerenigingsregisterData() {
+  get hasApiClient() {
     // The securitySchemeUrl will be set once the administrative unit has a 'verwerkersovereenkomst' which allows them to edit data.
     return Boolean(this.group?.securitySchemeUrl);
   }
