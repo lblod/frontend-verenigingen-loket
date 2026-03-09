@@ -11,7 +11,7 @@
       </div>
 
       {{#if state.isSuccess}}
-        {{#if this.currentSession.canEditVerenigingsregisterData}}
+        {{#if this.currentSession.hasApiClient}}
           <div class="au-u-flex au-u-flex--column au-u-flex--vertical-end">
             {{#if this.currentSession.canEdit}}
               {{#if state.result.isApiUnavailable}}
@@ -39,7 +39,7 @@
     </section>
 
     {{#if state.isSuccess}}
-      {{#if this.currentSession.canEditVerenigingsregisterData}}
+      {{#if this.currentSession.hasApiClient}}
         {{#if state.result.kboNumber}}
           <section class="au-u-padding-top">
             <h3
@@ -80,7 +80,7 @@
     {{/if}}
   </div>
 
-  {{#if this.currentSession.canEditVerenigingsregisterData}}
+  {{#if this.currentSession.hasApiClient}}
     <div>
       <AuDataTable
         @content={{if
