@@ -41,27 +41,20 @@ export default class AssociationRepresentativesRoute extends Route {
 
     let isApiUnavailable = false;
 
-    /*
-      At the moment only organizations with an agreement can make API calls, so the isApiUnavailable flag would always be true and never switch to false.
-      This confuses users, so we only do this call for users who can edit.
-      The downside is that users won't know if their data is out of date, but the sync should only last a few minutes anyway.
-    */
-    if (this.currentSession.canEditVerenigingsregisterData) {
-      try {
-        vertegenwoordigers.push(
-          ...(await getVertegenwoordigers(
-            association,
-            this.sensitiveData.getReason(association),
-          )),
+    try {
+      vertegenwoordigers.push(
+        ...(await getVertegenwoordigers(
+          association,
+          this.sensitiveData.getReason(association),
+        )),
+      );
+    } catch (error) {
+      isApiUnavailable = true;
+      if (error instanceof Error) {
+        logAPIError(
+          error,
+          'Something went wrong when trying to reach the Verenigingsregister API',
         );
-      } catch (error) {
-        isApiUnavailable = true;
-        if (error instanceof Error) {
-          logAPIError(
-            error,
-            'Something went wrong when trying to reach the Verenigingsregister API',
-          );
-        }
       }
     }
 

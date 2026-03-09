@@ -67,7 +67,7 @@ export default class ContactDetails extends Component<ContactDetailsSignature> {
   }
 
   get isEditDisabled() {
-    return !this.currentSession.canEditVerenigingsregisterData;
+    return !this.currentSession.hasApiClient;
   }
 
   reloadData = () => {

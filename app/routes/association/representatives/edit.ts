@@ -26,7 +26,7 @@ export default class AssociationRepresentativesEditRoute extends Route {
       this.sensitiveData.requiresReason(this.currentAssociation.association)
     ) {
       this.router.transitionTo('association.representatives.access-reason');
-    } else if (!this.currentSession.canEditVerenigingsregisterData) {
+    } else if (!this.currentSession.hasApiClient) {
       this.router.transitionTo('association.representatives');
     }
   }

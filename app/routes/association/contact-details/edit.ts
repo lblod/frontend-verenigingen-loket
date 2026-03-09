@@ -23,7 +23,7 @@ export default class AssociationContactDetailsEditRoute extends Route {
   @service declare store: StoreService;
 
   beforeModel() {
-    if (!this.currentSession.canEditVerenigingsregisterData) {
+    if (!this.currentSession.hasApiClient) {
       this.router.transitionTo('association.contact-details');
     }
   }
