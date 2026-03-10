@@ -1,5 +1,6 @@
 import { assert } from '@ember/debug';
 import { Fetch, RequestManager } from '@warp-drive/core';
+import type { RequestInfo } from '@warp-drive/core/types/request';
 import { associationVCode } from 'frontend-verenigingen-loket/models/association';
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type Concept from 'frontend-verenigingen-loket/models/concept';
@@ -210,9 +211,18 @@ export async function getVerenigingDetails(
     ? buildVerenigingUrl(vCode)
     : buildBasisInformatieUrl(vCode);
 
-  const dataDocument = await manager.request<VerenigingDetailsResponse>({
+  const requestInfo: RequestInfo<VerenigingDetailsResponse> = {
     url,
-  });
+  };
+
+  if (reasonId) {
+    requestInfo.headers = new Headers({
+      'X-Request-Reason': reasonId,
+    });
+  }
+
+  const dataDocument =
+    await manager.request<VerenigingDetailsResponse>(requestInfo);
 
   return dataDocument.content;
 }
