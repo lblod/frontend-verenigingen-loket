@@ -1,3 +1,9 @@
+## v1.12.1 (2026-03-10)
+
+#### :bug: Bug Fix
+* [#135](https://github.com/lblod/frontend-verenigingen-loket/pull/135) Fix the requests that require a reason ([@Windvis](https://github.com/Windvis))
+* [#134](https://github.com/lblod/frontend-verenigingen-loket/pull/134) Remove unneeded edit check ([@Windvis](https://github.com/Windvis))
+
 ## v1.12.0 (2026-03-05)
 
 #### :rocket: Enhancement
