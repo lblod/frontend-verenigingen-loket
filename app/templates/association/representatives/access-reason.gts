@@ -5,21 +5,16 @@ import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
 import { assert } from '@ember/debug';
 import { fn } from '@ember/helper';
-import { on } from '@ember/modifier';
-import type Owner from '@ember/owner';
 import type RouterService from '@ember/routing/router-service';
 import { service } from '@ember/service';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { pageTitle } from 'ember-page-title';
-import PowerSelect from 'ember-power-select/components/power-select';
-import EditCard from 'frontend-verenigingen-loket/components/edit-card';
-import Concept, {
-  CONCEPT_SCHEME,
-} from 'frontend-verenigingen-loket/models/concept';
 import type CurrentAssociationService from 'frontend-verenigingen-loket/services/current-association';
-import type StoreService from 'frontend-verenigingen-loket/services/store';
 import type SensitiveDataService from 'frontend-verenigingen-loket/services/sensitive-data';
+import ReasonForm from 'frontend-verenigingen-loket/components/reason-form';
+import type Concept from 'frontend-verenigingen-loket/models/concept';
+import { on } from '@ember/modifier';
 
 interface AccessReasonSignature {
   Args: {
@@ -89,67 +84,13 @@ export default class AccessReason extends Component<AccessReasonSignature> {
         onderzocht worden in het geval van onrechtmatig gebruik.
       </AuHelpText>
 
-      <form
+      <ReasonForm
+        @reason={{this.reason}}
+        @onReasonChange={{fn (mut this.reason)}}
         id="access-reason"
         class="au-u-margin-top"
-        {{on "submit" this.submit}}
-      >
-        <EditCard @containsRequiredFields={{true}}>
-          {{! <:title>Reden</:title> }}
-          <:card as |Card|>
-            <Card.Columns>
-              <:left as |Item|>
-                <Item @labelFor="reason" @required={{true}}>
-                  <:label>Reden</:label>
-                  <:content as |id|>
-                    <ReasonSelect
-                      @id={{id}}
-                      @reason={{this.reason}}
-                      @onChange={{fn (mut this.reason)}}
-                    />
-                  </:content>
-                </Item>
-              </:left>
-            </Card.Columns>
-          </:card>
-        </EditCard>
-      </form>
+        {{on 'submit' this.submit}}
+      />
     </div>
-  </template>
-}
-
-interface ReasonSelectSignature {
-  Args: {
-    reason?: Concept;
-    id?: string;
-    onChange: (reason: Concept) => void;
-  };
-}
-
-class ReasonSelect extends Component<ReasonSelectSignature> {
-  @service declare store: StoreService;
-
-  requestPromise?: Promise<Concept[]>;
-
-  constructor(owner: Owner, args: ReasonSelectSignature['Args']) {
-    super(owner, args);
-
-    this.requestPromise = this.store.query<Concept>('concept', {
-      'filter[concept-scheme][:id:]': CONCEPT_SCHEME.REASON_CODES,
-    });
-  }
-
-  <template>
-    <PowerSelect
-      @searchEnabled={{false}}
-      @loadingMessage="Aan het laden..."
-      @selected={{@reason}}
-      @options={{this.requestPromise}}
-      @onChange={{@onChange}}
-      @triggerId={{@id}}
-      as |reasonCode|
-    >
-      {{reasonCode.prefLabel}}
-    </PowerSelect>
   </template>
 }
