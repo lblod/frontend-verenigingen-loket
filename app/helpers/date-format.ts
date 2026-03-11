@@ -1,4 +1,7 @@
-export default function dateFormat(date?: string, format = 'DD-MM-YYYY') {
+export default function dateFormat(
+  date?: Date | string,
+  format = 'DD-MM-YYYY',
+) {
   if (!date) {
     return null;
   }
