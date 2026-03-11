@@ -86,7 +86,9 @@
                 <span>Verenigingen</span>
               </AuHeading>
 
-              {{#if @model.exportFile}}
+              <SensitiveSpreadsheetDownload />
+
+              {{!-- {{#if @model.exportFile}}
                 <AuFileCard
                   @filename={{@model.exportFile.name}}
                   @downloadLink={{@model.exportFile.downloadLink}}
@@ -95,7 +97,7 @@
                   style="text-align: right"
                   {{! template-lint-disable no-inline-styles }}
                 />
-              {{/if}}
+              {{/if}} --}}
             </div>
             <Filters::OrganizationStatusToggle
               @organizationStatus={{this.status}}

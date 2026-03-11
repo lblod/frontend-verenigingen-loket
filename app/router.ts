@@ -54,6 +54,7 @@ Router.map(function () {
       this.route('edit', { path: '/bewerk/:recognition_id' });
     });
   });
+  this.route('spreadsheet-request-reason');
 
   this.route('404', {
     path: '/*wildcard',

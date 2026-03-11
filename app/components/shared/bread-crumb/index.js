@@ -143,6 +143,13 @@ export default class SharedBreadCrumbComponent extends Component {
           { label: 'Bewerken' },
         ],
       },
+      {
+        route: 'spreadsheet-request-reason',
+        crumbs: [
+          { label: 'Verenigingen', link: 'associations' },
+          { label: 'Spreadsheet aanvragen' },
+        ],
+      },
     ];
   }
 
