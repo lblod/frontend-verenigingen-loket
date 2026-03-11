@@ -23,7 +23,7 @@ interface EditCardSignature {
   };
 }
 
-<template>
+const EditCard = <template>
   <div class="au-u-max-width-large" ...attributes>
     {{#if (has-block "title")}}
       <AuHeading
@@ -48,6 +48,8 @@ interface EditCardSignature {
     </div>
   </div>
 </template> satisfies TOC<EditCardSignature>;
+
+export default EditCard;
 
 interface CardColumnsSignature {
   Element: HTMLDivElement;
