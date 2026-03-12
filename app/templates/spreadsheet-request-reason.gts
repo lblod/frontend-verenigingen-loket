@@ -10,32 +10,44 @@ import type RouterService from '@ember/routing/router-service';
 import { service } from '@ember/service';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
+import { dropTask } from 'ember-concurrency';
 import { pageTitle } from 'ember-page-title';
 import ReasonForm from 'frontend-verenigingen-loket/components/reason-form';
 import type Concept from 'frontend-verenigingen-loket/models/concept';
+import type StoreService from 'frontend-verenigingen-loket/services/store';
 
 export default class SpreadsheetRequestReason extends Component {
   @service declare router: RouterService;
+  @service declare store: StoreService;
   @tracked reason?: Concept;
 
   get isSubmitDisabled() {
     return !this.reason;
   }
 
-  submit = (event: Event) => {
+  submit = dropTask(async (event: Event) => {
     event.preventDefault();
 
     assert(
       'The form can only be submitted when a reason is selected',
-      this.reason,
+      this.reason?.id,
     );
 
-    // TODO: make a call to create the job
+    // TODO: store.request seems to expect valid json:api content, while we just want a fetch replacement
+    // We probably need to use a new requestManager instance with only the fetch handler, or use fetch directly and disable the warning
+    await this.store.request({
+      url: '/verenigingen-downloads',
+      method: 'POST',
+      headers: new Headers({
+        'X-Request-Reason': this.reason.id,
+      }),
+    });
+
     this.router.transitionTo('associations');
-  };
+  });
 
   <template>
-    {{pageTitle "Spreadsheet aanvragen"}}
+    {{pageTitle "Vertegenwoordigers export aanvragen"}}
 
     <div
       class="au-o-box au-u-padding-left au-u-padding-right au-u-padding-top au-u-max-width-large"
@@ -44,7 +56,7 @@ export default class SpreadsheetRequestReason extends Component {
         class="au-u-flex au-u-flex--between au-u-flex--vertical-end au-u-margin-bottom"
       >
         <div>
-          <AuHeading @level="1" @skin="1">Spreadsheet aanvragen</AuHeading>
+          <AuHeading @level="1" @skin="1">Vertegenwoordigers export aanvragen</AuHeading>
         </div>
 
         <div>
@@ -55,6 +67,8 @@ export default class SpreadsheetRequestReason extends Component {
 
             <AuButton
               @disabled={{this.isSubmitDisabled}}
+              @loading={{this.submit.isRunning}}
+              @loadingMessage="Vraag aan"
               form="request-reason"
               type="submit"
             >
@@ -76,7 +90,7 @@ export default class SpreadsheetRequestReason extends Component {
         @onReasonChange={{fn (mut this.reason)}}
         id="request-reason"
         class="au-u-margin-top"
-        {{on "submit" this.submit}}
+        {{on "submit" this.submit.perform}}
       />
     </div>
   </template>
