@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
 import EditCard from './edit-card';
-import { fn } from '@ember/helper';
 import type Concept from 'frontend-verenigingen-loket/models/concept';
 import { service } from '@ember/service';
 import type Store from 'frontend-verenigingen-loket/services/store';
@@ -20,7 +19,6 @@ interface ReasonFormSignature {
 const ReasonForm = <template>
   <form ...attributes>
     <EditCard @containsRequiredFields={{true}}>
-      {{! <:title>Reden</:title> }}
       <:card as |Card|>
         <Card.Columns>
           <:left as |Item|>
