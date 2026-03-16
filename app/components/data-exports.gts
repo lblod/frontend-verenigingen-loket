@@ -17,9 +17,11 @@ import AuPill from '@appuniversum/ember-appuniversum/components/au-pill';
 import AuTooltip from '@appuniversum/ember-appuniversum/components/au-tooltip';
 import { task, timeout } from 'ember-concurrency';
 import type { TOC } from '@ember/component/template-only';
+import type CurrentSessionService from 'frontend-verenigingen-loket/services/current-session';
 
 export default class DataExports extends Component {
   @service declare store: Store;
+  @service declare currentSession: CurrentSessionService;
 
   dataPromise;
 
@@ -69,7 +71,9 @@ export default class DataExports extends Component {
       </:pending>
       <:success as |data|>
         <div class="au-u-flex u-gap">
-          <RepresentativesExport @job={{data.representativesExportJob}} />
+          {{#if this.currentSession.hasApiClient}}
+            <RepresentativesExport @job={{data.representativesExportJob}} />
+          {{/if}}
 
           {{#if data.verenigingenExport}}
             <ExportCard>
