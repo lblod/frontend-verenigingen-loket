@@ -1,3 +1,8 @@
+## v1.13.0 (2026-03-19)
+
+#### :rocket: Enhancement
+* [#136](https://github.com/lblod/frontend-verenigingen-loket/pull/136) [CLBV-1194] Display a "Vertegenwoordigers export" card ([@Windvis](https://github.com/Windvis))
+
 ## v1.12.1 (2026-03-10)
 
 #### :bug: Bug Fix
