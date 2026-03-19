@@ -86,16 +86,7 @@
                 <span>Verenigingen</span>
               </AuHeading>
 
-              {{#if @model.exportFile}}
-                <AuFileCard
-                  @filename={{@model.exportFile.name}}
-                  @downloadLink={{@model.exportFile.downloadLink}}
-                  {{! The AuFileCard component doesn't support displaying creation dates , so we (mis)use the fileSize arg instead }}
-                  @fileSize={{date-format @model.exportFile.created}}
-                  style="text-align: right"
-                  {{! template-lint-disable no-inline-styles }}
-                />
-              {{/if}}
+              <DataExports />
             </div>
             <Filters::OrganizationStatusToggle
               @organizationStatus={{this.status}}

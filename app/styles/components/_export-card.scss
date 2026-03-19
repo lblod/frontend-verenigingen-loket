@@ -1,0 +1,11 @@
+.export-card {
+  background-color: var(--au-white);
+  border: 0.1rem solid var(--au-gray-200);
+  border-radius: var(--au-radius);
+}
+
+.export-card__creation-date {
+  color: var(--au-gray-700);
+  font-style: italic;
+  font-weight: normal;
+}
