@@ -65,3 +65,9 @@
 .u-gap {
   gap: $au-unit-small;
 }
+
+// Webuniversum has different sizes for links, which Appuniversum does not support yet.
+// https://www.figma.com/design/HaG7VkMPJ2QmD9c37CX7VX/-VL--%E2%9D%87%EF%B8%8F-Componenten-V2?node-id=2169-1847
+.u-link-xs {
+  font-size: 1.4rem;
+}

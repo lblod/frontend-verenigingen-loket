@@ -99,6 +99,10 @@ export default class ContactDetails extends Component<ContactDetailsSignature> {
                 <AuButton @skin="secondary" @icon="pencil" @disabled={{true}}>
                   Bewerk
                 </AuButton>
+                <AuLinkExternal
+                  href="https://abb-vlaanderen.gitbook.io/handleiding-verenigingen/algemeen/verwerkersovereenkomst-en-aansluiting-magda"
+                  class="u-link-xs au-u-margin-top-tiny"
+                >Gegevens bewerken?</AuLinkExternal>
               {{else}}
                 <AuLink
                   @route="association.contact-details.edit"
