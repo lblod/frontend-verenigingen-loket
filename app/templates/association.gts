@@ -41,13 +41,11 @@ interface AssociationSignature {
                   Locaties
                 </AuNavigationLink>
               </li>
-              {{#if @model.hasApiAuthorization}}
-                <li class="au-c-list-navigation__item">
-                  <AuNavigationLink @route="association.representatives">
-                    Vertegenwoordigers
-                  </AuNavigationLink>
-                </li>
-              {{/if}}
+              <li class="au-c-list-navigation__item">
+                <AuNavigationLink @route="association.representatives">
+                  Vertegenwoordigers
+                </AuNavigationLink>
+              </li>
             </ul>
           </nav>
         </div>

@@ -145,15 +145,7 @@
             <Item>
               <:label>KBO nummer</:label>
               <:content>
-                {{#each this.model.association.identifiers as |identifier|}}
-                  {{#if (eq identifier.idName "KBO nummer")}}
-                    {{#if (get identifier.structuredIdentifier "localId")}}
-                      {{get identifier.structuredIdentifier "localId"}}
-                    {{else}}
-                      Niet opgegeven
-                    {{/if}}
-                  {{/if}}
-                {{/each}}
+                {{this.model.kboNumber}}
               </:content>
             </Item>
           </:right>

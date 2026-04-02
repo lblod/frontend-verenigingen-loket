@@ -11,8 +11,11 @@ export default class AssociationGeneralRoute extends Route {
     const association = await this.store.findRecord('association', id, {
       include: 'organization-status',
     });
+    const { kboNumber } = this.modelFor('association');
+
     return {
       association,
+      kboNumber,
       recognitions: this.loadRecognition.perform(id),
     };
   }

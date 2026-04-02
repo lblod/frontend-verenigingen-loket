@@ -36,15 +36,16 @@ export default class AssociationRoute extends Route {
 
       this.currentAssociation.setAssociation(association);
 
-      let canViewRepresentatives = false;
+      let hasAuthorization = false;
       try {
-        canViewRepresentatives = await hasApiAuthorization(association);
+        hasAuthorization = await hasApiAuthorization(association);
       } catch {
-        canViewRepresentatives = false;
+        hasAuthorization = false;
       }
       return {
         association,
-        hasApiAuthorization: canViewRepresentatives,
+        kboNumber: await this.loadKboNumber(association),
+        hasApiAuthorization: hasAuthorization,
       };
     } catch (error) {
       this.router.transitionTo('associations');
@@ -57,5 +58,19 @@ export default class AssociationRoute extends Route {
       );
       console.error(`Error loading association with id: (${id})`, error);
     }
+  }
+
+  async loadKboNumber(association: Association) {
+    const identifiers = await association.identifiers;
+
+    // Find the KBO identifier
+    for (const identifier of identifiers) {
+      const structuredIdentifier = await identifier.structuredIdentifier;
+      if (identifier.idName === 'KBO nummer') {
+        return structuredIdentifier.localId;
+      }
+    }
+
+    return null;
   }
 }
