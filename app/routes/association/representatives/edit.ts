@@ -13,6 +13,8 @@ import {
   type Vertegenwoordiger,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
+import type { ModelFrom } from 'frontend-verenigingen-loket/type-utils/model-from';
+import type AssociationRoute from 'frontend-verenigingen-loket/routes/association';
 
 export default class AssociationRepresentativesEditRoute extends Route {
   @service declare currentAssociation: CurrentAssociation;
@@ -22,11 +24,17 @@ export default class AssociationRepresentativesEditRoute extends Route {
   @service declare router: RouterService;
 
   beforeModel() {
+    const { hasApiAuthorization } = this.modelFor('association') as NonNullable<
+      ModelFrom<AssociationRoute>
+    >;
+
     if (
-      this.sensitiveData.requiresReason(this.currentAssociation.association)
+      this.sensitiveData.requiresReason(this.currentAssociation.association) &&
+      this.currentSession.hasApiClient &&
+      hasApiAuthorization
     ) {
       this.router.transitionTo('association.representatives.access-reason');
-    } else if (!this.currentSession.hasApiClient) {
+    } else if (!this.currentSession.hasApiClient || !hasApiAuthorization) {
       this.router.transitionTo('association.representatives');
     }
   }
