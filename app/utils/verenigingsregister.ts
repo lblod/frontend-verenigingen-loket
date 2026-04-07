@@ -7,6 +7,7 @@ import type Concept from 'frontend-verenigingen-loket/models/concept';
 import { isValidRijksregisternummer } from 'frontend-verenigingen-loket/utils/rijksregisternummer';
 import type TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
 import Joi from 'joi';
+import { phoneRegex } from './validations/phone';
 
 const manager = new RequestManager().use([Fetch]);
 
@@ -576,13 +577,9 @@ export const vertegenwoordigerValidationSchema = Joi.object({
   'e-mail': Joi.string().empty('').email({ tlds: false }).required().messages({
     'string.email': 'Geef een geldig e-mailadres in.',
   }),
-  telefoon: Joi.string()
-    .empty('')
-    .regex(/^(tel:)?\+?[0-9]*$/)
-    .optional()
-    .messages({
-      'string.pattern.base': 'Enkel een plusteken en cijfers zijn toegelaten.',
-    }),
+  telefoon: Joi.string().empty('').regex(phoneRegex).optional().messages({
+    'string.pattern.base': 'Enkel een plusteken en cijfers zijn toegelaten.',
+  }),
   socialMedia: Joi.string()
     .empty('')
     .uri()

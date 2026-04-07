@@ -29,7 +29,7 @@ interface PhoneInputSignature {
 
 export default class PhoneInput extends Component<PhoneInputSignature> {
   get warningMessage() {
-    const phone = this.args.value;
+    const phone = this.args.value?.trim().replaceAll(' ', '');
 
     if (!phone) {
       return undefined;
