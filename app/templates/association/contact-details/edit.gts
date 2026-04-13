@@ -77,11 +77,22 @@ export default class ContactEdit extends Component<ContactEditSignature> {
   @service declare toaster: ToasterService;
   contactgegevensToRemove: TrackedData<Partial<Contactgegeven>>[] = [];
 
+  get model() {
+    // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
+    return this.args.controller.model;
+  }
+
   @cached
   get isLoading() {
-    // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    const state = getPromiseState(this.args.controller.model.dataPromise);
+    const state = getPromiseState(this.model.dataPromise);
     return state.isPending;
+  }
+
+  get data() {
+    const state = getPromiseState(this.model.dataPromise);
+    assert('async data was accessed before it was loaded', state.isSuccess);
+
+    return state.value;
   }
 
   get association() {
@@ -89,24 +100,25 @@ export default class ContactEdit extends Component<ContactEditSignature> {
   }
 
   get contactgegevens() {
-    // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    const state = getPromiseState(this.args.controller.model.dataPromise);
+    const state = getPromiseState(this.model.dataPromise);
 
     return state.isSuccess ? state.value.contactgegevens : [];
   }
 
   get locatie() {
-    // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    const state = getPromiseState(this.args.controller.model.dataPromise);
-    assert('locatie was accessed before it was loaded', state.isSuccess);
-    return state.value.locatie;
+    return this.data.locatie;
+  }
+
+  get locaties() {
+    return this.data.locaties;
   }
 
   get adres() {
-    // We use the controller's model to work around an Ember bug: https://github.com/emberjs/ember.js/issues/18987
-    const state = getPromiseState(this.args.controller.model.dataPromise);
-    assert('adres was accessed before it was loaded', state.isSuccess);
-    return state.value.adres;
+    return this.data.adres;
+  }
+
+  get isAdresRequired() {
+    return this.locaties.length <= 1 && !this.adres.isNew;
   }
 
   save = dropTask(async (event: Event) => {
@@ -126,14 +138,14 @@ export default class ContactEdit extends Component<ContactEditSignature> {
 
     const adres = this.adres;
     const shouldValidateAddress =
-      !isEmptyAdres(adres.data) && !adres.data.bronwaarde;
+      this.isAdresRequired || !isEmptyAdres(adres.data);
 
     if (shouldValidateAddress) {
       await validateData(adres, adresValidationSchema);
+    }
 
-      if (adres.hasErrors) {
-        return;
-      }
+    if (adres.hasErrors) {
+      return;
     }
 
     try {
@@ -283,7 +295,7 @@ export default class ContactEdit extends Component<ContactEditSignature> {
           </div>
         </section>
 
-        <AddressEdit @adres={{this.adres}} />
+        <AddressEdit @adres={{this.adres}} @required={{this.isAdresRequired}} />
       </div>
 
       <form id="contact-details-edit-form" {{on "submit" this.save.perform}}>
@@ -338,6 +350,7 @@ export default class ContactEdit extends Component<ContactEditSignature> {
 interface AddressEditSignature {
   Args: {
     adres: TrackedData<Partial<Adres & AdresIdentifier>>;
+    required?: boolean;
   };
 }
 class AddressEdit extends Component<AddressEditSignature> {
@@ -347,6 +360,10 @@ class AddressEdit extends Component<AddressEditSignature> {
     super(owner, args);
 
     this.determineInitialInputMode();
+  }
+
+  get isRequired() {
+    return this.args.required || this.isManualInputMode;
   }
 
   get isManualInputMode() {
@@ -366,6 +383,7 @@ class AddressEdit extends Component<AddressEditSignature> {
   switchToSearchMode = () => {
     this.isSearchMode = true;
     clearAdresValues(this.args.adres.data);
+    this.args.adres.clearErrors();
   };
 
   switchToManualInputMode = () => {
@@ -373,6 +391,7 @@ class AddressEdit extends Component<AddressEditSignature> {
 
     const adres = this.args.adres;
     adres.data.bronwaarde = undefined;
+    adres.clearErrors();
     if (!adres.data.land) {
       adres.data.land = BELGIUM;
     }
@@ -380,19 +399,29 @@ class AddressEdit extends Component<AddressEditSignature> {
 
   <template>
     <section>
-      <EditCard @containsRequiredFields={{this.isManualInputMode}}>
+      <EditCard @containsRequiredFields={{this.isRequired}}>
         <:title>
           Correspondentieadres
         </:title>
         <:card as |Card|>
           {{#if this.isSearchMode}}
-            <AddressSearch @adres={{@adres}} as |address|>
+            <AddressSearch
+              @adres={{@adres}}
+              @error={{@adres.hasErrors}}
+              @required={{this.isRequired}}
+              as |address|
+            >
               <Card.Columns>
                 <:left as |Item|>
-                  <Item>
+                  <Item @required={{this.isRequired}}>
                     <:label>Adres</:label>
                     <:content>
                       <address.Search />
+                      {{#if @adres.hasErrors}}
+                        <AuHelpText @error={{true}}>
+                          Dit veld is verplicht.
+                        </AuHelpText>
+                      {{/if}}
                       <AuButton
                         @skin="link"
                         {{on "click" this.switchToManualInputMode}}

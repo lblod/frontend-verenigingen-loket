@@ -27,7 +27,8 @@ import {
 interface AddressSearchSignature {
   Args: {
     adres: TrackedData<Partial<Adres & AdresIdentifier>>;
-    errorMessage?: string;
+    error?: boolean;
+    required?: boolean;
   };
   Blocks: {
     default: [
@@ -118,7 +119,8 @@ export default class AddressSearch extends Component<AddressSearchSignature> {
           AddressRegisterSelector
           adres=@adres
           onChange=this.handleAddressChange
-          error=(if @errorMessage true false)
+          error=@error
+          required=@required
         )
         BusNumber=(component
           BusNumberSelector
@@ -141,6 +143,7 @@ interface AddressRegisterSelectorSignature {
     adres: TrackedData<Partial<Adres & AdresIdentifier>>;
     error?: boolean;
     id?: string;
+    required?: boolean;
     onChange: (data: { addresses: Address[] } | null) => void;
   };
 }
@@ -161,6 +164,10 @@ class AddressRegisterSelector extends Component<AddressRegisterSelectorSignature
 
       this.addressSuggestion = addressSuggestion as Address;
     }
+  }
+
+  get allowClear() {
+    return !this.args.required;
   }
 
   selectSuggestion = task(async (addressSuggestion: Address | null) => {
@@ -202,7 +209,7 @@ class AddressRegisterSelector extends Component<AddressRegisterSelectorSignature
     <div class={{if @error "ember-power-select--error"}}>
       <PowerSelect
         @triggerId={{@id}}
-        @allowClear={{true}}
+        @allowClear={{this.allowClear}}
         @renderInPlace={{false}}
         @search={{this.search.perform}}
         @selected={{this.addressSuggestion}}
