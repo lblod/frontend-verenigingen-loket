@@ -61,6 +61,7 @@ import {
   isEmptyAdres,
   isPostcodeInFlanders,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister/adres';
+import { phoneRegex } from 'frontend-verenigingen-loket/utils/validations/phone';
 
 interface ContactEditSignature {
   Args: {
@@ -815,13 +816,10 @@ export const contactgegevenValidationSchema = Joi.object({
         },
         {
           is: 'Telefoon' satisfies ContactgegevenType,
-          then: Joi.string()
-            .required()
-            .regex(/^(tel:)?\+?[0-9]*$/)
-            .messages({
-              'string.pattern.base':
-                'Enkel een plusteken en cijfers zijn toegelaten.',
-            }),
+          then: Joi.string().required().regex(phoneRegex).messages({
+            'string.pattern.base':
+              'Enkel een plusteken en cijfers zijn toegelaten.',
+          }),
         },
         {
           is: 'Website' satisfies ContactgegevenType,

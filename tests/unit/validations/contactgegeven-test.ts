@@ -79,9 +79,15 @@ module('Unit | Validation | Contactgegeven', function () {
           waarde: '+32123456789',
         });
 
+        // White space is allowed
+        await validate(contactgegevenValidationSchema, {
+          ...contactgegevenBase,
+          waarde: '+32 12 345 67 89',
+        });
+
         assert.step('no error');
       } catch {
-        assert.step('no error');
+        assert.step('error');
       }
 
       assert.verifySteps(['no error']);
