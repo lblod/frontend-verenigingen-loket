@@ -65,6 +65,7 @@ export default class AssociationContactDetailsEditRoute extends Route {
     return {
       contactgegevens: trackedArray(contactgegevens),
       locatie: correspondenceLocatie,
+      locaties,
       adres,
     };
   }
