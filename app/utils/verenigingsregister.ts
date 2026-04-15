@@ -8,6 +8,7 @@ import { isValidRijksregisternummer } from 'frontend-verenigingen-loket/utils/ri
 import type TrackedData from 'frontend-verenigingen-loket/utils/tracked-data';
 import Joi from 'joi';
 import { phoneRegex } from './validations/phone';
+import { emailRegex } from './validations/email';
 
 const manager = new RequestManager().use([Fetch]);
 
@@ -574,8 +575,8 @@ export const vertegenwoordigerValidationSchema = Joi.object({
     .messages({
       'string.invalid-ssn': 'Geen geldig rijksregisternummer.',
     }),
-  'e-mail': Joi.string().empty('').email({ tlds: false }).required().messages({
-    'string.email': 'Geef een geldig e-mailadres in.',
+  'e-mail': Joi.string().empty('').regex(emailRegex).required().messages({
+    'string.pattern.base': 'Geef een geldig e-mailadres in.',
   }),
   telefoon: Joi.string().empty('').regex(phoneRegex).optional().messages({
     'string.pattern.base': 'Enkel een plusteken en cijfers zijn toegelaten.',

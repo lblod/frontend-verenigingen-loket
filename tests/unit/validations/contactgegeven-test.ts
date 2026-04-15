@@ -30,6 +30,13 @@ module('Unit | Validation | Contactgegeven', function () {
           waarde: 'not-an-email',
         }),
       );
+
+      await assert.rejects(
+        validate(contactgegevenValidationSchema, {
+          ...contactgegevenBase,
+          waarde: 'email.with@numbers.be123',
+        }),
+      );
     });
 
     test('valid email', async function (assert) {

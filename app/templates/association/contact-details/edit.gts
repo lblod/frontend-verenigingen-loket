@@ -62,6 +62,7 @@ import {
   isPostcodeInFlanders,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister/adres';
 import { phoneRegex } from 'frontend-verenigingen-loket/utils/validations/phone';
+import { emailRegex } from 'frontend-verenigingen-loket/utils/validations/email';
 
 interface ContactEditSignature {
   Args: {
@@ -838,10 +839,9 @@ export const contactgegevenValidationSchema = Joi.object({
       switch: [
         {
           is: 'E-mail' satisfies ContactgegevenType,
-          then: Joi.string()
-            .required()
-            .email({ tlds: false })
-            .messages({ 'string.email': 'Geef een geldig e-mailadres in.' }),
+          then: Joi.string().required().regex(emailRegex).messages({
+            'string.pattern.base': 'Geef een geldig e-mailadres in.',
+          }),
         },
         {
           is: 'Telefoon' satisfies ContactgegevenType,
