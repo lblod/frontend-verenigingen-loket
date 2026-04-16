@@ -39,6 +39,7 @@ import {
   CONTACTGEGEVEN_LABEL,
   type AdresIdentifier,
   type Adres,
+  ApiValidationError,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import type RouterService from '@ember/routing/router-service';
 import type StoreService from 'frontend-verenigingen-loket/services/store';
@@ -62,6 +63,7 @@ import {
   isPostcodeInFlanders,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister/adres';
 import { phoneRegex } from 'frontend-verenigingen-loket/utils/validations/phone';
+import AuAlert from '@appuniversum/ember-appuniversum/components/au-alert';
 import { emailRegex } from 'frontend-verenigingen-loket/utils/validations/email';
 
 interface ContactEditSignature {
@@ -123,8 +125,21 @@ export default class ContactEdit extends Component<ContactEditSignature> {
     return this.locaties.length <= 1 && !this.adres.isNew;
   }
 
+  get genericValidationError() {
+    const withGenericError = this.contactgegevens.find((contactgegeven) =>
+      contactgegeven.hasError('genericError'),
+    );
+
+    return withGenericError ? withGenericError.errors.genericError : undefined;
+  }
+
   save = dropTask(async (event: Event) => {
     event.preventDefault();
+
+    // clear the generic error messages we received from the server previously
+    this.contactgegevens.forEach((contactgegeven) =>
+      contactgegeven.removeError('genericError'),
+    );
 
     const promises = this.contactgegevens.map(async (contactgegeven) => {
       await validateData(contactgegeven, contactgegevenValidationSchema);
@@ -177,18 +192,9 @@ export default class ContactEdit extends Component<ContactEditSignature> {
       ];
 
       for (const contactgegeven of sortedContactgegevensToSave) {
-        const changedData: Partial<
-          Record<keyof Contactgegeven, Contactgegeven[keyof Contactgegeven]>
-        > = {};
-
-        for (const value of contactgegeven.changedValues) {
-          changedData[value] = contactgegeven.data[value];
-        }
-
         await createOrUpdateContactgegeven({
           vCode,
-          contactgegevenId: contactgegeven.data.contactgegevenId,
-          data: changedData as Partial<Contactgegeven>,
+          contactgegeven: contactgegeven,
         });
       }
 
@@ -210,7 +216,7 @@ export default class ContactEdit extends Component<ContactEditSignature> {
       await waitForStableAPI();
       this.router.transitionTo('association.contact-details');
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof Error && !(error instanceof ApiValidationError)) {
         handleError(this.toaster, error);
       }
     }
@@ -278,7 +284,7 @@ export default class ContactEdit extends Component<ContactEditSignature> {
           </div>
 
           <div>
-            <AuButtonGroup class="au-c-button-group--align-right">
+            <AuButtonGroup class="au-u-flex au-u-flex--end">
               <AuLink
                 @route="association.contact-details"
                 @skin="button-secondary"
@@ -294,6 +300,17 @@ export default class ContactEdit extends Component<ContactEditSignature> {
                 Opslaan
               </AuButton>
             </AuButtonGroup>
+            {{#if this.genericValidationError}}
+              <AuAlert
+                @skin="error"
+                @size="small"
+                @icon="info-circle"
+                @closable={{true}}
+                class="au-u-margin-top-small au-u-max-width-xsmall"
+              >
+                {{this.genericValidationError}}
+              </AuAlert>
+            {{/if}}
           </div>
         </section>
 
@@ -594,7 +611,10 @@ class TableRow extends Component<TableRowSignature> {
   }
 
   <template>
-    <tr>
+    <tr
+      class="c-edit-table-row
+        {{~if @contactgegeven.errors.genericError ' c-edit-table-row--error'}}"
+    >
       <td>
         <ContactTypeSelect
           @contactgegeven={{@contactgegeven}}

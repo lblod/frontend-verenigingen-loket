@@ -66,6 +66,10 @@ export type Contactgegeven = {
   contactgegeventype: ContactgegevenType;
   waarde: string;
   isPrimair: boolean;
+} & {
+  // Not a real property, but we use it to store generic errors for now.
+  // TODO: This is only relevant for the edit page, we shouldn't add it here.
+  genericError?: string;
 };
 
 // A representative in English. We use dutch naming here since it's a verenigingsregister object that also uses dutch property names.
@@ -285,26 +289,52 @@ export async function getVertegenwoordigers(
 
 export async function createOrUpdateContactgegeven({
   vCode,
-  contactgegevenId,
-  data,
+  contactgegeven,
 }: {
   vCode: string;
-  contactgegevenId?: number;
-  data: Partial<Contactgegeven>;
+  contactgegeven: TrackedData<Partial<Contactgegeven>>;
 }) {
+  const contactgegevenId = contactgegeven.data.contactgegevenId;
   const url = buildContactgegevenUrl(vCode, contactgegevenId);
   const method = contactgegevenId ? 'PATCH' : 'POST';
 
-  await manager.request({
-    url,
-    method,
-    headers: new Headers({
-      'Content-Type': 'application/json',
-    }),
-    body: JSON.stringify({
-      contactgegeven: data,
-    }),
-  });
+  const changedData: Partial<
+    Record<keyof Contactgegeven, Contactgegeven[keyof Contactgegeven]>
+  > = {};
+
+  for (const value of contactgegeven.changedValues) {
+    changedData[value] = contactgegeven.data[value];
+  }
+
+  try {
+    await manager.request({
+      url,
+      method,
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify({
+        contactgegeven: changedData,
+      }),
+    });
+  } catch (error) {
+    // TODO: use the correct error type, not sure if WarpDrive exports this
+    // @ts-expect-error: Find out where to get proper types for this error: https://github.com/warp-drive-data/warp-drive/blob/7f899457cea393b233b86a4d92c9f5bd4a51ea76/warp-drive-packages/core/src/request/-private/fetch.ts#L249-L258
+    if (error instanceof Error && error.status === 400) {
+      // @ts-expect-error: missing error types
+      const apiError = error.content as ApiErrorResponse;
+
+      if (apiError.details) {
+        // All "detail" values seem to contain a `Source: ` prefix, which we don't want to show to users..
+        const errorMessage = apiError.details.detail.replace('Source: ', '');
+        contactgegeven.addError('genericError', errorMessage);
+      }
+
+      throw new ApiValidationError(contactgegeven);
+    } else {
+      throw error;
+    }
+  }
 }
 
 export async function deleteContactgegeven(
