@@ -61,7 +61,10 @@ export type ContactgegevenType =
   | 'Website'
   | 'SocialMedia';
 
+export type ContactgegevenBron = 'Initiator' | 'KBO';
+
 export type Contactgegeven = {
+  bron: ContactgegevenBron;
   contactgegevenId: number;
   contactgegeventype: ContactgegevenType;
   waarde: string;
@@ -250,6 +253,7 @@ export function getContactgegevensFromVereniging(
     vereniging.contactgegevens?.map((contactgegeven) => {
       // We only return the data we actually need. The API responds with more (nested) data.
       return {
+        bron: contactgegeven.bron,
         contactgegevenId: contactgegeven.contactgegevenId,
         contactgegeventype: contactgegeven.contactgegeventype,
         waarde: contactgegeven.waarde,
