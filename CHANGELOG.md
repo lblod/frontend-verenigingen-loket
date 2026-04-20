@@ -1,3 +1,14 @@
+## v1.14.0 (2026-04-20)
+
+#### :rocket: Enhancement
+* [#141](https://github.com/lblod/frontend-verenigingen-loket/pull/141) [CLBV-1209] Contactgegevens validation improvements ([@Windvis](https://github.com/Windvis))
+* [#138](https://github.com/lblod/frontend-verenigingen-loket/pull/138) [CLBV-1202] Display a message when the representative data can't be viewed ([@Windvis](https://github.com/Windvis))
+* [#137](https://github.com/lblod/frontend-verenigingen-loket/pull/137) [CLBV-1201] Display a documentation link when editing is disabled ([@Windvis](https://github.com/Windvis))
+
+#### :bug: Bug Fix
+* [#140](https://github.com/lblod/frontend-verenigingen-loket/pull/140) [CLBV-1207] Improve the contact address validations ([@Windvis](https://github.com/Windvis))
+* [#139](https://github.com/lblod/frontend-verenigingen-loket/pull/139) [CLBV-1206] Add support for white space in phone numbers ([@Windvis](https://github.com/Windvis))
+
 ## v1.13.0 (2026-03-19)
 
 #### :rocket: Enhancement
