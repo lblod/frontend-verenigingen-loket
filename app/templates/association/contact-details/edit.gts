@@ -3,11 +3,13 @@ import AuButton from '@appuniversum/ember-appuniversum/components/au-button';
 import AuCheckbox from '@appuniversum/ember-appuniversum/components/au-checkbox';
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text';
+import AuIcon from '@appuniversum/ember-appuniversum/components/au-icon';
 import AuInput, {
   type AuInputSignature,
 } from '@appuniversum/ember-appuniversum/components/au-input';
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
+import AuTooltip from '@appuniversum/ember-appuniversum/components/au-tooltip';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
@@ -650,15 +652,27 @@ class TableRow extends Component<TableRowSignature> {
         @disabled={{this.disabled}}
         @primaryDisabled={{this.primaryDisabled}}
       />
-      <td class="au-u-text-right">
-        <AuButton
-          @alert={{true}}
-          @hideText={{true}}
-          @icon="bin"
-          @skin="naked"
-          @disabled={{this.disabled}}
-          {{on "click" (fn @onDelete @contactgegeven)}}
-        >Verwijder contactgegeven</AuButton>
+      <td class="au-u-text-center u-align-middle">
+        {{#if this.disabled}}
+          <AuTooltip @placement="left" as |tooltip|>
+            <span class="au-u-muted" {{tooltip.target}}>
+              <AuIcon @icon="info-circle" @size="large" />
+            </span>
+            <tooltip.Content>
+              Contactgegevens die uit KBO werden overgenomen, kunnen niet
+              aangepast worden.
+            </tooltip.Content>
+          </AuTooltip>
+        {{else}}
+          <AuButton
+            @alert={{true}}
+            @hideText={{true}}
+            @icon="bin"
+            @skin="naked"
+            @disabled={{this.disabled}}
+            {{on "click" (fn @onDelete @contactgegeven)}}
+          >Verwijder contactgegeven</AuButton>
+        {{/if}}
       </td>
     </tr>
   </template>
