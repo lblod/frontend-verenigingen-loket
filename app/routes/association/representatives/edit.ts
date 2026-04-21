@@ -9,6 +9,7 @@ import type SensitiveData from 'frontend-verenigingen-loket/services/sensitive-d
 import type Store from 'frontend-verenigingen-loket/services/store';
 import {
   getVertegenwoordigers,
+  isKboData,
   logAPIError,
   type Vertegenwoordiger,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
@@ -24,17 +25,22 @@ export default class AssociationRepresentativesEditRoute extends Route {
   @service declare router: RouterService;
 
   beforeModel() {
-    const { hasApiAuthorization } = this.modelFor('association') as NonNullable<
-      ModelFrom<AssociationRoute>
-    >;
+    const { vereniging, hasApiAuthorization } = this.modelFor(
+      'association',
+    ) as NonNullable<ModelFrom<AssociationRoute>>;
 
     if (
       this.sensitiveData.requiresReason(this.currentAssociation.association) &&
       this.currentSession.hasApiClient &&
-      hasApiAuthorization
+      hasApiAuthorization &&
+      !isKboData(vereniging)
     ) {
       this.router.transitionTo('association.representatives.access-reason');
-    } else if (!this.currentSession.hasApiClient || !hasApiAuthorization) {
+    } else if (
+      !this.currentSession.hasApiClient ||
+      !hasApiAuthorization ||
+      isKboData(vereniging)
+    ) {
       this.router.transitionTo('association.representatives');
     }
   }
