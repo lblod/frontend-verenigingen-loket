@@ -42,6 +42,7 @@ import {
   type AdresIdentifier,
   type Adres,
   ApiValidationError,
+  isKboData,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
 import type RouterService from '@ember/routing/router-service';
 import type StoreService from 'frontend-verenigingen-loket/services/store';
@@ -593,7 +594,7 @@ interface TableRowSignature {
 }
 class TableRow extends Component<TableRowSignature> {
   get disabled() {
-    return this.args.contactgegeven.data.bron === 'KBO';
+    return isKboData(this.args.contactgegeven.data);
   }
 
   get primaryDisabled() {
@@ -606,7 +607,7 @@ class TableRow extends Component<TableRowSignature> {
     return this.args.contactgegevens.some((contactgegeven) => {
       return (
         contactgegeven.data.contactgegeventype === currentType &&
-        contactgegeven.data.bron === 'KBO' &&
+        isKboData(contactgegeven.data) &&
         contactgegeven.data.isPrimair
       );
     });
