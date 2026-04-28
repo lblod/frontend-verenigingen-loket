@@ -3,11 +3,13 @@ import AuButton from '@appuniversum/ember-appuniversum/components/au-button';
 import AuCheckbox from '@appuniversum/ember-appuniversum/components/au-checkbox';
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text';
+import AuIcon from '@appuniversum/ember-appuniversum/components/au-icon';
 import AuInput, {
   type AuInputSignature,
 } from '@appuniversum/ember-appuniversum/components/au-input';
 import AuLoader from '@appuniversum/ember-appuniversum/components/au-loader';
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
+import AuTooltip from '@appuniversum/ember-appuniversum/components/au-tooltip';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
@@ -338,6 +340,7 @@ export default class ContactEdit extends Component<ContactEditSignature> {
             {{#each this.contactgegevens as |contactgegeven|}}
               <TableRow
                 @contactgegeven={{contactgegeven}}
+                @contactgegevens={{this.contactgegevens}}
                 @onDelete={{this.deleteContactgegeven}}
                 @onPrimaryChange={{this.handlePrimaryChange}}
               />
@@ -583,11 +586,32 @@ const AddressInput = <template>
 interface TableRowSignature {
   Args: {
     contactgegeven: TrackedData<Partial<Contactgegeven>>;
+    contactgegevens: TrackedData<Partial<Contactgegeven>>[];
     onPrimaryChange: (contactgegeven: TrackedData<Contactgegeven>) => void;
     onDelete: (contactgegeven: TrackedData<Contactgegeven>) => void;
   };
 }
 class TableRow extends Component<TableRowSignature> {
+  get disabled() {
+    return this.args.contactgegeven.data.bron === 'KBO';
+  }
+
+  get primaryDisabled() {
+    if (this.disabled) {
+      return true;
+    }
+
+    const currentType = this.args.contactgegeven.data.contactgegeventype;
+    // If there is a KBO contactgegeven with the same type, that is also primary, we can't allow primary edits. That would change the KBO data because there can only be a single primary per type.
+    return this.args.contactgegevens.some((contactgegeven) => {
+      return (
+        contactgegeven.data.contactgegeventype === currentType &&
+        contactgegeven.data.bron === 'KBO' &&
+        contactgegeven.data.isPrimair
+      );
+    });
+  }
+
   get editComponent() {
     if (!this.args.contactgegeven.data.contactgegeventype) {
       return NoContactType;
@@ -619,20 +643,36 @@ class TableRow extends Component<TableRowSignature> {
         <ContactTypeSelect
           @contactgegeven={{@contactgegeven}}
           @errorMessage={{@contactgegeven.errors.contactgegeventype}}
+          @disabled={{this.disabled}}
         />
       </td>
       <this.editComponent
         @contactgegeven={{@contactgegeven}}
         @onPrimaryChange={{fn @onPrimaryChange @contactgegeven}}
+        @disabled={{this.disabled}}
+        @primaryDisabled={{this.primaryDisabled}}
       />
-      <td class="au-u-text-right">
-        <AuButton
-          @alert={{true}}
-          @hideText={{true}}
-          @icon="bin"
-          @skin="naked"
-          {{on "click" (fn @onDelete @contactgegeven)}}
-        >Verwijder contactgegeven</AuButton>
+      <td class="au-u-text-center u-align-middle">
+        {{#if this.disabled}}
+          <AuTooltip @placement="left" as |tooltip|>
+            <span class="au-u-muted" {{tooltip.target}}>
+              <AuIcon @icon="info-circle" @size="large" />
+            </span>
+            <tooltip.Content>
+              Contactgegevens die uit KBO werden overgenomen, kunnen niet
+              aangepast worden.
+            </tooltip.Content>
+          </AuTooltip>
+        {{else}}
+          <AuButton
+            @alert={{true}}
+            @hideText={{true}}
+            @icon="bin"
+            @skin="naked"
+            @disabled={{this.disabled}}
+            {{on "click" (fn @onDelete @contactgegeven)}}
+          >Verwijder contactgegeven</AuButton>
+        {{/if}}
       </td>
     </tr>
   </template>
@@ -642,6 +682,7 @@ interface ContactTypeSelectSignature {
   Args: {
     contactgegeven: TrackedData<Partial<Contactgegeven>>;
     errorMessage?: string;
+    disabled?: boolean;
   };
 }
 class ContactTypeSelect extends Component<ContactTypeSelectSignature> {
@@ -657,9 +698,11 @@ class ContactTypeSelect extends Component<ContactTypeSelectSignature> {
   }
 
   get isDisabled() {
-    return !(
-      this.args.contactgegeven.isNew ||
-      !this.args.contactgegeven.data.contactgegeventype
+    return (
+      !(
+        this.args.contactgegeven.isNew ||
+        !this.args.contactgegeven.data.contactgegeventype
+      ) || this.args.disabled
     );
   }
 
@@ -699,6 +742,8 @@ class ContactTypeSelect extends Component<ContactTypeSelectSignature> {
 interface EditFieldSignature {
   Args: {
     contactgegeven: TrackedData<Partial<Contactgegeven>>;
+    disabled?: boolean;
+    primaryDisabled?: boolean;
     onPrimaryChange: (value: boolean) => void;
   };
 }
@@ -708,6 +753,8 @@ const EmailEdit = <template>
     @contactgegeven={{@contactgegeven}}
     @onPrimaryChange={{@onPrimaryChange}}
     @errorMessage={{@contactgegeven.errors.waarde}}
+    @disabled={{@disabled}}
+    @primaryDisabled={{@primaryDisabled}}
   >
     <:input as |ContactInput|>
       <ContactInput
@@ -732,11 +779,13 @@ const TelephoneEdit = <template>
         @onPrimaryChange={{@onPrimaryChange}}
         @errorMessage={{errorMessage}}
         @warningMessage={{phone.warning}}
+        @disabled={{@disabled}}
       >
         <:input as |_ id|>
           <phone.Input
             @width="block"
             @error={{if errorMessage true}}
+            @disabled={{@disabled}}
             id={{id}}
           />
         </:input>
@@ -751,6 +800,7 @@ const SocialMediaEdit = <template>
     @contactgegeven={{@contactgegeven}}
     @onPrimaryChange={{@onPrimaryChange}}
     @errorMessage={{@contactgegeven.errors.waarde}}
+    @disabled={{@disabled}}
   >
     <:input as |ContactInput|>
       <ContactInput
@@ -768,6 +818,7 @@ const WebsiteEdit = <template>
     @contactgegeven={{@contactgegeven}}
     @onPrimaryChange={{@onPrimaryChange}}
     @errorMessage={{@contactgegeven.errors.waarde}}
+    @disabled={{@disabled}}
   >
     <:input as |ContactInput|>
       <ContactInput
@@ -785,6 +836,8 @@ interface EditColumnsSignature {
     contactgegeven: TrackedData<Partial<Contactgegeven>>;
     errorMessage?: string;
     warningMessage?: string;
+    disabled?: boolean;
+    primaryDisabled?: boolean;
     onPrimaryChange?: (newValue: boolean) => void;
   };
   Blocks: {
@@ -804,6 +857,10 @@ class EditColumns extends Component<EditColumnsSignature> {
     ];
   }
 
+  get primaryDisabled() {
+    return this.args.disabled || this.args.primaryDisabled;
+  }
+
   <template>
     <EditCell
       @errorMessage={{@errorMessage}}
@@ -813,7 +870,7 @@ class EditColumns extends Component<EditColumnsSignature> {
         {{this.label}}
       </:label>
       <:input as |CellInput id|>
-        {{yield CellInput id to="input"}}
+        {{yield (component CellInput disabled=@disabled) id to="input"}}
       </:input>
     </EditCell>
     <td>
@@ -821,6 +878,7 @@ class EditColumns extends Component<EditColumnsSignature> {
         <AuCheckbox
           @checked={{@contactgegeven.data.isPrimair}}
           @onChange={{@onPrimaryChange}}
+          @disabled={{this.primaryDisabled}}
         >
           {{yield to="checkboxLabel"}}
         </AuCheckbox>

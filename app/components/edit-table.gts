@@ -46,7 +46,7 @@ interface EditCellSignature {
 
 export type YieldedCellInput = WithBoundArgs<
   typeof CellInput,
-  'id' | 'error' | 'warning'
+  'id' | 'error' | 'warning' | 'disabled'
 >;
 
 export class EditCell extends Component<EditCellSignature> {
@@ -86,6 +86,7 @@ interface CellInputSignature {
     error?: boolean;
     warning?: boolean;
     id: string;
+    disabled?: boolean;
   };
   Element: AuInputSignature['Element'];
 }
@@ -95,6 +96,7 @@ const CellInput = <template>
     @width={{@width}}
     @error={{@error}}
     @warning={{@warning}}
+    @disabled={{@disabled}}
     id={{@id}}
     ...attributes
   />
