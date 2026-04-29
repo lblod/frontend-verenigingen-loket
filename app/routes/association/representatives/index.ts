@@ -31,12 +31,13 @@ export default class AssociationRepresentativesRoute extends Route {
 
   model() {
     const association = this.currentAssociation.association;
-    const { kboNumber, hasApiAuthorization } = this.modelFor(
+    const { kboNumber, hasApiAuthorization, vereniging } = this.modelFor(
       'association',
     ) as NonNullable<ModelFrom<AssociationRoute>>;
 
     return {
       association,
+      vereniging,
       kboNumber,
       hasApiAuthorization,
     };

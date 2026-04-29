@@ -17,6 +17,7 @@ import ErrorTableMessage from 'frontend-verenigingen-loket/components/table-mess
 import telFormat from 'frontend-verenigingen-loket/helpers/tel-format';
 import {
   getVertegenwoordigers,
+  isKboData,
   logAPIError,
   type Vertegenwoordiger,
 } from 'frontend-verenigingen-loket/utils/verenigingsregister';
@@ -28,6 +29,8 @@ import type AssociationRepresentativesIndexController from 'frontend-vereniginge
 import { cached } from '@glimmer/tracking';
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type SensitiveDataService from 'frontend-verenigingen-loket/services/sensitive-data';
+import AuButton from '@appuniversum/ember-appuniversum/components/au-button';
+import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text';
 
 interface Signature {
   Args: {
@@ -56,6 +59,12 @@ export default class RepresentativesIndex extends Component<Signature> {
     );
   }
 
+  get canEdit() {
+    return (
+      this.currentSession.canEdit && !isKboData(this.args.model.vereniging)
+    );
+  }
+
   reloadData = () => {
     this.router.refresh('association.representatives.index');
   };
@@ -74,7 +83,7 @@ export default class RepresentativesIndex extends Component<Signature> {
 
         {{#if this.canSeeVertegenwoordigers}}
           <div class="au-u-flex au-u-flex--column au-u-flex--vertical-end">
-            {{#if this.currentSession.canEdit}}
+            {{#if this.canEdit}}
               <AuLink
                 @route="association.representatives.edit"
                 @skin="button-secondary"
@@ -83,7 +92,17 @@ export default class RepresentativesIndex extends Component<Signature> {
                 Bewerk
               </AuLink>
             {{else}}
-              <ReportWrongData @model={{this.association}} />
+              {{#if (isKboData @model.vereniging)}}
+                <AuButton @skin="secondary" @icon="pencil" @disabled={{true}}>
+                  Bewerk
+                </AuButton>
+                <AuHelpText @skin="secondary" class="au-u-margin-bottom-small">
+                  Aan een KBO vereniging kunnen geen vertegenwoordigers
+                  toegevoegd worden.
+                </AuHelpText>
+              {{else}}
+                <ReportWrongData @model={{this.association}} />
+              {{/if}}
             {{/if}}
             <span class="au-u-margin-top-tiny">
               <LastUpdated @lastUpdated={{this.association.lastUpdated}} />

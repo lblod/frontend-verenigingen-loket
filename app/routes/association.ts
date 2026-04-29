@@ -7,7 +7,10 @@ import type Transition from '@ember/routing/transition';
 import type Association from 'frontend-verenigingen-loket/models/association';
 import type CurrentAssociationService from 'frontend-verenigingen-loket/services/current-association';
 import type StoreService from 'frontend-verenigingen-loket/services/store';
-import { hasApiAuthorization } from 'frontend-verenigingen-loket/utils/verenigingsregister';
+import {
+  getVerenigingDetails,
+  hasApiAuthorization,
+} from 'frontend-verenigingen-loket/utils/verenigingsregister';
 
 export default class AssociationRoute extends Route {
   @service declare session: SessionService;
@@ -42,8 +45,12 @@ export default class AssociationRoute extends Route {
       } catch {
         hasAuthorization = false;
       }
+
+      const vereniging = (await getVerenigingDetails(association)).vereniging;
+
       return {
         association,
+        vereniging,
         kboNumber: await this.loadKboNumber(association),
         hasApiAuthorization: hasAuthorization,
       };

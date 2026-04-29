@@ -17,7 +17,9 @@ const manager = new RequestManager().use([Fetch]);
 ////////////////////////////////////////////////////////////////////////////
 
 // These types aren't complete. The API contains more info, but we only type what is useful to keep things simple.
+type Bron = 'Initiator' | 'KBO';
 type Vereniging = {
+  bron: Bron;
   vCode: string;
   naam: string;
   korteNaam: string;
@@ -61,10 +63,8 @@ export type ContactgegevenType =
   | 'Website'
   | 'SocialMedia';
 
-export type ContactgegevenBron = 'Initiator' | 'KBO';
-
 export type Contactgegeven = {
-  bron: ContactgegevenBron;
+  bron: Bron;
   contactgegevenId: number;
   contactgegeventype: ContactgegevenType;
   waarde: string;
@@ -623,3 +623,10 @@ export const vertegenwoordigerValidationSchema = Joi.object({
 }).messages({
   'any.required': 'Dit veld is verplicht.',
 });
+
+////////////////////////////////////////////////////////////////////////////
+// Utils
+////////////////////////////////////////////////////////////////////////////
+export function isKboData(data: { bron?: Bron }) {
+  return data.bron === 'KBO';
+}
