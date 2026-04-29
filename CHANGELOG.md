@@ -1,3 +1,9 @@
+## v1.14.1 (2026-04-29)
+
+#### :bug: Bug Fix
+* [#143](https://github.com/lblod/frontend-verenigingen-loket/pull/143) [CLBV-1211] Disable representative editing for KBO organizations ([@Windvis](https://github.com/Windvis))
+* [#142](https://github.com/lblod/frontend-verenigingen-loket/pull/142) [CLBV-1213] Prevent users from editing KBO contact data ([@Windvis](https://github.com/Windvis))
+
 ## v1.14.0 (2026-04-20)
 
 #### :rocket: Enhancement
