@@ -1,3 +1,8 @@
+## v1.14.2 (2026-04-29)
+
+#### :bug: Bug Fix
+* [#144](https://github.com/lblod/frontend-verenigingen-loket/pull/144) Fix the representative edit info message ([@Windvis](https://github.com/Windvis))
+
 ## v1.14.1 (2026-04-29)
 
 #### :bug: Bug Fix
