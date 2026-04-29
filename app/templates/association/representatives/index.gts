@@ -31,6 +31,7 @@ import type Association from 'frontend-verenigingen-loket/models/association';
 import type SensitiveDataService from 'frontend-verenigingen-loket/services/sensitive-data';
 import AuButton from '@appuniversum/ember-appuniversum/components/au-button';
 import AuHelpText from '@appuniversum/ember-appuniversum/components/au-help-text';
+import AuIcon from '@appuniversum/ember-appuniversum/components/au-icon';
 
 interface Signature {
   Args: {
@@ -97,8 +98,8 @@ export default class RepresentativesIndex extends Component<Signature> {
                   Bewerk
                 </AuButton>
                 <AuHelpText @skin="secondary" class="au-u-margin-bottom-small">
-                  Aan een KBO vereniging kunnen geen vertegenwoordigers
-                  toegevoegd worden.
+                  <AuIcon @icon="circle-info" />
+                  Gegevens afkomstig uit het KBO kunnen niet aangepast worden.
                 </AuHelpText>
               {{else}}
                 <ReportWrongData @model={{this.association}} />
