@@ -1,40 +1,40 @@
 steps:
   install:
-    image: danlynn/ember-cli:5.8.0-node_20.12
+    image: danlynn/ember-cli:6.11.0-node_24.13
     commands:
       - npm ci
   lint-js:
-    image: danlynn/ember-cli:5.8.0-node_20.12
+    image: danlynn/ember-cli:6.11.0-node_24.13
     depends_on: install
     commands:
       - npm run lint:js
   lint-hbs:
-    image: danlynn/ember-cli:5.8.0-node_20.12
+    image: danlynn/ember-cli:6.11.0-node_24.13
     depends_on: install
     commands:
       - npm run lint:hbs
   lint-css:
-    image: danlynn/ember-cli:5.8.0-node_20.12
+    image: danlynn/ember-cli:6.11.0-node_24.13
     depends_on: install
     commands:
       - npm run lint:css
   lint-formatting:
-    image: danlynn/ember-cli:5.8.0-node_20.12
+    image: danlynn/ember-cli:6.11.0-node_24.13
     depends_on: install
     commands:
       - npm run lint:format
   lint-types:
-    image: danlynn/ember-cli:5.8.0-node_20.12
+    image: danlynn/ember-cli:6.11.0-node_24.13
     depends_on: install
     commands:
       - npm run lint:types
   dependency-lint:
-    image: danlynn/ember-cli:5.8.0-node_20.12
+    image: danlynn/ember-cli:6.11.0-node_24.13
     depends_on: install
     commands:
       - npm run lint:dependencies
   test:
-    image: danlynn/ember-cli:5.8.0-node_20.12
+    image: danlynn/ember-cli:6.11.0-node_24.13
     depends_on: [lint-js, lint-hbs, lint-css, dependency-lint]
     commands:
       - npm run test:ember
