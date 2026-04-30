@@ -66,6 +66,7 @@ interface CardItemSignature {
     label: [];
     content: [];
   };
+  Element: HTMLDivElement;
 }
 
 const CardItem = <template>
