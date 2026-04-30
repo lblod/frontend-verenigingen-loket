@@ -1,6 +1,7 @@
 'use strict';
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
+const { setConfig } = require('@warp-drive/core/build-config');
 
 module.exports = async function (defaults) {
   const app = new EmberApp(defaults, {
@@ -14,7 +15,6 @@ module.exports = async function (defaults) {
     // Add options here
   });
 
-  const { setConfig } = await import('@warp-drive/build-config');
   setConfig(app, __dirname, {
     // this should be the most recent <major>.<minor> version for
     // which all deprecations have been fully resolved
