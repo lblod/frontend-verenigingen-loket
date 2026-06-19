@@ -609,7 +609,7 @@ export const vertegenwoordigerValidationSchema = Joi.object({
     .messages({
       'string.invalid-ssn': 'Geen geldig rijksregisternummer.',
     }),
-  'e-mail': Joi.string().empty('').regex(emailRegex).required().messages({
+  'e-mail': Joi.string().empty('').regex(emailRegex).optional().messages({
     'string.pattern.base': 'Geef een geldig e-mailadres in.',
   }),
   telefoon: Joi.string().empty('').regex(phoneRegex).optional().messages({
