@@ -14,7 +14,6 @@ module('Unit | Utility | verenigingsregister', function () {
         const validVertegenwoordiger: ValidatedVertegenwoordiger = {
           voornaam: 'Jan',
           achternaam: 'Janssens',
-          'e-mail': 'jan.janssens@example.com',
         };
 
         const result = await validate(
@@ -30,7 +29,6 @@ module('Unit | Utility | verenigingsregister', function () {
           voornaam: 'Jan',
           achternaam: 'Janssens',
           insz: '90031910473',
-          'e-mail': 'jan.janssens@example.com',
         };
 
         const result = await validate(
@@ -50,7 +48,6 @@ module('Unit | Utility | verenigingsregister', function () {
         await assert.rejects(
           validate(vertegenwoordigerValidationSchema, {
             achternaam: 'Janssens',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld is verplicht/,
           'Missing voornaam should throw',
@@ -60,7 +57,6 @@ module('Unit | Utility | verenigingsregister', function () {
           validate(vertegenwoordigerValidationSchema, {
             voornaam: '',
             achternaam: 'Janssens',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld is verplicht/,
           'an empty string is invalid',
@@ -70,7 +66,6 @@ module('Unit | Utility | verenigingsregister', function () {
           validate(vertegenwoordigerValidationSchema, {
             voornaam: ' ',
             achternaam: 'Janssens',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld is verplicht/,
           'whitespace is invalid',
@@ -80,7 +75,6 @@ module('Unit | Utility | verenigingsregister', function () {
           validate(vertegenwoordigerValidationSchema, {
             voornaam: '123',
             achternaam: 'Janssens',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld mag geen cijfers bevatten/,
           'numbers are not allowed',
@@ -90,7 +84,6 @@ module('Unit | Utility | verenigingsregister', function () {
           validate(vertegenwoordigerValidationSchema, {
             voornaam: 'Jan 123',
             achternaam: 'Janssens',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld mag geen cijfers bevatten/,
           'numbers are not allowed',
@@ -101,7 +94,6 @@ module('Unit | Utility | verenigingsregister', function () {
         await assert.rejects(
           validate(vertegenwoordigerValidationSchema, {
             voornaam: 'Jan',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld is verplicht/,
           'Missing achternaam should throw',
@@ -111,7 +103,6 @@ module('Unit | Utility | verenigingsregister', function () {
           validate(vertegenwoordigerValidationSchema, {
             voornaam: 'Jan',
             achternaam: '',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld is verplicht/,
           'an empty string is invalid',
@@ -121,7 +112,6 @@ module('Unit | Utility | verenigingsregister', function () {
           validate(vertegenwoordigerValidationSchema, {
             voornaam: 'Jan',
             achternaam: ' ',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld is verplicht/,
           'whitespace is invalid',
@@ -131,7 +121,6 @@ module('Unit | Utility | verenigingsregister', function () {
           validate(vertegenwoordigerValidationSchema, {
             voornaam: 'Jan',
             achternaam: '123',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld mag geen cijfers bevatten/,
           'numbers are not allowed',
@@ -141,7 +130,6 @@ module('Unit | Utility | verenigingsregister', function () {
           validate(vertegenwoordigerValidationSchema, {
             voornaam: 'Jan',
             achternaam: 'Janssens 123',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Dit veld mag geen cijfers bevatten/,
           'numbers are not allowed',
@@ -155,7 +143,6 @@ module('Unit | Utility | verenigingsregister', function () {
             {
               voornaam: 'Jan',
               achternaam: 'Janssens',
-              'e-mail': 'jan.janssens@example.com',
             },
             { context: { isNew: true } },
           ),
@@ -169,7 +156,6 @@ module('Unit | Utility | verenigingsregister', function () {
             {
               voornaam: 'Jan',
               achternaam: 'Janssens',
-              'e-mail': 'jan.janssens@example.com',
               insz: '',
             },
             { context: { isNew: true } },
@@ -185,7 +171,6 @@ module('Unit | Utility | verenigingsregister', function () {
             voornaam: 'Jan',
             achternaam: 'Janssens',
             insz: '123',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Geen geldig rijksregisternummer/,
           'Invalid insz should throw',
@@ -196,7 +181,6 @@ module('Unit | Utility | verenigingsregister', function () {
             voornaam: 'Jan',
             achternaam: 'Janssens',
             insz: ' ',
-            'e-mail': 'jan.janssens@example.com',
           }),
           /Geen geldig rijksregisternummer/,
           'whitespace is invalid',
@@ -212,16 +196,6 @@ module('Unit | Utility | verenigingsregister', function () {
           }),
           /Geef een geldig e-mailadres in/,
           'Invalid e-mail should throw',
-        );
-
-        await assert.rejects(
-          validate(vertegenwoordigerValidationSchema, {
-            voornaam: 'Jan',
-            achternaam: 'Janssens',
-            'e-mail': '',
-          }),
-          /Dit veld is verplicht/,
-          'an empty string is invalid',
         );
 
         await assert.rejects(
@@ -264,7 +238,6 @@ module('Unit | Utility | verenigingsregister', function () {
           validate(vertegenwoordigerValidationSchema, {
             voornaam: 'Jan',
             achternaam: 'Janssens',
-            'e-mail': 'jan.janssens@example.com',
             socialMedia: 'not-a-uri',
           }),
           /Geef een geldig internetadres in/,
@@ -287,7 +260,7 @@ module('Unit | Utility | verenigingsregister', function () {
         const validVertegenwoordiger: ValidatedVertegenwoordiger = {
           voornaam: 'Jan',
           achternaam: 'Janssens',
-          'e-mail': 'jan.janssens@example.com',
+          'e-mail': '',
           telefoon: '',
           socialMedia: '',
         };
