@@ -263,9 +263,9 @@ export default class RepresentativesEdit extends Component {
             <RequiredColumn>
               Rijksregisternummer
             </RequiredColumn>
-            <RequiredColumn>
+            <th>
               E-mail
-            </RequiredColumn>
+            </th>
             <th>
               Telefoonnummer
             </th>
