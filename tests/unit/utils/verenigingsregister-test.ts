@@ -209,6 +209,30 @@ module('Unit | Utility | verenigingsregister', function () {
         );
       });
 
+      test('mobiel', async function (assert) {
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+            mobiel: 'not-a-phone',
+          }),
+          /Enkel een plusteken en cijfers zijn toegelaten/,
+          'Invalid mobiel nummer should throw',
+        );
+
+        await assert.rejects(
+          validate(vertegenwoordigerValidationSchema, {
+            voornaam: 'Jan',
+            achternaam: 'Janssens',
+            'e-mail': 'jan.janssens@example.com',
+            mobiel: ' ',
+          }),
+          /Enkel een plusteken en cijfers zijn toegelaten/,
+          'whitespace is invalid',
+        );
+      });
+
       test('telefoon', async function (assert) {
         await assert.rejects(
           validate(vertegenwoordigerValidationSchema, {
@@ -261,6 +285,7 @@ module('Unit | Utility | verenigingsregister', function () {
           voornaam: 'Jan',
           achternaam: 'Janssens',
           'e-mail': '',
+          mobiel: '',
           telefoon: '',
           socialMedia: '',
         };

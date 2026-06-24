@@ -224,6 +224,12 @@ class VertegenwoordigersData extends Component<VertegenwoordigersDataSignature> 
                 @class="data-table__header-title"
               />
               <AuDataTableThSortable
+                @field="mobiel"
+                @currentSorting={{@controller.sort}}
+                @label="Mobiel nummer"
+                @class="data-table__header-title"
+              />
+              <AuDataTableThSortable
                 @field="telefoon"
                 @currentSorting={{@controller.sort}}
                 @label="Telefoonnummer"
@@ -259,6 +265,15 @@ class VertegenwoordigersData extends Component<VertegenwoordigersDataSignature> 
                   <AuLinkExternal href="mailto:{{vertegenwoordiger.e-mail}}">
                     {{vertegenwoordiger.e-mail}}
                   </AuLinkExternal>
+                </td>
+                <td>
+                  {{#if vertegenwoordiger.mobiel}}
+                    <AuLinkExternal href="tel:{{vertegenwoordiger.mobiel}}">
+                      {{telFormat vertegenwoordiger.mobiel}}
+                    </AuLinkExternal>
+                  {{else}}
+                    -
+                  {{/if}}
                 </td>
                 <td>
                   {{#if vertegenwoordiger.telefoon}}

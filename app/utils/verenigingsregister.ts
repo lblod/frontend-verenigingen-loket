@@ -84,6 +84,7 @@ export type Vertegenwoordiger = {
   roepnaam?: string;
   insz?: string;
   'e-mail'?: string;
+  mobiel?: string;
   telefoon?: string;
   socialMedia?: string;
   isPrimair?: boolean;
@@ -279,6 +280,7 @@ export async function getVertegenwoordigers(
         voornaam: vertegenwoordiger.voornaam,
         achternaam: vertegenwoordiger.achternaam,
         'e-mail': vertegenwoordiger['e-mail'],
+        mobiel: vertegenwoordiger.mobiel,
         telefoon: vertegenwoordiger.telefoon,
         socialMedia: vertegenwoordiger.socialMedia,
         isPrimair: vertegenwoordiger.isPrimair,
@@ -611,6 +613,9 @@ export const vertegenwoordigerValidationSchema = Joi.object({
     }),
   'e-mail': Joi.string().empty('').regex(emailRegex).optional().messages({
     'string.pattern.base': 'Geef een geldig e-mailadres in.',
+  }),
+  mobiel: Joi.string().empty('').regex(phoneRegex).optional().messages({
+    'string.pattern.base': 'Enkel een plusteken en cijfers zijn toegelaten.',
   }),
   telefoon: Joi.string().empty('').regex(phoneRegex).optional().messages({
     'string.pattern.base': 'Enkel een plusteken en cijfers zijn toegelaten.',

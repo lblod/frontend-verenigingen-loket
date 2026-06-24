@@ -267,6 +267,9 @@ export default class RepresentativesEdit extends Component {
               E-mail
             </th>
             <th>
+              Mobiel nummer
+            </th>
+            <th>
               Telefoonnummer
             </th>
             <th>
@@ -391,18 +394,35 @@ class EditRow extends Component {
         </:input>
       </EditCell>
       <PhoneInput
+        @onUpdate={{fn (mut @vertegenwoordiger.data.mobiel)}}
+        @value={{@vertegenwoordiger.data.mobiel}}
+        as |mobiel|
+      >
+        {{#let @contactPoint.errors.mobiel as |errorMessage|}}
+          <EditCell
+            @errorMessage={{errorMessage}}
+            @warningMessage={{mobiel.warning}}
+          >
+            <:label>Mobiel nummer</:label>
+            <:input as |_ id|>
+              <mobiel.Input @error={{if errorMessage true}} id={{id}} />
+            </:input>
+          </EditCell>
+        {{/let}}
+      </PhoneInput>
+      <PhoneInput
         @onUpdate={{fn (mut @vertegenwoordiger.data.telefoon)}}
         @value={{@vertegenwoordiger.data.telefoon}}
-        as |phone|
+        as |telefoon|
       >
         {{#let @contactPoint.errors.telefoon as |errorMessage|}}
           <EditCell
             @errorMessage={{errorMessage}}
-            @warningMessage={{phone.warning}}
+            @warningMessage={{telefoon.warning}}
           >
             <:label>Telefoonnummer</:label>
             <:input as |_ id|>
-              <phone.Input @error={{if errorMessage true}} id={{id}} />
+              <telefoon.Input @error={{if errorMessage true}} id={{id}} />
             </:input>
           </EditCell>
         {{/let}}
