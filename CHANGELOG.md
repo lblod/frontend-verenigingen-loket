@@ -1,3 +1,13 @@
+## v1.15.0 (2026-06-24)
+
+#### :rocket: Enhancement
+* [#148](https://github.com/lblod/frontend-verenigingen-loket/pull/148) [CLBV-1251]: Add an extra field 'Mobiel nummer' for representatives ([@wolfderechter](https://github.com/wolfderechter))
+* [#147](https://github.com/lblod/frontend-verenigingen-loket/pull/147) [CLBV-1241]: convert the email field of representatives into optional ([@wolfderechter](https://github.com/wolfderechter))
+
+#### :house: Internal
+* [#146](https://github.com/lblod/frontend-verenigingen-loket/pull/146) [CLBV-1217] Update to Appuniversum v4 ([@Windvis](https://github.com/Windvis))
+* [#145](https://github.com/lblod/frontend-verenigingen-loket/pull/145) [CLBV-1217] Update to Ember v6.12 ([@Windvis](https://github.com/Windvis))
+
 ## v1.14.2 (2026-04-29)
 
 #### :bug: Bug Fix
