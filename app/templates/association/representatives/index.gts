@@ -325,9 +325,9 @@ const NoJurisdictionMessage = <template>
       Waarom zie ik geen gegevens van vertegenwoordigers van deze vereniging?
     </AuHeading>
     <p>
-      Je ziet alleen vertegenwoordigers van verenigingen die jouw gemeente als
-      primaire locatie hebben. Als er geen primaire locatie is aangeduid,
-      gebruiken we het maatschappelijke adres uit de KBO. Is dat niet
+      Je ziet alleen vertegenwoordigers van verenigingen waarvan de primaire
+      locatie binnen jouw werkingsgebied ligt. Als er geen primaire locatie is
+      aangeduid, gebruiken we het maatschappelijke adres uit de KBO. Is dat niet
       beschikbaar, dan nemen we het correspondentieadres als primair adres.
     </p>
   </AuContent>
