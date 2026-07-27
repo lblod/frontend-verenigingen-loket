@@ -1,3 +1,9 @@
+
+## v1.16.0 (2026-07-27)
+
+#### :rocket: Enhancement
+* [#149](https://github.com/lblod/frontend-verenigingen-loket/pull/149) [CLBV-1270] Adjust the no-jurisdiction message to cover province and district logins ([@bdevloed](https://github.com/bdevloed))
+
 ## v1.15.0 (2026-06-24)
 
 #### :rocket: Enhancement
