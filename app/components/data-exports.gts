@@ -155,6 +155,21 @@ class RepresentativesExport extends Component<RepresentativesExportSignature> {
             >
               Nieuwe export aanvragen
             </AuLink>
+            {{#if @job.error}}
+              <AuTooltip @placement="bottom" as |tooltip|>
+                <AuPill
+                  @skin="warning"
+                  @icon="alert-triangle"
+                  class="au-u-margin-right"
+                  {{tooltip.target}}
+                >
+                  Export onvolledig
+                </AuPill>
+                <tooltip.Content>
+                  {{@job.error}}
+                </tooltip.Content>
+              </AuTooltip>
+            {{/if}}
             <span
               class="au-u-flex au-u-flex--inline au-u-flex--column au-u-flex--vertical-end"
             >
