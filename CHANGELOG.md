@@ -1,4 +1,9 @@
 
+## v1.17.0 (2026-10-02)
+
+#### :rocket: Enhancement
+* [#150](https://github.com/lblod/frontend-verenigingen-loket/pull/150) [CLBV-1293] Show a warning when the representatives export is incomplete ([@bdevloed](https://github.com/bdevloed))
+
 ## v1.16.0 (2026-07-27)
 
 #### :rocket: Enhancement
