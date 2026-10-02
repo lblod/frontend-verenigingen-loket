@@ -155,34 +155,39 @@ class RepresentativesExport extends Component<RepresentativesExportSignature> {
             >
               Nieuwe export aanvragen
             </AuLink>
-            {{#if @job.error}}
-              <AuTooltip @placement="bottom" as |tooltip|>
-                <AuPill
-                  @skin="warning"
-                  @icon="alert-triangle"
-                  class="au-u-margin-right"
-                  {{tooltip.target}}
-                >
-                  Export onvolledig
-                </AuPill>
-                <tooltip.Content>
-                  {{@job.error}}
-                </tooltip.Content>
-              </AuTooltip>
-            {{/if}}
             <span
               class="au-u-flex au-u-flex--inline au-u-flex--column au-u-flex--vertical-end"
             >
-              <AuLinkExternal
-                @icon="download"
-                href={{downloadLink
-                  @job.resultsContainer
-                  "vertegenwoordigers-export.xlsx"
-                }}
-                download="vertegenwoordigers-export.xlsx"
+              <span
+                class="au-u-flex au-u-flex--inline au-u-flex--vertical-center"
               >
-                Download bestand
-              </AuLinkExternal>
+                <AuLinkExternal
+                  @icon="download"
+                  href={{downloadLink
+                    @job.resultsContainer
+                    "vertegenwoordigers-export.xlsx"
+                  }}
+                  download="vertegenwoordigers-export.xlsx"
+                >
+                  Download bestand
+                </AuLinkExternal>
+                {{#if @job.error}}
+                  <AuTooltip @placement="bottom" as |tooltip|>
+                    <AuPill
+                      @skin="warning"
+                      @size="small"
+                      @icon="alert-triangle"
+                      class="au-u-margin-left-small"
+                      {{tooltip.target}}
+                    >
+                      Export onvolledig
+                    </AuPill>
+                    <tooltip.Content>
+                      {{@job.error}}
+                    </tooltip.Content>
+                  </AuTooltip>
+                {{/if}}
+              </span>
               <span class="au-u-muted au-u-para-tiny">
                 Beschikbaar tot
                 {{dateFormat (add7Days @job.created)}}
